@@ -1,4 +1,5 @@
 import { spawn } from "node:child_process";
+import fs from "node:fs/promises";
 import path from "node:path";
 
 import {
@@ -73,6 +74,17 @@ async function main(): Promise<void> {
   await verifyTestDatabaseIdentity(mode, env);
 
   if (command === "reset") {
+    const testStorageRoot = path.resolve(
+      workspaceRoot,
+      env.TEST_PRIVATE_STORAGE_ROOT,
+    );
+    const expectedSuffix = path.join("storage", "private-test");
+
+    if (!testStorageRoot.endsWith(expectedSuffix)) {
+      throw new Error("TEST_STORAGE_ROOT_IDENTITY_MISMATCH");
+    }
+
+    await fs.rm(testStorageRoot, { recursive: true, force: true });
     await runPrismaCommand(
       [
         "migrate",

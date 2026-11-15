@@ -17,6 +17,7 @@ coverage/
 # Runtime data and private files
 storage/private/*
 !storage/private/.gitkeep
+storage/private-test/
 *.log
 logs/
 

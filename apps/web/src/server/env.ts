@@ -18,6 +18,7 @@ const webEnvSchema = z.object({
       (value) => !value.startsWith("REPLACE_WITH_"),
       "BETTER_AUTH_SECRET must be replaced locally",
     ),
+  PRIVATE_STORAGE_ROOT: z.string().min(1).default("storage/private"),
 });
 
 export type WebEnv = z.infer<typeof webEnvSchema>;

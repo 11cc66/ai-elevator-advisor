@@ -45,6 +45,40 @@ test("test customer is limited to the assigned project", async ({
   );
   expect(unassignedProject.status()).toBe(403);
 
+  const assignedUploadIntent = await request.post(
+    `/api/projects/${assignedProjectId}/files/upload-intents`,
+    {
+      headers: {
+        "Idempotency-Key": "phase3-customer-upload-intent-0001",
+      },
+      data: {
+        displayName: "DEMO customer permission.pdf",
+        originalFilename: "customer-permission.pdf",
+        declaredMimeType: "application/pdf",
+        declaredSizeBytes: 100,
+        buildingId: "phase3_test_building",
+        installationUnitId: "phase3_test_unit",
+      },
+    },
+  );
+  expect(assignedUploadIntent.status()).toBe(201);
+
+  const unassignedUploadIntent = await request.post(
+    "/api/projects/project-not-assigned/files/upload-intents",
+    {
+      headers: {
+        "Idempotency-Key": "phase3-customer-upload-intent-0002",
+      },
+      data: {
+        displayName: "DENIED.pdf",
+        originalFilename: "denied.pdf",
+        declaredMimeType: "application/pdf",
+        declaredSizeBytes: 100,
+      },
+    },
+  );
+  expect(unassignedUploadIntent.status()).toBe(403);
+
   const customers = await request.get("/api/admin/customers");
   expect(customers.status()).toBe(403);
 

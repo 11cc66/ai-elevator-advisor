@@ -44,6 +44,7 @@ model User {
   fileVersionsUploaded FileVersion[]           @relation("FileVersionUploadedBy")
   fieldReviews         ExtractionFieldReview[]
   securityEvents       FileSecurityEvent[]
+  uploadIntents        FileUploadIntent[]
 
   @@map("user")
 }
@@ -198,6 +199,7 @@ model Project {
   buildings          Building[]
   roleAssignments    UserRole[]
   files              File[]
+  uploadIntents      FileUploadIntent[]
 
   @@unique([id, customerId])
   @@index([customerId])
@@ -227,6 +229,7 @@ model Building {
   createdBy          User               @relation("BuildingCreatedBy", fields: [createdById], references: [id])
   installationUnits  InstallationUnit[]
   files              File[]
+  uploadIntents      FileUploadIntent[]
 
   @@unique([id, projectId])
   @@index([projectId])
@@ -252,6 +255,7 @@ model InstallationUnit {
   building           Building               @relation(fields: [buildingId], references: [id])
   createdBy          User                   @relation("UnitCreatedBy", fields: [createdById], references: [id])
   files              File[]
+  uploadIntents      FileUploadIntent[]
 
   @@unique([id, buildingId])
   @@index([buildingId])
@@ -364,7 +368,9 @@ model File {
   createdBy          User               @relation("FileCreatedBy", fields: [createdById], references: [id])
   currentVersion     FileVersion?       @relation("CurrentFileVersion", fields: [currentVersionId], references: [id], onDelete: SetNull)
   versions           FileVersion[]      @relation("FileVersions")
+  uploadIntents      FileUploadIntent[] @relation("ExistingUploadIntentFile")
 
+  @@unique([id, projectId])
   @@index([customerId])
   @@index([projectId])
   @@index([buildingId])
@@ -403,6 +409,7 @@ model FileVersion {
   uploadedBy              User                    @relation("FileVersionUploadedBy", fields: [uploadedById], references: [id])
   extractions             FileExtraction[]
   securityEvents          FileSecurityEvent[]
+  uploadIntent            FileUploadIntent?       @relation("CompletedUploadIntent")
 
   @@unique([fileId, versionNumber])
   @@unique([id, fileId])
@@ -410,6 +417,54 @@ model FileVersion {
   @@index([fileId, createdAt])
   @@index([checksumSha256])
   @@map("file_version")
+}
+
+enum FileUploadIntentStatus {
+  PENDING
+  UPLOADING
+  COMPLETED
+  FAILED
+  EXPIRED
+}
+
+model FileUploadIntent {
+  id                     String                 @id @default(cuid())
+  requestKey             String                 @db.VarChar(100)
+  requestFingerprint     String                 @db.Char(64)
+  uploadedById           String
+  projectId              String
+  buildingId             String?
+  installationUnitId     String?
+  existingFileId         String?
+  displayName            String                 @db.VarChar(255)
+  originalFilename       String                 @db.VarChar(255)
+  sanitizedFilename      String                 @db.VarChar(255)
+  declaredMimeType       String                 @db.VarChar(150)
+  declaredSizeBytes      BigInt
+  stagingKey             String                 @unique @db.VarChar(255)
+  objectStorageKey       String?                @unique @db.VarChar(255)
+  status                 FileUploadIntentStatus @default(PENDING)
+  expiresAt              DateTime               @db.Timestamptz(6)
+  claimedAt              DateTime?              @db.Timestamptz(6)
+  completedAt            DateTime?              @db.Timestamptz(6)
+  failureCode            String?                @db.VarChar(100)
+  completedFileVersionId String?                @unique
+  createdAt              DateTime               @default(now()) @db.Timestamptz(6)
+  updatedAt              DateTime               @updatedAt @db.Timestamptz(6)
+
+  uploadedBy           User              @relation(fields: [uploadedById], references: [id])
+  project              Project           @relation(fields: [projectId], references: [id])
+  building             Building?         @relation(fields: [buildingId], references: [id])
+  installationUnit     InstallationUnit? @relation(fields: [installationUnitId], references: [id])
+  existingFile         File?             @relation("ExistingUploadIntentFile", fields: [existingFileId], references: [id])
+  completedFileVersion FileVersion?      @relation("CompletedUploadIntent", fields: [completedFileVersionId], references: [id])
+
+  @@unique([uploadedById, requestKey])
+  @@index([projectId, status])
+  @@index([status, expiresAt])
+  @@index([buildingId])
+  @@index([installationUnitId])
+  @@map("file_upload_intent")
 }
 
 model FileExtraction {

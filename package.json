@@ -8,7 +8,7 @@
     "node": ">=24.0.0"
   },
   "scripts": {
-    "build:packages": "pnpm --filter @elevator/contracts build && pnpm --filter @elevator/selection-engine build && pnpm --filter @elevator/shared-ui build",
+    "build:packages": "pnpm --filter @elevator/contracts build && pnpm --filter @elevator/file-storage build && pnpm --filter @elevator/selection-engine build && pnpm --filter @elevator/shared-ui build",
     "dev:web": "pnpm run build:packages && pnpm --filter @elevator/web dev",
     "dev:worker": "pnpm run build:packages && pnpm --filter @elevator/worker dev",
     "build": "pnpm -r build",

@@ -14,7 +14,11 @@ const nextConfig: NextConfig = {
   outputFileTracingRoot: workspaceRoot,
   poweredByHeader: false,
   reactStrictMode: true,
-  transpilePackages: ["@elevator/contracts", "@elevator/shared-ui"],
+  transpilePackages: [
+    "@elevator/contracts",
+    "@elevator/file-storage",
+    "@elevator/shared-ui",
+  ],
 };
 
 export default nextConfig;

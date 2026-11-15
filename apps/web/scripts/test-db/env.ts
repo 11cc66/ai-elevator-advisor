@@ -47,6 +47,10 @@ const testEnvSchema = z
     ALLOW_TEST_DB_INIT: booleanFlag,
     ALLOW_TEST_DB_RESET: booleanFlag,
     TEST_APP_BASE_URL: z.string().url(),
+    TEST_PRIVATE_STORAGE_ROOT: z
+      .string()
+      .min(1)
+      .default("storage/private-test"),
     BETTER_AUTH_URL: z.string().url(),
     BETTER_AUTH_SECRET: z
       .string()

@@ -100,6 +100,46 @@ export const createInstallationUnitSchema = z.object({
 
 export const idSchema = z.string().min(1);
 
+export const MAX_FILE_SIZE_BYTES = 20 * 1024 * 1024;
+
+export const uploadIntentSchema = z.object({
+  displayName: z
+    .string()
+    .trim()
+    .min(1, "请输入文件名称")
+    .max(255, "文件名称不能超过 255 个字符"),
+  originalFilename: z
+    .string()
+    .trim()
+    .min(1, "缺少原始文件名")
+    .max(255, "原始文件名不能超过 255 个字符"),
+  declaredMimeType: z.enum([
+    "application/pdf",
+    "image/jpeg",
+    "image/png",
+  ]),
+  declaredSizeBytes: z
+    .number()
+    .int()
+    .positive()
+    .max(MAX_FILE_SIZE_BYTES, "文件不能超过 20 MiB"),
+  buildingId: z
+    .string()
+    .trim()
+    .optional()
+    .transform((value) => value || undefined),
+  installationUnitId: z
+    .string()
+    .trim()
+    .optional()
+    .transform((value) => value || undefined),
+  existingFileId: z
+    .string()
+    .trim()
+    .optional()
+    .transform((value) => value || undefined),
+});
+
 export type LoginCredentials = z.infer<typeof loginCredentialsSchema>;
 export type CreateCustomerInput = z.infer<typeof createCustomerSchema>;
 export type CreateProjectInput = z.infer<typeof createProjectSchema>;
@@ -107,3 +147,4 @@ export type CreateBuildingInput = z.infer<typeof createBuildingSchema>;
 export type CreateInstallationUnitInput = z.infer<
   typeof createInstallationUnitSchema
 >;
+export type UploadIntentInput = z.infer<typeof uploadIntentSchema>;

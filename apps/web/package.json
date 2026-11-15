@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@elevator/contracts": "workspace:*",
+    "@elevator/file-storage": "workspace:*",
     "@elevator/shared-ui": "workspace:*",
     "@prisma/client": "6.19.0",
     "better-auth": "1.7.23",

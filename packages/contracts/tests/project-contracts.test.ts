@@ -4,6 +4,7 @@ import {
   createCustomerSchema,
   createProjectSchema,
   loginCredentialsSchema,
+  uploadIntentSchema,
 } from "../src/index.js";
 
 describe("Phase 2 contracts", () => {
@@ -36,5 +37,23 @@ describe("Phase 2 contracts", () => {
     });
 
     expect(result.success).toBe(false);
+  });
+
+  it("rejects upload declarations over 20 MiB or outside the MIME allowlist", () => {
+    const base = {
+      displayName: "演示资料",
+      originalFilename: "demo.pdf",
+      declaredMimeType: "application/pdf",
+      declaredSizeBytes: 20 * 1024 * 1024 + 1,
+    };
+
+    expect(uploadIntentSchema.safeParse(base).success).toBe(false);
+    expect(
+      uploadIntentSchema.safeParse({
+        ...base,
+        declaredMimeType: "image/svg+xml",
+        declaredSizeBytes: 100,
+      }).success,
+    ).toBe(false);
   });
 });
