@@ -1,0 +1,28 @@
+{
+  "name": "ai-elevator-advisor",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI Elevator Selection Advisor V1.0",
+  "packageManager": "pnpm@11.25.0",
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "scripts": {
+    "build:packages": "pnpm --filter @elevator/contracts build && pnpm --filter @elevator/selection-engine build && pnpm --filter @elevator/shared-ui build",
+    "dev:web": "pnpm run build:packages && pnpm --filter @elevator/web dev",
+    "dev:worker": "pnpm run build:packages && pnpm --filter @elevator/worker dev",
+    "build": "pnpm -r build",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r --if-present test",
+    "test:e2e": "pnpm --filter @elevator/web test:e2e",
+    "db:generate": "prisma generate",
+    "db:validate": "prisma validate",
+    "db:migrate:dev": "prisma migrate dev",
+    "db:status": "prisma migrate status"
+  },
+  "devDependencies": {
+    "@prisma/client": "6.19.0",
+    "prisma": "6.19.0",
+    "typescript": "5.9.3"
+  }
+}

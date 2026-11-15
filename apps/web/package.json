@@ -1,0 +1,37 @@
+{
+  "name": "@elevator/web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "@elevator/contracts": "workspace:*",
+    "@elevator/shared-ui": "workspace:*",
+    "@prisma/client": "6.19.0",
+    "better-auth": "1.7.23",
+    "dotenv": "18.0.10",
+    "next": "16.4.6",
+    "pino": "10.4.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.65.1",
+    "@tailwindcss/postcss": "4.3.5",
+    "@types/node": "^24.19.2",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "postcss": "8.5.33",
+    "tailwindcss": "4.3.5",
+    "typescript": "5.9.3",
+    "vitest": "3.2.4"
+  }
+}

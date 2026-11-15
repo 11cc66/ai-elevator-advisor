@@ -1,0 +1,20 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// Technical metadata for the Phase 1 infrastructure.
+/// No customer, product or engineering business data belongs here.
+model SystemMetadata {
+  id        String   @id @default(cuid())
+  key       String   @unique @db.VarChar(100)
+  value     Json
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@map("system_metadata")
+}
