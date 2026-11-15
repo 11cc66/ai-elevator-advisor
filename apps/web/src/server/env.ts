@@ -3,6 +3,7 @@ import { z } from "zod";
 import { FILE_PROCESSING_RETRY_DEFAULTS } from "@elevator/contracts";
 
 const webEnvSchema = z.object({
+  NODE_ENV: z.string().min(1).optional(),
   DATABASE_URL: z
     .string()
     .regex(
@@ -49,11 +50,22 @@ const webEnvSchema = z.object({
 });
 
 export type WebEnv = z.infer<typeof webEnvSchema>;
+export type RuntimeEnvironmentSource = Record<string, unknown>;
+
+export function readRuntimeNodeEnvironment(
+  source: RuntimeEnvironmentSource = process.env,
+): string | undefined {
+  const value = Reflect.get(source, "NODE_ENV");
+  return typeof value === "string" ? value : undefined;
+}
 
 export function readWebEnv(
-  source: NodeJS.ProcessEnv = process.env,
+  source: RuntimeEnvironmentSource = process.env,
 ): WebEnv {
-  const result = webEnvSchema.safeParse(source);
+  const result = webEnvSchema.safeParse({
+    ...source,
+    NODE_ENV: readRuntimeNodeEnvironment(source),
+  });
 
   if (!result.success) {
     const fields = [

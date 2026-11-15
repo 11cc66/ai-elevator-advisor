@@ -29,7 +29,7 @@ export async function verifyIsolatedTestFileEnvironment(
   env: WebEnv,
 ): Promise<boolean> {
   if (
-    process.env.NODE_ENV !== "test" ||
+    env.NODE_ENV !== "test" ||
     env.FILE_ACCESS_MODE !== "test"
   ) {
     return false;
@@ -61,7 +61,7 @@ export async function verifyIsolatedTestFileEnvironment(
     `;
 
     return isVerifiedTestRuntime({
-      nodeEnvironment: process.env.NODE_ENV,
+      nodeEnvironment: env.NODE_ENV,
       fileAccessMode: env.FILE_ACCESS_MODE,
       databaseName: context[0].databaseName,
       databaseRole: context[0].databaseRole,
@@ -147,7 +147,7 @@ export async function prepareFileDownload(input: {
     PERMISSIONS.FILE_UNSCANNED_TEST_ACCESS,
   );
   const policy = evaluateDownloadPolicy({
-    nodeEnvironment: process.env.NODE_ENV,
+    nodeEnvironment: input.env.NODE_ENV,
     fileAccessMode: input.env.FILE_ACCESS_MODE,
     testIdentityVerified,
     hasUnscannedTestAccess,

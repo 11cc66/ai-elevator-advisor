@@ -45,6 +45,7 @@ describe("download security policy", () => {
       "development",
       "staging",
       "production",
+      "preview",
     ]) {
       expect(
         evaluateDownloadPolicy({

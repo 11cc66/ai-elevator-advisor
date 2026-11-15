@@ -1,26 +1,24 @@
-import { afterAll, beforeAll, expect, it } from "vitest";
+import { afterAll, expect, it } from "vitest";
 
 import { verifyIsolatedTestFileEnvironment } from "../../src/modules/files/download-service";
-import { readWebEnv } from "../../src/server/env";
+import {
+  readRuntimeNodeEnvironment,
+  readWebEnv,
+} from "../../src/server/env";
 
-const env = readWebEnv();
-const originalNodeEnvironment = process.env.NODE_ENV;
 const originalTestMarker = process.env.TEST_DATABASE_MARKER;
 
-function setNodeEnvironment(value: string | undefined): void {
+function buildEnvironment(value: string | undefined) {
+  const source = { ...process.env };
   if (value === undefined) {
-    Reflect.deleteProperty(process.env, "NODE_ENV");
+    Reflect.deleteProperty(source, "NODE_ENV");
   } else {
-    Reflect.set(process.env, "NODE_ENV", value);
+    Reflect.set(source, "NODE_ENV", value);
   }
+  return readWebEnv(source);
 }
 
-beforeAll(() => {
-  setNodeEnvironment("test");
-});
-
 afterAll(() => {
-  setNodeEnvironment(originalNodeEnvironment);
   if (originalTestMarker === undefined) {
     delete process.env.TEST_DATABASE_MARKER;
   } else {
@@ -28,20 +26,43 @@ afterAll(() => {
   }
 });
 
+it("reads NODE_ENV from the real runtime without accepting invalid values", () => {
+  expect(
+    readRuntimeNodeEnvironment({ NODE_ENV: "test" }),
+  ).toBe("test");
+  expect(readRuntimeNodeEnvironment({})).toBeUndefined();
+  expect(
+    readRuntimeNodeEnvironment({
+      NODE_ENV: 123,
+    }),
+  ).toBeUndefined();
+});
+
 it("requires an exact test runtime, fixed database identity and marker", async () => {
-  expect(await verifyIsolatedTestFileEnvironment(env)).toBe(true);
+  expect(
+    await verifyIsolatedTestFileEnvironment(
+      buildEnvironment("test"),
+    ),
+  ).toBe(true);
 
   for (const nodeEnvironment of [
     undefined,
     "development",
     "staging",
     "production",
+    "preview",
   ]) {
-    setNodeEnvironment(nodeEnvironment);
-    expect(await verifyIsolatedTestFileEnvironment(env)).toBe(false);
+    expect(
+      await verifyIsolatedTestFileEnvironment(
+        buildEnvironment(nodeEnvironment),
+      ),
+    ).toBe(false);
   }
 
-  setNodeEnvironment("test");
   process.env.TEST_DATABASE_MARKER = "incorrect-test-marker";
-  expect(await verifyIsolatedTestFileEnvironment(env)).toBe(false);
+  expect(
+    await verifyIsolatedTestFileEnvironment(
+      buildEnvironment("test"),
+    ),
+  ).toBe(false);
 });

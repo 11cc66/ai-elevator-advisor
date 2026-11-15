@@ -43,11 +43,13 @@ export default defineConfig({
     timeout: 120_000,
     env: {
       ...process.env,
+      NODE_ENV: "test",
       DATABASE_URL: testEnv.TEST_DATABASE_URL,
       BETTER_AUTH_URL: testEnv.BETTER_AUTH_URL,
       BETTER_AUTH_SECRET: testEnv.BETTER_AUTH_SECRET,
       PRIVATE_STORAGE_ROOT: testStorageRoot,
       FILE_ACCESS_MODE: "test",
+      TEST_DATABASE_MARKER: testEnv.TEST_DATABASE_MARKER,
     },
   },
 });
