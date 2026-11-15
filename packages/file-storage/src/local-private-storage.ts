@@ -31,6 +31,11 @@ export interface PrivateStorageAdapter {
     objectKey: string,
     expectedChecksumSha256: string,
   ): Promise<IntegrityCheck>;
+  cleanupOrphanObjects(
+    referencedObjectKeys: readonly string[],
+    olderThanMs: number,
+  ): Promise<number>;
+  cleanupTemp(olderThanMs: number): Promise<number>;
   openReadStream(objectKey: string): Readable;
 }
 
@@ -151,6 +156,62 @@ export class LocalPrivateStorage implements PrivateStorageAdapter {
       valid: actualChecksumSha256 === expectedChecksumSha256,
       actualChecksumSha256,
     };
+  }
+
+  async cleanupOrphanObjects(
+    referencedObjectKeys: readonly string[],
+    olderThanMs: number,
+  ): Promise<number> {
+    const objectsDirectory = this.#resolveKey("objects");
+    const entries = await fs
+      .readdir(objectsDirectory, { withFileTypes: true })
+      .catch(() => []);
+    const referenced = new Set(referencedObjectKeys);
+    const cutoff = Date.now() - olderThanMs;
+    let removed = 0;
+
+    for (const entry of entries) {
+      if (!entry.isFile()) {
+        continue;
+      }
+
+      const objectKey = `objects/${entry.name}`;
+      if (referenced.has(objectKey)) {
+        continue;
+      }
+
+      const objectPath = path.join(objectsDirectory, entry.name);
+      const stats = await fs.stat(objectPath).catch(() => null);
+      if (!stats || stats.mtimeMs >= cutoff) {
+        continue;
+      }
+
+      await fs.rm(objectPath, { force: true });
+      removed += 1;
+    }
+
+    return removed;
+  }
+
+  async cleanupTemp(olderThanMs: number): Promise<number> {
+    const tempDirectory = this.#resolveKey("temp");
+    const entries = await fs
+      .readdir(tempDirectory, { withFileTypes: true })
+      .catch(() => []);
+    const cutoff = Date.now() - olderThanMs;
+    let removed = 0;
+
+    for (const entry of entries) {
+      const entryPath = path.join(tempDirectory, entry.name);
+      const stats = await fs.stat(entryPath).catch(() => null);
+      if (!stats || stats.mtimeMs >= cutoff) {
+        continue;
+      }
+      await fs.rm(entryPath, { recursive: true, force: true });
+      removed += 1;
+    }
+
+    return removed;
   }
 
   openReadStream(objectKey: string): Readable {

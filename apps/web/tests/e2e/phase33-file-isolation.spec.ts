@@ -6,14 +6,14 @@ import {
   type APIRequestContext,
 } from "@playwright/test";
 
+import { createTestPdf } from "../fixtures/test-pdf";
+
 const customerOneUsername = process.env.TEST_CUSTOMER_USERNAME;
 const customerTwoUsername = process.env.TEST_CUSTOMER_2_USERNAME;
 const customerPassword = process.env.TEST_CUSTOMER_PASSWORD;
 const projectOne = "phase3_test_project";
 const projectTwo = "phase3_test_project_2";
-const PDF_BYTES = Buffer.from(
-  "%PDF-1.7\n1 0 obj\n<< /Type /Catalog >>\nendobj\n%%EOF",
-);
+const PDF_BYTES = createTestPdf(["Customer isolation test"]);
 
 async function login(
   request: APIRequestContext,

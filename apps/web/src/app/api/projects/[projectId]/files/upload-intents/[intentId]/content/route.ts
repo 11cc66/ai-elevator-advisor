@@ -57,7 +57,7 @@ export async function PUT(
     const requestMimeType =
       request.headers.get("content-type")?.split(";", 1)[0]?.trim() ??
       null;
-    const version = await completeUpload({
+    const completed = await completeUpload({
       actor,
       projectId,
       intentId,
@@ -69,9 +69,11 @@ export async function PUT(
       requestId,
       storage: getPrivateStorage(),
     });
+    const { version } = completed;
 
     return NextResponse.json(
       {
+        extractionId: completed.extractionId,
         fileVersion: {
           id: version.id,
           fileId: version.fileId,

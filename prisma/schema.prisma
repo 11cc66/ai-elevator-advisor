@@ -468,30 +468,36 @@ model FileUploadIntent {
 }
 
 model FileExtraction {
-  id                 String                @id @default(cuid())
-  fileVersionId      String
-  extractionVersion  Int
-  provider           String                @db.VarChar(100)
-  providerVersion    String                @db.VarChar(100)
-  dataClassification DataClassification    @default(DEMO_MOCK)
-  status             ExtractionStatus      @default(QUEUED)
-  extractedText      String?               @db.Text
-  missingItems       Json?
-  safetyNotes        String?               @db.Text
-  safeErrorCode      String?               @db.VarChar(100)
-  safeErrorMessage   String?               @db.Text
-  attempt            Int                   @default(1)
-  queuedAt           DateTime?             @db.Timestamptz(6)
-  startedAt          DateTime?             @db.Timestamptz(6)
-  completedAt        DateTime?             @db.Timestamptz(6)
-  createdAt          DateTime              @default(now()) @db.Timestamptz(6)
-  fileVersion        FileVersion           @relation(fields: [fileVersionId], references: [id])
-  textBlocks         ExtractionTextBlock[]
-  fields             ExtractionField[]
+  id                   String                @id @default(cuid())
+  fileVersionId        String
+  extractionVersion    Int
+  provider             String                @db.VarChar(100)
+  providerVersion      String                @db.VarChar(100)
+  parserVersion        String?               @db.VarChar(100)
+  dataClassification   DataClassification    @default(DEMO_MOCK)
+  status               ExtractionStatus      @default(QUEUED)
+  extractedText        String?               @db.Text
+  providerMetadata     Json?
+  pageCount            Int?
+  outputCharacterCount Int                   @default(0)
+  missingItems         Json?
+  safetyNotes          String?               @db.Text
+  safeErrorCode        String?               @db.VarChar(100)
+  safeErrorMessage     String?               @db.Text
+  attempt              Int                   @default(1)
+  queuedAt             DateTime?             @db.Timestamptz(6)
+  startedAt            DateTime?             @db.Timestamptz(6)
+  completedAt          DateTime?             @db.Timestamptz(6)
+  createdAt            DateTime              @default(now()) @db.Timestamptz(6)
+  fileVersion          FileVersion           @relation(fields: [fileVersionId], references: [id])
+  textBlocks           ExtractionTextBlock[]
+  fields               ExtractionField[]
 
   @@unique([fileVersionId, extractionVersion])
   @@index([fileVersionId, createdAt])
   @@index([status])
+  @@index([status, queuedAt])
+  @@index([status, startedAt])
   @@map("file_extraction")
 }
 
@@ -503,6 +509,7 @@ model ExtractionTextBlock {
   text           String         @db.Text
   sourceKind     String         @db.VarChar(100)
   sourceRef      String?        @db.VarChar(500)
+  positionData   Json?
   characterCount Int
   createdAt      DateTime       @default(now()) @db.Timestamptz(6)
   extraction     FileExtraction @relation(fields: [extractionId], references: [id])

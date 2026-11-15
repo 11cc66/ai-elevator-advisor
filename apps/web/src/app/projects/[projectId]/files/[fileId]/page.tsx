@@ -96,6 +96,14 @@ export default async function FileDetailPage({
                   <p className="mt-3 text-xs text-slate-500">
                     完成时间：{version.finalizedAt?.toISOString() ?? "未完成"}
                   </p>
+                  {version.extractions[0] ? (
+                    <Link
+                      className="mt-3 inline-block text-sm text-cyan-800"
+                      href={`/projects/${projectId}/files/${file.id}/versions/${version.id}/extractions/${version.extractions[0].id}`}
+                    >
+                      查看最新识别结果
+                    </Link>
+                  ) : null}
                 </article>
               );
             })}

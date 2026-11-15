@@ -148,3 +148,17 @@ export type CreateInstallationUnitInput = z.infer<
   typeof createInstallationUnitSchema
 >;
 export type UploadIntentInput = z.infer<typeof uploadIntentSchema>;
+
+export const FILE_RECOGNITION_QUEUE = "file-recognition";
+export const FILE_MAINTENANCE_QUEUE = "file-maintenance";
+
+export const fileRecognitionJobSchema = z.object({
+  extractionId: z.string().min(1),
+  fileVersionId: z.string().min(1),
+  requestedByUserId: z.string().min(1),
+  trigger: z.literal("UPLOAD"),
+});
+
+export type FileRecognitionJob = z.infer<
+  typeof fileRecognitionJobSchema
+>;

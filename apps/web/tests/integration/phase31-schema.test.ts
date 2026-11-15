@@ -256,6 +256,12 @@ describe.sequential("Phase 3.1 database constraints", () => {
       }),
     ).rejects.toBeDefined();
     await expect(
+      prisma.fileExtraction.update({
+        where: { id: extraction.id },
+        data: { status: "PROCESSING" },
+      }),
+    ).rejects.toBeDefined();
+    await expect(
       prisma.extractionTextBlock.update({
         where: { id: block.id },
         data: { text: "changed" },

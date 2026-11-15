@@ -9,6 +9,8 @@ import {
   type APIRequestContext,
 } from "@playwright/test";
 
+import { createTestPdf } from "../fixtures/test-pdf";
+
 const username = process.env.TEST_ADMIN_USERNAME;
 const password = process.env.TEST_ADMIN_PASSWORD;
 const projectId = "phase3_test_project";
@@ -17,9 +19,7 @@ const installationUnitId = "phase3_test_unit";
 const workspaceRoot = path.resolve(process.cwd(), "../..");
 const storageRoot = path.join(workspaceRoot, "storage", "private-test");
 
-const PDF_BYTES = Buffer.from(
-  "%PDF-1.7\n1 0 obj\n<< /Type /Catalog >>\nendobj\n%%EOF",
-);
+const PDF_BYTES = createTestPdf(["Phase 3.2 upload test"]);
 const PNG_BYTES = Buffer.from(
   "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
   "base64",

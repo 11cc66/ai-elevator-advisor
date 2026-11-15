@@ -47,7 +47,7 @@ async function uploadFile(existingFileId?: string) {
     storage,
   );
 
-  return completeUpload({
+  const completed = await completeUpload({
     actor,
     projectId: TEST_FIXTURE_IDS.project,
     intentId: intent.id,
@@ -57,6 +57,7 @@ async function uploadFile(existingFileId?: string) {
     requestId: `phase33-${randomUUID()}`,
     storage,
   });
+  return completed.version;
 }
 
 beforeAll(async () => {

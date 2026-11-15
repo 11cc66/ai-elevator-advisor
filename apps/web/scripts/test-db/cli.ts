@@ -2,6 +2,8 @@ import { spawn } from "node:child_process";
 import fs from "node:fs/promises";
 import path from "node:path";
 
+import { PrismaClient } from "@prisma/client";
+
 import {
   readTestEnvironment,
   TestEnvironmentError,
@@ -85,6 +87,20 @@ async function main(): Promise<void> {
     }
 
     await fs.rm(testStorageRoot, { recursive: true, force: true });
+    const resetPrisma = new PrismaClient({
+      datasources: {
+        db: { url: env.TEST_DATABASE_URL },
+      },
+    });
+
+    try {
+      await resetPrisma.$executeRawUnsafe(
+        'DROP SCHEMA IF EXISTS "pgboss" CASCADE',
+      );
+    } finally {
+      await resetPrisma.$disconnect();
+    }
+
     await runPrismaCommand(
       [
         "migrate",

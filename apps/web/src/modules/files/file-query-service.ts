@@ -90,7 +90,20 @@ export async function getProjectFileDetails(
       },
       versions: {
         orderBy: { versionNumber: "desc" },
-        select: versionSelect,
+        select: {
+          ...versionSelect,
+          extractions: {
+            orderBy: { extractionVersion: "desc" },
+            select: {
+              id: true,
+              extractionVersion: true,
+              status: true,
+              pageCount: true,
+              outputCharacterCount: true,
+              createdAt: true,
+            },
+          },
+        },
       },
     },
   });
@@ -110,4 +123,98 @@ export async function getProjectFileDetails(
       sizeBytes: version.sizeBytes.toString(),
     })),
   };
+}
+
+async function verifyVersion(
+  projectId: string,
+  fileId: string,
+  versionId: string,
+): Promise<void> {
+  const version = await prisma.fileVersion.findFirst({
+    where: {
+      id: versionId,
+      fileId,
+      file: {
+        projectId,
+      },
+    },
+    select: { id: true },
+  });
+
+  if (!version) {
+    throw new AppError(
+      "FILE_VERSION_NOT_FOUND",
+      "文件版本不存在或不属于当前项目。",
+      404,
+    );
+  }
+}
+
+export async function listVersionExtractions(
+  projectId: string,
+  fileId: string,
+  versionId: string,
+) {
+  await verifyVersion(projectId, fileId, versionId);
+  return prisma.fileExtraction.findMany({
+    where: { fileVersionId: versionId },
+    orderBy: { extractionVersion: "desc" },
+    select: {
+      id: true,
+      extractionVersion: true,
+      provider: true,
+      providerVersion: true,
+      parserVersion: true,
+      dataClassification: true,
+      status: true,
+      pageCount: true,
+      outputCharacterCount: true,
+      safeErrorCode: true,
+      safeErrorMessage: true,
+      queuedAt: true,
+      startedAt: true,
+      completedAt: true,
+      createdAt: true,
+    },
+  });
+}
+
+export async function getExtractionDetails(
+  projectId: string,
+  fileId: string,
+  versionId: string,
+  extractionId: string,
+) {
+  await verifyVersion(projectId, fileId, versionId);
+  const extraction = await prisma.fileExtraction.findFirst({
+    where: {
+      id: extractionId,
+      fileVersionId: versionId,
+    },
+    include: {
+      textBlocks: {
+        orderBy: [{ pageNumber: "asc" }, { blockIndex: "asc" }],
+        select: {
+          id: true,
+          pageNumber: true,
+          blockIndex: true,
+          text: true,
+          sourceKind: true,
+          sourceRef: true,
+          positionData: true,
+          characterCount: true,
+        },
+      },
+    },
+  });
+
+  if (!extraction) {
+    throw new AppError(
+      "EXTRACTION_NOT_FOUND",
+      "识别结果不存在或不属于当前文件版本。",
+      404,
+    );
+  }
+
+  return extraction;
 }

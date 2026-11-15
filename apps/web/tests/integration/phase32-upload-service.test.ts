@@ -54,7 +54,7 @@ it("completes a streamed upload into immutable private storage", async () => {
     },
     storage,
   );
-  const version = await completeUpload({
+  const { version } = await completeUpload({
     actor,
     projectId: TEST_FIXTURE_IDS.project,
     intentId: intent.id,

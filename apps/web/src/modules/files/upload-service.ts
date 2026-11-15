@@ -14,6 +14,7 @@ import type { Readable } from "node:stream";
 import type { Actor } from "@/modules/access/actor";
 import { appendAuditLog } from "@/modules/audit/log";
 import { AppError } from "@/server/http/errors";
+import { enqueueFileRecognition } from "@/server/jobs/file-recognition-queue";
 import { logger } from "@/server/logger";
 import { prisma } from "@/server/prisma";
 
@@ -338,9 +339,15 @@ export async function completeUpload(
   }
 
   if (intent.status === "COMPLETED" && intent.completedFileVersionId) {
-    return prisma.fileVersion.findUniqueOrThrow({
+    const version = await prisma.fileVersion.findUniqueOrThrow({
       where: { id: intent.completedFileVersionId },
     });
+    const extraction = await prisma.fileExtraction.findFirstOrThrow({
+      where: { fileVersionId: version.id },
+      orderBy: { extractionVersion: "desc" },
+      select: { id: true },
+    });
+    return { version, extractionId: extraction.id };
   }
 
   if (intent.status !== "PENDING") {
@@ -482,7 +489,7 @@ export async function completeUpload(
     await input.storage.finalize(intent.stagingKey, objectKey);
     stagingCleanup = false;
 
-    const version = await prisma.$transaction(
+    const completed = await prisma.$transaction(
       async (tx) => {
         let fileId = intent.existingFileId;
 
@@ -543,6 +550,23 @@ export async function completeUpload(
           },
         });
 
+        const extraction = await tx.fileExtraction.create({
+          data: {
+            fileVersionId: createdVersion.id,
+            extractionVersion: 1,
+            provider: "LOCAL_FILE_PROCESSOR",
+            providerVersion: "phase3.4",
+            dataClassification: intent.project.dataClassification,
+            status: "QUEUED",
+            queuedAt: new Date(),
+          },
+        });
+
+        await tx.fileVersion.update({
+          where: { id: createdVersion.id },
+          data: { recognitionStatus: "QUEUED" },
+        });
+
         await tx.file.update({
           where: { id: fileId },
           data: { currentVersionId: createdVersion.id },
@@ -585,11 +609,35 @@ export async function completeUpload(
           requestId: input.requestId,
         });
 
-        return createdVersion;
+        return {
+          version: await tx.fileVersion.findUniqueOrThrow({
+            where: { id: createdVersion.id },
+          }),
+          extractionId: extraction.id,
+        };
       },
     );
 
-    return version;
+    try {
+      await enqueueFileRecognition({
+        extractionId: completed.extractionId,
+        fileVersionId: completed.version.id,
+        requestedByUserId: input.actor.userId,
+        trigger: "UPLOAD",
+      });
+    } catch (error) {
+      logger.warn(
+        {
+          err: error,
+          event: "file_queue.enqueue_failed",
+          extractionId: completed.extractionId,
+          fileVersionId: completed.version.id,
+        },
+        "File recognition queue dispatch failed; recovery is required",
+      );
+    }
+
+    return completed;
   } catch (error) {
     if (objectKey) {
       await input.storage.removeObject(objectKey).catch(() => undefined);
