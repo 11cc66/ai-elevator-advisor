@@ -6,6 +6,7 @@ export interface PdfParserLimits {
   maxPages: number;
   maxCharacters: number;
   timeoutMs: number;
+  signal?: AbortSignal;
 }
 
 export interface PdfParserBlock {
@@ -47,10 +48,12 @@ export class PdfParserError extends Error {
 export async function runWorkerWithDeadline<T>(
   worker: Worker,
   timeoutMs: number,
+  signal?: AbortSignal,
 ): Promise<T> {
   return new Promise<T>((resolve, reject) => {
     let settled = false;
     let timeoutTriggered = false;
+    let abortReason: Error | null = null;
 
     const finishWithError = (error: Error): void => {
       if (settled) {
@@ -58,6 +61,7 @@ export async function runWorkerWithDeadline<T>(
       }
       settled = true;
       clearTimeout(timer);
+      signal?.removeEventListener("abort", abortHandler);
       reject(error);
     };
 
@@ -67,8 +71,19 @@ export async function runWorkerWithDeadline<T>(
       }
       settled = true;
       clearTimeout(timer);
+      signal?.removeEventListener("abort", abortHandler);
       void worker.terminate();
       resolve(result);
+    };
+
+    const abortHandler = (): void => {
+      abortReason =
+        signal?.reason instanceof Error
+          ? signal.reason
+          : new Error("PDF_WORKER_ABORTED");
+      void worker.terminate().finally(() => {
+        finishWithError(abortReason ?? new Error("PDF_WORKER_ABORTED"));
+      });
     };
 
     const timer = setTimeout(() => {
@@ -78,7 +93,17 @@ export async function runWorkerWithDeadline<T>(
       });
     }, timeoutMs);
 
+    if (signal?.aborted) {
+      abortHandler();
+    } else {
+      signal?.addEventListener("abort", abortHandler, { once: true });
+    }
+
     worker.once("message", (message: WorkerMessage) => {
+      if (abortReason) {
+        finishWithError(abortReason);
+        return;
+      }
       if (message.ok && message.result) {
         finishWithResult(message.result as T);
       } else {
@@ -91,19 +116,22 @@ export async function runWorkerWithDeadline<T>(
 
     worker.once("error", () => {
       void worker.terminate();
-      finishWithError(new PdfParserError("PDF_WORKER_ERROR"));
+      finishWithError(
+        abortReason ?? new PdfParserError("PDF_WORKER_ERROR"),
+      );
     });
 
     worker.once("exit", (code) => {
       if (!settled) {
         finishWithError(
-          new PdfParserError(
-            timeoutTriggered
-              ? "PDF_WORKER_TIMEOUT"
-              : code === 0
-                ? "PDF_WORKER_EXITED"
-                : "PDF_WORKER_CRASHED",
-          ),
+          abortReason ??
+            new PdfParserError(
+              timeoutTriggered
+                ? "PDF_WORKER_TIMEOUT"
+                : code === 0
+                  ? "PDF_WORKER_EXITED"
+                  : "PDF_WORKER_CRASHED",
+            ),
         );
       }
     });
@@ -140,5 +168,6 @@ export async function parsePdfInWorker(
   return runWorkerWithDeadline<PdfParserResult>(
     worker,
     limits.timeoutMs,
+    limits.signal,
   );
 }

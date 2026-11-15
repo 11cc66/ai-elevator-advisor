@@ -85,12 +85,24 @@ const workerEnvSchema = z.object({
     .min(30_000)
     .max(600_000)
     .default(120_000),
+  FILE_PROCESSING_LEASE_RENEW_INTERVAL_MS: z.coerce
+    .number()
+    .int()
+    .min(1_000)
+    .max(300_000)
+    .default(30_000),
   FILE_MAINTENANCE_LEASE_MS: z.coerce
     .number()
     .int()
     .min(60_000)
     .max(3_600_000)
     .default(300_000),
+  FILE_MAINTENANCE_RENEW_INTERVAL_MS: z.coerce
+    .number()
+    .int()
+    .min(1_000)
+    .max(1_800_000)
+    .default(60_000),
   TEMP_RETENTION_MS: z.coerce
     .number()
     .int()
@@ -99,6 +111,29 @@ const workerEnvSchema = z.object({
   TEST_DATABASE_NAME: z.string().optional(),
   TEST_DATABASE_ROLE: z.string().optional(),
   TEST_DATABASE_MARKER: z.string().optional(),
+}).superRefine((value, context) => {
+  if (
+    value.FILE_PROCESSING_LEASE_RENEW_INTERVAL_MS >=
+    value.FILE_PROCESSING_LEASE_MS
+  ) {
+    context.addIssue({
+      code: "custom",
+      path: ["FILE_PROCESSING_LEASE_RENEW_INTERVAL_MS"],
+      message:
+        "FILE_PROCESSING_LEASE_RENEW_INTERVAL_MS must be less than the lease",
+    });
+  }
+  if (
+    value.FILE_MAINTENANCE_RENEW_INTERVAL_MS >=
+    value.FILE_MAINTENANCE_LEASE_MS
+  ) {
+    context.addIssue({
+      code: "custom",
+      path: ["FILE_MAINTENANCE_RENEW_INTERVAL_MS"],
+      message:
+        "FILE_MAINTENANCE_RENEW_INTERVAL_MS must be less than the lease",
+    });
+  }
 });
 
 export type WorkerEnv = z.infer<typeof workerEnvSchema>;

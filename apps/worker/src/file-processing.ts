@@ -21,6 +21,10 @@ import {
 } from "./file-processing-errors.js";
 import { evaluateFileProcessingPolicy } from "./file-processing-policy.js";
 import {
+  FileProcessingLeaseController,
+  FileProcessingLeaseLostError,
+} from "./file-processing-lease.js";
+import {
   claimFileExtraction,
   completeFileExtraction,
   failExhaustedFileExtraction,
@@ -60,6 +64,8 @@ export interface FileProcessingDependencies {
   checkpoint?: (
     checkpoint: ProcessingCheckpoint,
   ) => void | Promise<void>;
+  leaseMs?: number;
+  leaseRenewIntervalMs?: number;
 }
 
 interface WorkerRuntime {
@@ -326,6 +332,7 @@ export async function processFileRecognitionJob(
   const runtime = createRuntime(prisma, dependencies.storage);
   const currentTime = (): Date => dependencies.now?.() ?? new Date();
   let claim: ProcessingClaim | null = null;
+  let lease: FileProcessingLeaseController | null = null;
   let actorUserId: string | null = null;
 
   try {
@@ -387,13 +394,25 @@ export async function processFileRecognitionJob(
       extractionId: extraction.id,
       fileVersionId: extraction.fileVersionId,
       maxAttempts: runtime.env.FILE_PROCESSING_MAX_ATTEMPTS,
-      leaseMs: runtime.env.FILE_PROCESSING_LEASE_MS,
+      leaseMs:
+        dependencies.leaseMs ?? runtime.env.FILE_PROCESSING_LEASE_MS,
       now,
     });
     if (!claim) {
       return "IGNORED";
     }
 
+    lease = new FileProcessingLeaseController({
+      prisma,
+      claim,
+      leaseMs:
+        dependencies.leaseMs ?? runtime.env.FILE_PROCESSING_LEASE_MS,
+      renewIntervalMs:
+        dependencies.leaseRenewIntervalMs ??
+        runtime.env.FILE_PROCESSING_LEASE_RENEW_INTERVAL_MS,
+    });
+    lease.start();
+    await lease.assertHeld();
     await runCheckpoint(dependencies, "AFTER_CLAIM");
 
     const user = await prisma.user.findUnique({
@@ -438,6 +457,7 @@ export async function processFileRecognitionJob(
     });
 
     if (!policy.allowed) {
+      await lease.assertHeld();
       await recordSecurityEvent(prisma, {
         fileVersionId: extraction.fileVersion.id,
         eventType:
@@ -457,6 +477,7 @@ export async function processFileRecognitionJob(
 
     let objectBytes: Buffer;
     try {
+      await lease.assertHeld();
       objectBytes = await (dependencies.readObject ?? readObjectBytes)(
         runtime.storage,
         extraction.fileVersion.storageKey,
@@ -499,12 +520,14 @@ export async function processFileRecognitionJob(
       throw error;
     }
 
+    await lease.assertHeld();
     await runCheckpoint(dependencies, "AFTER_READ");
 
     const actualChecksum = createHash("sha256")
       .update(objectBytes)
       .digest("hex");
     if (actualChecksum !== extraction.fileVersion.checksumSha256) {
+      await lease.assertHeld();
       await prisma.fileVersion.update({
         where: { id: extraction.fileVersion.id },
         data: { integrityStatus: "FAILED" },
@@ -535,6 +558,7 @@ export async function processFileRecognitionJob(
         error instanceof PrivateStorageError
           ? error.code
           : "FILE_TYPE_UNKNOWN";
+      await lease.assertHeld();
       await recordSecurityEvent(prisma, {
         fileVersionId: extraction.fileVersion.id,
         eventType: "VALIDATION_FAILED",
@@ -550,6 +574,7 @@ export async function processFileRecognitionJob(
     }
 
     if (detected.mimeType !== extraction.fileVersion.detectedMimeType) {
+      await lease.assertHeld();
       await recordSecurityEvent(prisma, {
         fileVersionId: extraction.fileVersion.id,
         eventType: "MIME_MISMATCH",
@@ -578,6 +603,7 @@ export async function processFileRecognitionJob(
     let safetyNotes: string | null = null;
 
     await runCheckpoint(dependencies, "BEFORE_PARSE");
+    await lease.assertHeld();
     if (detected.mimeType === "application/pdf") {
       const parsed = await (dependencies.parsePdf ?? parsePdfInWorker)(
         objectBytes,
@@ -585,6 +611,7 @@ export async function processFileRecognitionJob(
           maxPages: runtime.env.PDF_MAX_PAGES,
           maxCharacters: runtime.env.PDF_MAX_TEXT_CHARS,
           timeoutMs: runtime.env.PDF_PARSE_TIMEOUT_MS,
+          signal: lease.signal,
         },
       );
       providerMetadata = {
@@ -608,8 +635,12 @@ export async function processFileRecognitionJob(
       safetyNotes =
         "当前版本尚未进行图片文字提取或 AI 图像识别。图片仅完成基础文件校验和元数据读取，不构成现场情况、结构、尺寸或工程可行性判断。";
     }
+    await lease.assertHeld();
     await runCheckpoint(dependencies, "AFTER_PARSE");
     await runCheckpoint(dependencies, "BEFORE_COMMIT");
+    await lease.assertHeld();
+    const completedAt = currentTime();
+    await lease.stop();
 
     const completed = await completeFileExtraction(prisma, {
       claim,
@@ -621,7 +652,7 @@ export async function processFileRecognitionJob(
       parserVersion,
       safetyNotes,
       blocks,
-      completedAt: currentTime(),
+      completedAt,
     });
     if (!completed) {
       return "IGNORED";
@@ -644,6 +675,12 @@ export async function processFileRecognitionJob(
     if (error instanceof SimulatedWorkerCrashError) {
       throw error;
     }
+    if (
+      error instanceof FileProcessingLeaseLostError ||
+      lease?.lost
+    ) {
+      throw new FileProcessingLeaseLostError();
+    }
 
     const failure = classifyFileProcessingError(error);
     if (!claim) {
@@ -657,6 +694,8 @@ export async function processFileRecognitionJob(
       );
       throw error;
     }
+
+    await lease?.stop();
 
     if (failure.failureClass === "TRANSIENT") {
       if (claim.attempt >= runtime.env.FILE_PROCESSING_MAX_ATTEMPTS) {
@@ -695,6 +734,7 @@ export async function processFileRecognitionJob(
         code: failure.code,
         safeMessage: failure.safeMessage,
         nextAttemptAt: retryAt,
+        transitionAt: currentTime(),
       });
       if (!released) {
         return "IGNORED";
@@ -742,6 +782,7 @@ export async function processFileRecognitionJob(
     );
     return failed ? (isBlocked ? "BLOCKED" : "FAILED") : "IGNORED";
   } finally {
+    await lease?.stop();
     if (ownsPrisma) {
       await prisma.$disconnect();
     }

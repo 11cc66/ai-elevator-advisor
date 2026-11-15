@@ -104,6 +104,19 @@ describe("PDF Worker Thread", () => {
     await new Promise((resolve) => setTimeout(resolve, 20));
     expect(worker.threadId).toBe(-1);
   });
+
+  it("terminates a PDF worker when its lease signal is aborted", async () => {
+    const worker = new Worker("while (true) {}", { eval: true });
+    const controller = new AbortController();
+    const reason = new Error("PROCESSING_LEASE_LOST");
+    setTimeout(() => controller.abort(reason), 30);
+
+    await expect(
+      runWorkerWithDeadline(worker, 5_000, controller.signal),
+    ).rejects.toBe(reason);
+    await new Promise((resolve) => setTimeout(resolve, 20));
+    expect(worker.threadId).toBe(-1);
+  });
 });
 
 describe("image metadata", () => {

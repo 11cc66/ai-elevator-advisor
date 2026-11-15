@@ -116,6 +116,7 @@ export async function completeFileExtraction(
         id: input.claim.extractionId,
         status: "PROCESSING",
         processingToken: input.claim.token,
+        leaseExpiresAt: { gt: input.completedAt },
       },
       data: {
         status: "COMPLETED",
@@ -185,6 +186,7 @@ export async function scheduleFileExtractionRetry(
     code: string;
     safeMessage: string;
     nextAttemptAt: Date;
+    transitionAt: Date;
   },
 ): Promise<boolean> {
   return prisma.$transaction(async (tx) => {
@@ -193,6 +195,7 @@ export async function scheduleFileExtractionRetry(
         id: input.claim.extractionId,
         status: "PROCESSING",
         processingToken: input.claim.token,
+        leaseExpiresAt: { gt: input.transitionAt },
       },
       data: {
         status: "QUEUED",
@@ -256,6 +259,7 @@ export async function failFileExtraction(
         id: input.claim.extractionId,
         status: "PROCESSING",
         processingToken: input.claim.token,
+        leaseExpiresAt: { gt: input.failedAt },
       },
       data: {
         status: "FAILED",
@@ -328,6 +332,29 @@ export async function failExhaustedFileExtraction(
       maxAttemptsReached: true,
     },
   });
+}
+
+export async function renewFileExtractionLease(
+  prisma: PrismaClient,
+  input: {
+    claim: ProcessingClaim;
+    leaseMs: number;
+    now: Date;
+  },
+): Promise<boolean> {
+  const leaseExpiresAt = new Date(input.now.getTime() + input.leaseMs);
+  const renewed = await prisma.fileExtraction.updateMany({
+    where: {
+      id: input.claim.extractionId,
+      status: "PROCESSING",
+      processingToken: input.claim.token,
+      leaseExpiresAt: { gt: input.now },
+    },
+    data: {
+      leaseExpiresAt,
+    },
+  });
+  return renewed.count === 1;
 }
 
 export async function failExhaustedUnclaimedFileExtraction(

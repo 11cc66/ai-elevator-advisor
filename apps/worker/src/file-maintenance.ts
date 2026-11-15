@@ -1,5 +1,3 @@
-import { randomUUID } from "node:crypto";
-
 import {
   buildFileProcessingRetryOptions,
   FILE_RECOGNITION_QUEUE,
@@ -11,16 +9,21 @@ import type { PgBoss } from "pg-boss";
 
 import type { WorkerEnv } from "./config.js";
 import {
+  acquireMaintenanceLease,
+  MaintenanceLeaseController,
+  MaintenanceLeaseLostError,
+} from "./maintenance-lease.js";
+import {
   failExhaustedUnclaimedFileExtraction,
   recoverExpiredFileExtraction,
 } from "./file-processing-state.js";
 import { logger } from "./logger.js";
 
 const STALE_UPLOADING_MS = 15 * 60 * 1000;
-const MAINTENANCE_LOCK_KEY = "file_maintenance_lease";
 
 export interface FileMaintenanceResult {
   skipped: boolean;
+  leaseLost: boolean;
   requeued: number;
   recoveredProcessing: number;
   exhaustedProcessing: number;
@@ -38,12 +41,20 @@ export async function runFileMaintenance(input: {
   testHooks?: {
     afterLease?: () => void | Promise<void>;
   };
+  leasePolicy?: {
+    leaseMs?: number;
+    renewIntervalMs?: number;
+  };
 }): Promise<FileMaintenanceResult> {
-  const owner = randomUUID();
+  const leaseMs =
+    input.leasePolicy?.leaseMs ?? input.env.FILE_MAINTENANCE_LEASE_MS;
+  const renewIntervalMs =
+    input.leasePolicy?.renewIntervalMs ??
+    input.env.FILE_MAINTENANCE_RENEW_INTERVAL_MS;
   const now = new Date();
   const acquired = await acquireMaintenanceLease({
-    ...input,
-    owner,
+    prisma: input.prisma,
+    leaseMs,
     now,
   });
 
@@ -57,6 +68,7 @@ export async function runFileMaintenance(input: {
     );
     return {
       skipped: true,
+      leaseLost: false,
       requeued: 0,
       recoveredProcessing: 0,
       exhaustedProcessing: 0,
@@ -67,11 +79,43 @@ export async function runFileMaintenance(input: {
     };
   }
 
+  const lease = new MaintenanceLeaseController({
+    prisma: input.prisma,
+    owner: acquired.owner,
+    leaseMs,
+    renewIntervalMs,
+  });
+  lease.start();
+
   try {
     await input.testHooks?.afterLease?.();
-    return await runFileMaintenanceUnlocked(input);
+    await lease.assertHeld();
+    return await runFileMaintenanceUnlocked(input, lease);
+  } catch (error) {
+    if (error instanceof MaintenanceLeaseLostError) {
+      logger.warn(
+        {
+          event: "file.maintenance.aborted",
+          reason: "LEASE_LOST",
+        },
+        "File maintenance stopped after losing its lease",
+      );
+      return {
+        skipped: true,
+        leaseLost: true,
+        requeued: 0,
+        recoveredProcessing: 0,
+        exhaustedProcessing: 0,
+        expiredIntents: 0,
+        removedOrphanObjects: 0,
+        removedTempEntries: 0,
+        cleanupFailures: 0,
+      };
+    }
+    throw error;
   } finally {
-    await releaseMaintenanceLease(input.prisma, owner).catch((error) => {
+    await lease.stop();
+    await lease.release().catch((error) => {
       logger.warn(
         {
           event: "file.maintenance.lease_release_failed",
@@ -84,69 +128,12 @@ export async function runFileMaintenance(input: {
   }
 }
 
-async function acquireMaintenanceLease(input: {
-  prisma: PrismaClient;
-  env: WorkerEnv;
-  owner: string;
-  now: Date;
-}): Promise<boolean> {
-  const expiresAt = new Date(
-    input.now.getTime() + input.env.FILE_MAINTENANCE_LEASE_MS,
-  );
-  const payload = JSON.stringify({
-    owner: input.owner,
-    expiresAt: expiresAt.toISOString(),
-  });
-  const rows = await input.prisma.$queryRaw<
-    Array<{ owner: string | null }>
-  >`
-    INSERT INTO "system_metadata"
-      ("id", "key", "value", "created_at", "updated_at")
-    VALUES
-      (
-        ${randomUUID()},
-        ${MAINTENANCE_LOCK_KEY},
-        ${payload}::jsonb,
-        ${input.now},
-        ${input.now}
-      )
-    ON CONFLICT ("key") DO UPDATE
-    SET
-      "value" = EXCLUDED."value",
-      "updated_at" = EXCLUDED."updated_at"
-    WHERE COALESCE(
-      ("system_metadata"."value"->>'expiresAt')::timestamptz,
-      '-infinity'::timestamptz
-    ) < ${input.now}
-    RETURNING "value"->>'owner' AS "owner"
-  `;
-  return rows[0]?.owner === input.owner;
-}
-
-async function releaseMaintenanceLease(
-  prisma: PrismaClient,
-  owner: string,
-): Promise<void> {
-  await prisma.$executeRaw`
-    UPDATE "system_metadata"
-    SET
-      "value" = jsonb_set(
-        "value",
-        '{expiresAt}',
-        to_jsonb(${new Date().toISOString()}::text)
-      ),
-      "updated_at" = ${new Date()}
-    WHERE "key" = ${MAINTENANCE_LOCK_KEY}
-      AND "value"->>'owner' = ${owner}
-  `;
-}
-
 async function runFileMaintenanceUnlocked(input: {
   prisma: PrismaClient;
   boss: PgBoss;
   storage: LocalPrivateStorage;
   env: WorkerEnv;
-}): Promise<FileMaintenanceResult> {
+}, lease: MaintenanceLeaseController): Promise<FileMaintenanceResult> {
   const now = new Date();
   let recoveredProcessing = 0;
   let exhaustedProcessing = 0;
@@ -168,6 +155,7 @@ async function runFileMaintenanceUnlocked(input: {
   });
 
   for (const extraction of staleExtractions) {
+    await lease.assertHeld();
     if (
       extraction.attempt >= input.env.FILE_PROCESSING_MAX_ATTEMPTS
     ) {
@@ -227,6 +215,7 @@ async function runFileMaintenanceUnlocked(input: {
   });
 
   for (const extraction of queued) {
+    await lease.assertHeld();
     if (
       extraction.attempt >= input.env.FILE_PROCESSING_MAX_ATTEMPTS
     ) {
@@ -325,6 +314,7 @@ async function runFileMaintenanceUnlocked(input: {
   };
 
   for (const intent of expiredIntents) {
+    await lease.assertHeld();
     await input.storage
       .removeStaging(intent.stagingKey)
       .catch((error) =>
@@ -340,6 +330,7 @@ async function runFileMaintenanceUnlocked(input: {
           recordCleanupFailure("expired_object", error),
         );
     }
+    await lease.assertHeld();
     const updated = await input.prisma.$transaction(async (tx) => {
       const changed = await tx.fileUploadIntent.updateMany({
         where: {
@@ -390,13 +381,16 @@ async function runFileMaintenanceUnlocked(input: {
       referencedObjectKeys,
       input.env.TEMP_RETENTION_MS,
       (error) => recordCleanupFailure("orphan_object", error),
+      () => lease.assertHeld(),
     );
   const removedTempEntries = await input.storage.cleanupTemp(
     input.env.TEMP_RETENTION_MS,
     (error) => recordCleanupFailure("temp_entry", error),
+    () => lease.assertHeld(),
   );
   const result = {
     skipped: false,
+    leaseLost: false,
     requeued,
     recoveredProcessing,
     exhaustedProcessing,

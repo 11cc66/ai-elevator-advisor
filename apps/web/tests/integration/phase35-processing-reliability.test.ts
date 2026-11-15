@@ -19,6 +19,7 @@ import {
   FileProcessingRetryError,
   SimulatedWorkerCrashError,
 } from "../../../worker/src/file-processing-errors";
+import { FileProcessingLeaseLostError } from "../../../worker/src/file-processing-lease";
 import {
   processFileRecognitionJob,
   type FileProcessingDependencies,
@@ -247,7 +248,9 @@ it("prevents a stale worker from overwriting the newer lease owner", async () =>
   ).resolves.toBe("COMPLETED");
 
   parserGate.resolve();
-  await expect(staleWorker).resolves.toBe("IGNORED");
+  await expect(staleWorker).rejects.toBeInstanceOf(
+    FileProcessingLeaseLostError,
+  );
   const extraction = await prisma.fileExtraction.findUniqueOrThrow({
     where: { id: uploaded.extractionId },
     include: { textBlocks: true },

@@ -44,10 +44,12 @@ export interface PrivateStorageAdapter {
     referencedObjectKeys: readonly string[],
     olderThanMs: number,
     onError?: (error: unknown) => void,
+    beforeDelete?: (objectKey: string) => void | Promise<void>,
   ): Promise<number>;
   cleanupTemp(
     olderThanMs: number,
     onError?: (error: unknown) => void,
+    beforeDelete?: (storageKey: string) => void | Promise<void>,
   ): Promise<number>;
   openReadStream(objectKey: string): Readable;
 }
@@ -175,6 +177,7 @@ export class LocalPrivateStorage implements PrivateStorageAdapter {
     referencedObjectKeys: readonly string[],
     olderThanMs: number,
     onError?: (error: unknown) => void,
+    beforeDelete?: (objectKey: string) => void | Promise<void>,
   ): Promise<number> {
     const objectsDirectory = this.#resolveKey("objects");
     let entries;
@@ -215,6 +218,7 @@ export class LocalPrivateStorage implements PrivateStorageAdapter {
         continue;
       }
 
+      await beforeDelete?.(objectKey);
       try {
         await fs.rm(objectPath, { force: true });
       } catch (error) {
@@ -230,6 +234,7 @@ export class LocalPrivateStorage implements PrivateStorageAdapter {
   async cleanupTemp(
     olderThanMs: number,
     onError?: (error: unknown) => void,
+    beforeDelete?: (storageKey: string) => void | Promise<void>,
   ): Promise<number> {
     const tempDirectory = this.#resolveKey("temp");
     let entries;
@@ -259,6 +264,7 @@ export class LocalPrivateStorage implements PrivateStorageAdapter {
       if (!stats || stats.mtimeMs >= cutoff) {
         continue;
       }
+      await beforeDelete?.(`temp/${entry.name}`);
       try {
         await fs.rm(entryPath, { recursive: true, force: true });
       } catch (error) {
