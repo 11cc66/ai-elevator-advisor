@@ -10,6 +10,14 @@ const webEnvSchema = z.object({
   LOG_LEVEL: z
     .enum(["fatal", "error", "warn", "info", "debug", "trace", "silent"])
     .default("info"),
+  BETTER_AUTH_URL: z.string().url("BETTER_AUTH_URL must be a valid URL"),
+  BETTER_AUTH_SECRET: z
+    .string()
+    .min(32, "BETTER_AUTH_SECRET must contain at least 32 characters")
+    .refine(
+      (value) => !value.startsWith("REPLACE_WITH_"),
+      "BETTER_AUTH_SECRET must be replaced locally",
+    ),
 });
 
 export type WebEnv = z.infer<typeof webEnvSchema>;

@@ -20,17 +20,21 @@ export default function HomePage() {
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-6 py-12 sm:px-8 lg:py-20">
       <header className="flex flex-col gap-5 border-b border-slate-200 pb-10">
         <span className="w-fit rounded-full border border-cyan-200 bg-cyan-50 px-3 py-1 text-sm font-medium text-cyan-900">
-          Phase 1 · 可运行骨架
+          Phase 2 · 开发认证与项目管理
         </span>
         <div className="max-w-3xl space-y-4">
           <h1 className="text-4xl font-semibold tracking-tight text-slate-950 sm:text-5xl">
             AI 电梯选型顾问
           </h1>
           <p className="text-lg leading-8 text-slate-600">
-            当前版本只提供工程基础能力，尚未开放客户咨询、项目资料、勘察、选型或报价业务。
+            当前版本提供开发管理员登录，以及客户、项目、建筑和安装单元的基础 DEMO
+            档案管理；尚未开放工程确认、勘察、选型或报价。
           </p>
         </div>
-        <div>
+        <div className="flex flex-wrap gap-3">
+          <Button asChild>
+            <a href="/login">进入开发后台</a>
+          </Button>
           <Button asChild variant="outline">
             <a href="/api/health">检查系统健康状态</a>
           </Button>

@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "db:seed": "tsx scripts/seed.ts",
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
@@ -31,6 +32,7 @@
     "@types/react-dom": "19.3.0",
     "postcss": "8.5.33",
     "tailwindcss": "4.3.5",
+    "tsx": "4.23.15",
     "typescript": "5.9.3",
     "vitest": "3.2.4"
   }

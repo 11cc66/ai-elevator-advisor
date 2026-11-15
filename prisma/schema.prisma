@@ -18,3 +18,249 @@ model SystemMetadata {
 
   @@map("system_metadata")
 }
+
+// Better Auth models. Authentication uses database sessions, not stateless
+// client-side authorization.
+model User {
+  id              String     @id
+  name            String
+  email           String     @unique
+  emailVerified   Boolean    @default(false)
+  image           String?
+  username        String?    @unique
+  displayUsername String?
+  createdAt       DateTime   @default(now()) @db.Timestamptz(6)
+  updatedAt       DateTime   @updatedAt @db.Timestamptz(6)
+  sessions        Session[]
+  accounts        Account[]
+  roleAssignments UserRole[]
+  auditLogs       AuditLog[]
+
+  customersCreated Customer[]         @relation("CustomerCreatedBy")
+  projectsCreated  Project[]          @relation("ProjectCreatedBy")
+  buildingsCreated Building[]         @relation("BuildingCreatedBy")
+  unitsCreated     InstallationUnit[] @relation("UnitCreatedBy")
+
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime @db.Timestamptz(6)
+  token     String   @unique
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime? @db.Timestamptz(6)
+  refreshTokenExpiresAt DateTime? @db.Timestamptz(6)
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt             DateTime  @updatedAt @db.Timestamptz(6)
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime @db.Timestamptz(6)
+  createdAt  DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt  DateTime @updatedAt @db.Timestamptz(6)
+
+  @@index([identifier])
+  @@map("verification")
+}
+
+enum AccessScope {
+  GLOBAL
+  PROJECT
+}
+
+model Role {
+  id          String           @id @default(cuid())
+  code        String           @unique @db.VarChar(64)
+  name        String           @db.VarChar(120)
+  description String?
+  isSystem    Boolean          @default(false)
+  createdAt   DateTime         @default(now()) @db.Timestamptz(6)
+  updatedAt   DateTime         @updatedAt @db.Timestamptz(6)
+  permissions RolePermission[]
+  assignments UserRole[]
+
+  @@map("role")
+}
+
+model Permission {
+  code        String           @id @db.VarChar(100)
+  description String
+  roles       RolePermission[]
+
+  @@map("permission")
+}
+
+model RolePermission {
+  roleId         String
+  permissionCode String     @db.VarChar(100)
+  role           Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission     Permission @relation(fields: [permissionCode], references: [code], onDelete: Cascade)
+
+  @@id([roleId, permissionCode])
+  @@map("role_permission")
+}
+
+model UserRole {
+  id        String      @id @default(cuid())
+  userId    String
+  roleId    String
+  scope     AccessScope @default(GLOBAL)
+  projectId String?
+  createdAt DateTime    @default(now()) @db.Timestamptz(6)
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role      Role        @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  project   Project?    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, roleId, scope, projectId])
+  @@index([userId])
+  @@index([projectId])
+  @@map("user_role")
+}
+
+enum DataClassification {
+  DEMO_MOCK
+  OPERATIONAL
+}
+
+model Customer {
+  id                 String             @id @default(cuid())
+  organizationName   String             @db.VarChar(160)
+  contactName        String             @db.VarChar(120)
+  contactPhone       String?            @db.VarChar(40)
+  dataClassification DataClassification @default(DEMO_MOCK)
+  createdById        String
+  createdAt          DateTime           @default(now()) @db.Timestamptz(6)
+  updatedAt          DateTime           @updatedAt @db.Timestamptz(6)
+  createdBy          User               @relation("CustomerCreatedBy", fields: [createdById], references: [id])
+  projects           Project[]
+
+  @@index([organizationName])
+  @@map("customer")
+}
+
+enum ProjectType {
+  OLD_BUILDING_ELEVATOR
+}
+
+enum ProjectStatus {
+  DRAFT
+  ACTIVE
+  ARCHIVED
+}
+
+model Project {
+  id                 String             @id @default(cuid())
+  projectCode        String             @unique @db.VarChar(40)
+  customerId         String
+  name               String             @db.VarChar(160)
+  address            String             @db.VarChar(300)
+  projectType        ProjectType        @default(OLD_BUILDING_ELEVATOR)
+  status             ProjectStatus      @default(DRAFT)
+  dataClassification DataClassification @default(DEMO_MOCK)
+  createdById        String
+  createdAt          DateTime           @default(now()) @db.Timestamptz(6)
+  updatedAt          DateTime           @updatedAt @db.Timestamptz(6)
+  customer           Customer           @relation(fields: [customerId], references: [id])
+  createdBy          User               @relation("ProjectCreatedBy", fields: [createdById], references: [id])
+  buildings          Building[]
+  roleAssignments    UserRole[]
+
+  @@index([customerId])
+  @@index([createdById])
+  @@map("project")
+}
+
+enum BuildingStatus {
+  DRAFT
+  ACTIVE
+  ARCHIVED
+}
+
+model Building {
+  id                 String             @id @default(cuid())
+  buildingCode       String             @unique @db.VarChar(40)
+  projectId          String
+  name               String             @db.VarChar(160)
+  usageType          String?            @db.VarChar(80)
+  addressDetail      String?            @db.VarChar(300)
+  status             BuildingStatus     @default(DRAFT)
+  dataClassification DataClassification @default(DEMO_MOCK)
+  createdById        String
+  createdAt          DateTime           @default(now()) @db.Timestamptz(6)
+  updatedAt          DateTime           @updatedAt @db.Timestamptz(6)
+  project            Project            @relation(fields: [projectId], references: [id])
+  createdBy          User               @relation("BuildingCreatedBy", fields: [createdById], references: [id])
+  installationUnits  InstallationUnit[]
+
+  @@index([projectId])
+  @@map("building")
+}
+
+enum InstallationUnitStatus {
+  PENDING_CONFIRMATION
+  ACTIVE
+  ARCHIVED
+}
+
+model InstallationUnit {
+  id                 String                 @id @default(cuid())
+  unitCode           String                 @unique @db.VarChar(40)
+  buildingId         String
+  intendedLocation   String?                @db.VarChar(200)
+  status             InstallationUnitStatus @default(PENDING_CONFIRMATION)
+  dataClassification DataClassification     @default(DEMO_MOCK)
+  createdById        String
+  createdAt          DateTime               @default(now()) @db.Timestamptz(6)
+  updatedAt          DateTime               @updatedAt @db.Timestamptz(6)
+  building           Building               @relation(fields: [buildingId], references: [id])
+  createdBy          User                   @relation("UnitCreatedBy", fields: [createdById], references: [id])
+
+  @@index([buildingId])
+  @@map("installation_unit")
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  actorUserId String?
+  action      String   @db.VarChar(100)
+  objectType  String   @db.VarChar(100)
+  objectId    String   @db.VarChar(100)
+  oldValue    Json?
+  newValue    Json?
+  reason      String?  @db.VarChar(500)
+  requestId   String?  @db.VarChar(100)
+  createdAt   DateTime @default(now()) @db.Timestamptz(6)
+  actor       User?    @relation(fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  @@index([actorUserId, createdAt])
+  @@index([objectType, objectId])
+  @@map("audit_log")
+}

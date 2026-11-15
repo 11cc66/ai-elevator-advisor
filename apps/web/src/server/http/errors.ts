@@ -1,4 +1,5 @@
 import type { ApiError } from "@elevator/contracts";
+import { NextResponse } from "next/server";
 
 export class AppError extends Error {
   constructor(
@@ -40,4 +41,17 @@ export function toApiError(
 
 export function getErrorStatus(error: unknown): number {
   return error instanceof AppError ? error.status : 500;
+}
+
+export function errorResponse(
+  error: unknown,
+  requestId: string,
+): NextResponse<ApiError> {
+  return NextResponse.json(toApiError(error, requestId), {
+    status: getErrorStatus(error),
+    headers: {
+      "Cache-Control": "no-store",
+      "X-Request-Id": requestId,
+    },
+  });
 }
