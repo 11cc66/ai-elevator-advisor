@@ -1,6 +1,11 @@
 import { AppError } from "@/server/http/errors";
 import { prisma } from "@/server/prisma";
 
+import {
+  customerFieldActions,
+  deriveEffectiveFieldStatus,
+} from "./field-review-policy";
+
 const versionSelect = {
   id: true,
   versionNumber: true,
@@ -218,6 +223,61 @@ export async function getExtractionDetails(
       startedAt: true,
       completedAt: true,
       createdAt: true,
+      fileVersion: {
+        select: {
+          id: true,
+          versionNumber: true,
+          file: {
+            select: {
+              id: true,
+              displayName: true,
+            },
+          },
+        },
+      },
+      fields: {
+        orderBy: [{ fieldKey: "asc" }, { createdAt: "asc" }],
+        select: {
+          id: true,
+          extractionId: true,
+          fieldKey: true,
+          fieldLabel: true,
+          valueType: true,
+          originalRawValue: true,
+          originalNormalizedValue: true,
+          unit: true,
+          pageNumber: true,
+          sourceText: true,
+          sourceRefs: true,
+          confidence: true,
+          fieldClassification: true,
+          initialStatus: true,
+          customerConfirmable: true,
+          requiresProfessionalReview: true,
+          createdAt: true,
+          reviews: {
+            orderBy: { reviewSequence: "asc" },
+            select: {
+              id: true,
+              reviewSequence: true,
+              action: true,
+              originalValueSnapshot: true,
+              correctedRawValue: true,
+              correctedNormalizedValue: true,
+              statusAfterReview: true,
+              note: true,
+              actorUserId: true,
+              actorRoleSnapshot: true,
+              createdAt: true,
+              actor: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+      },
       textBlocks: {
         orderBy: [{ pageNumber: "asc" }, { blockIndex: "asc" }],
         select: {
@@ -242,5 +302,67 @@ export async function getExtractionDetails(
     );
   }
 
-  return extraction;
+  const fields = extraction.fields.map((field) => {
+    const latestReview =
+      field.reviews[field.reviews.length - 1] ?? null;
+    const effectiveStatus = deriveEffectiveFieldStatus({
+      fieldClassification: field.fieldClassification,
+      initialStatus: field.initialStatus,
+      latestReviewStatus: latestReview?.statusAfterReview,
+    });
+    const policyActions =
+      extraction.status === "COMPLETED"
+        ? customerFieldActions(field)
+        : {
+            canConfirm: false,
+            canCorrect: false,
+            canReject: false,
+          };
+    const actions = {
+      ...policyActions,
+      canConfirm:
+        policyActions.canConfirm &&
+        effectiveStatus !== "CUSTOMER_CONFIRMED",
+      canReject:
+        policyActions.canReject &&
+        effectiveStatus !== "CUSTOMER_REJECTED",
+    };
+
+    return {
+      ...field,
+      confidence: field.confidence?.toString() ?? null,
+      effectiveStatus,
+      latestReviewSequence: latestReview?.reviewSequence ?? 0,
+      needsCustomerConfirmation:
+        field.fieldClassification === "ORDINARY" &&
+        field.customerConfirmable &&
+        effectiveStatus === "EXTRACTED",
+      awaitingProfessionalReview:
+        field.fieldClassification === "PROFESSIONAL" ||
+        field.requiresProfessionalReview,
+      availableActions: actions,
+    };
+  });
+
+  return {
+    ...extraction,
+    fields,
+    fieldSummary: {
+      total: fields.length,
+      customerConfirmed: fields.filter(
+        (field) => field.effectiveStatus === "CUSTOMER_CONFIRMED",
+      ).length,
+      customerRejected: fields.filter(
+        (field) => field.effectiveStatus === "CUSTOMER_REJECTED",
+      ).length,
+      awaitingCustomerConfirmation: fields.filter(
+        (field) => field.needsCustomerConfirmation,
+      ).length,
+      awaitingProfessionalReview: fields.filter(
+        (field) =>
+          field.awaitingProfessionalReview &&
+          field.effectiveStatus !== "INVALIDATED",
+      ).length,
+    },
+  };
 }

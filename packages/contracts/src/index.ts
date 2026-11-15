@@ -149,6 +149,60 @@ export type CreateInstallationUnitInput = z.infer<
 >;
 export type UploadIntentInput = z.infer<typeof uploadIntentSchema>;
 
+export const fieldReviewActionSchema = z.enum([
+  "CONFIRM",
+  "CORRECT",
+  "REJECT",
+]);
+
+export const fieldReviewInputSchema = z
+  .object({
+    action: fieldReviewActionSchema,
+    correctedRawValue: z.json().optional(),
+    note: z
+      .string()
+      .trim()
+      .max(1_000, "备注不能超过 1000 个字符")
+      .optional()
+      .transform((value) => value || undefined)
+      .optional(),
+    expectedReviewSequence: z
+      .number()
+      .int()
+      .min(0, "识别字段历史序号无效"),
+  })
+  .superRefine((value, context) => {
+    if (
+      value.action === "CORRECT" &&
+      (value.correctedRawValue === undefined ||
+        value.correctedRawValue === null)
+    ) {
+      context.addIssue({
+        code: "custom",
+        path: ["correctedRawValue"],
+        message: "更正字段时必须提供修正值",
+      });
+    }
+
+    if (
+      value.action !== "CORRECT" &&
+      value.correctedRawValue !== undefined
+    ) {
+      context.addIssue({
+        code: "custom",
+        path: ["correctedRawValue"],
+        message: "只有更正操作可以提交修正值",
+      });
+    }
+  });
+
+export type FieldReviewAction = z.infer<
+  typeof fieldReviewActionSchema
+>;
+export type FieldReviewInput = z.infer<
+  typeof fieldReviewInputSchema
+>;
+
 export const FILE_RECOGNITION_QUEUE = "file-recognition";
 export const FILE_MAINTENANCE_QUEUE = "file-maintenance";
 
