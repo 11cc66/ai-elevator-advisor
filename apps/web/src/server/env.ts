@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { FILE_PROCESSING_RETRY_DEFAULTS } from "@elevator/contracts";
+
 const webEnvSchema = z.object({
   DATABASE_URL: z
     .string()
@@ -20,6 +22,30 @@ const webEnvSchema = z.object({
     ),
   PRIVATE_STORAGE_ROOT: z.string().min(1).default("storage/private"),
   FILE_ACCESS_MODE: z.enum(["enforce", "test"]).default("enforce"),
+  FILE_PROCESSING_MAX_ATTEMPTS: z.coerce
+    .number()
+    .int()
+    .min(1)
+    .max(10)
+    .default(FILE_PROCESSING_RETRY_DEFAULTS.maxAttempts),
+  FILE_PROCESSING_RETRY_DELAY_SECONDS: z.coerce
+    .number()
+    .int()
+    .min(1)
+    .max(300)
+    .default(FILE_PROCESSING_RETRY_DEFAULTS.retryDelaySeconds),
+  FILE_PROCESSING_RETRY_MAX_SECONDS: z.coerce
+    .number()
+    .int()
+    .min(1)
+    .max(3_600)
+    .default(FILE_PROCESSING_RETRY_DEFAULTS.retryDelayMaxSeconds),
+  FILE_PROCESSING_JOB_EXPIRE_SECONDS: z.coerce
+    .number()
+    .int()
+    .min(30)
+    .max(3_600)
+    .default(FILE_PROCESSING_RETRY_DEFAULTS.jobExpireSeconds),
 });
 
 export type WebEnv = z.infer<typeof webEnvSchema>;

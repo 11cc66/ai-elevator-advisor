@@ -1,24 +1,66 @@
 import { createHash } from "node:crypto";
 
+import type { FileRecognitionJob } from "@elevator/contracts";
 import {
   detectAllowedFileType,
   LocalPrivateStorage,
   PrivateStorageError,
 } from "@elevator/file-storage";
-import type { FileRecognitionJob } from "@elevator/contracts";
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 
 import { readWorkerEnv, type WorkerEnv } from "./config.js";
+import {
+  blockedProcessingError,
+  ClassifiedProcessingError,
+  computeRetryAt,
+  FileProcessingRetryError,
+  getSafeErrorCode,
+  permanentProcessingError,
+  SimulatedWorkerCrashError,
+  type ProcessingFailureClass,
+} from "./file-processing-errors.js";
 import { evaluateFileProcessingPolicy } from "./file-processing-policy.js";
+import {
+  claimFileExtraction,
+  completeFileExtraction,
+  failExhaustedFileExtraction,
+  failExhaustedUnclaimedFileExtraction,
+  failFileExtraction,
+  scheduleFileExtractionRetry,
+  type CompletionBlock,
+  type ProcessingClaim,
+} from "./file-processing-state.js";
 import { extractImageMetadata } from "./image-metadata.js";
 import { logger } from "./logger.js";
 import { PdfParserError, parsePdfInWorker } from "./pdf-parser-client.js";
 import { createWorkerStorage } from "./storage.js";
 
 const MAX_FILE_BYTES = 20n * 1024n * 1024n;
-const STALE_PROCESSING_MS = 5 * 60 * 1000;
 const PDF_PROVIDER_VERSION = "pdfjs-dist@6.5.438";
 const IMAGE_PROVIDER_VERSION = "image-size@2.1.0";
+
+export type ProcessingCheckpoint =
+  | "AFTER_CLAIM"
+  | "AFTER_READ"
+  | "BEFORE_PARSE"
+  | "AFTER_PARSE"
+  | "BEFORE_COMMIT"
+  | "AFTER_COMMIT";
+
+export interface FileProcessingDependencies {
+  prisma?: PrismaClient;
+  storage?: LocalPrivateStorage;
+  parsePdf?: typeof parsePdfInWorker;
+  readObject?: (
+    storage: LocalPrivateStorage,
+    storageKey: string,
+  ) => Promise<Buffer>;
+  now?: () => Date;
+  jobId?: string;
+  checkpoint?: (
+    checkpoint: ProcessingCheckpoint,
+  ) => void | Promise<void>;
+}
 
 interface WorkerRuntime {
   env: WorkerEnv;
@@ -26,12 +68,15 @@ interface WorkerRuntime {
   storage: LocalPrivateStorage;
 }
 
-function createRuntime(prisma: PrismaClient): WorkerRuntime {
+function createRuntime(
+  prisma: PrismaClient,
+  storage?: LocalPrivateStorage,
+): WorkerRuntime {
   const env = readWorkerEnv();
   return {
     env,
     prisma,
-    storage: createWorkerStorage(env),
+    storage: storage ?? createWorkerStorage(env),
   };
 }
 
@@ -115,13 +160,13 @@ async function verifyTestIdentity(runtime: WorkerRuntime): Promise<boolean> {
 }
 
 async function readObjectBytes(
-  runtime: WorkerRuntime,
+  storage: LocalPrivateStorage,
   storageKey: string,
 ): Promise<Buffer> {
   const chunks: Buffer[] = [];
   let totalBytes = 0n;
 
-  for await (const chunk of runtime.storage.openReadStream(storageKey)) {
+  for await (const chunk of storage.openReadStream(storageKey)) {
     const buffer = Buffer.from(chunk);
     totalBytes += BigInt(buffer.byteLength);
     if (totalBytes > MAX_FILE_BYTES) {
@@ -133,71 +178,155 @@ async function readObjectBytes(
   return Buffer.concat(chunks);
 }
 
-async function markExtractionFailed(
-  runtime: WorkerRuntime,
+async function runCheckpoint(
+  dependencies: FileProcessingDependencies,
+  checkpoint: ProcessingCheckpoint,
+): Promise<void> {
+  await dependencies.checkpoint?.(checkpoint);
+}
+
+async function recordSecurityEvent(
+  prisma: PrismaClient,
   input: {
-    extractionId: string;
     fileVersionId: string;
-    fileId: string;
+    eventType:
+      | "CHECKSUM_MISMATCH"
+      | "MIME_MISMATCH"
+      | "VALIDATION_FAILED"
+      | "POLICY_BLOCKED"
+      | "SCAN_UNAVAILABLE_BLOCK"
+      | "STORAGE_OBJECT_MISSING";
+    severity: "INFO" | "WARNING" | "HIGH" | "CRITICAL";
     actorUserId: string | null;
-    code: string;
-    message: string;
-    recognitionStatus?: "FAILED" | "BLOCKED";
+    jobId?: string;
+    policyCode: string;
+    expectedChecksum?: string;
+    actualChecksum?: string;
+    details?: Prisma.InputJsonObject;
   },
-): Promise<boolean> {
-  return runtime.prisma.$transaction(async (tx) => {
-    const changed = await tx.fileExtraction.updateMany({
-      where: {
-        id: input.extractionId,
-        status: "PROCESSING",
-      },
-      data: {
-        status: "FAILED",
-        safeErrorCode: input.code,
-        safeErrorMessage: input.message,
-        completedAt: new Date(),
-      },
-    });
-
-    if (changed.count !== 1) {
-      return false;
-    }
-
-    const latest = await tx.fileExtraction.findFirst({
-      where: { fileVersionId: input.fileVersionId },
-      orderBy: { extractionVersion: "desc" },
-      select: { id: true },
-    });
-    if (latest?.id === input.extractionId) {
-      await tx.fileVersion.update({
-        where: { id: input.fileVersionId },
-        data: {
-          recognitionStatus: input.recognitionStatus ?? "FAILED",
-        },
-      });
-    }
-    await tx.auditLog.create({
-      data: {
-        actorUserId: input.actorUserId,
-        action: "file.extraction.failed",
-        objectType: "FileVersion",
-        objectId: input.fileVersionId,
-        reason: input.code,
-        newValue: {
-          fileId: input.fileId,
-          extractionId: input.extractionId,
-        },
-      },
-    });
-    return true;
+): Promise<void> {
+  await prisma.fileSecurityEvent.create({
+    data: {
+      fileVersionId: input.fileVersionId,
+      eventType: input.eventType,
+      severity: input.severity,
+      actorUserId: input.actorUserId,
+      jobId: input.jobId,
+      policyCode: input.policyCode,
+      expectedChecksum: input.expectedChecksum,
+      actualChecksum: input.actualChecksum,
+      details: input.details,
+    },
   });
+}
+
+export function classifyFileProcessingError(
+  error: unknown,
+): {
+  code: string;
+  safeMessage: string;
+  failureClass: ProcessingFailureClass;
+} {
+  if (error instanceof ClassifiedProcessingError) {
+    return {
+      code: error.code,
+      safeMessage: error.safeMessage,
+      failureClass: error.failureClass,
+    };
+  }
+
+  if (error instanceof PdfParserError) {
+    if (
+      error.code === "PDF_WORKER_TIMEOUT" ||
+      error.code === "PDF_WORKER_CRASHED" ||
+      error.code === "PDF_WORKER_ERROR" ||
+      error.code === "PDF_WORKER_EXITED"
+    ) {
+      return {
+        code: error.code,
+        safeMessage: "PDF 解析暂时中断，将按策略重试。",
+        failureClass: "TRANSIENT",
+      };
+    }
+
+    return {
+      code: error.code,
+      safeMessage:
+        error.code === "PDF_PAGE_LIMIT_EXCEEDED"
+          ? "PDF 页数超过允许上限。"
+          : error.code === "PDF_TEXT_LIMIT_EXCEEDED"
+            ? "PDF 提取文字超过允许上限。"
+            : "PDF 内容无法解析或已经损坏。",
+      failureClass: "PERMANENT",
+    };
+  }
+
+  if (error instanceof PrivateStorageError) {
+    return {
+      code: error.code,
+      safeMessage: "文件类型或私有存储对象不符合处理要求。",
+      failureClass: "PERMANENT",
+    };
+  }
+
+  if (
+    error instanceof Prisma.PrismaClientKnownRequestError &&
+    ["P1001", "P1002", "P1008", "P1017", "P2024"].includes(error.code)
+  ) {
+    return {
+      code: "DATABASE_TEMPORARILY_UNAVAILABLE",
+      safeMessage: "数据库暂时不可用，将按策略重试。",
+      failureClass: "TRANSIENT",
+    };
+  }
+
+  const errorCode = getSafeErrorCode(error);
+  if (errorCode === "ENOENT") {
+    return {
+      code: "STORAGE_OBJECT_MISSING",
+      safeMessage: "原始文件对象不存在。",
+      failureClass: "PERMANENT",
+    };
+  }
+  if (errorCode === "EACCES" || errorCode === "EPERM") {
+    return {
+      code: "STORAGE_ACCESS_DENIED",
+      safeMessage: "私有存储拒绝访问。",
+      failureClass: "PERMANENT",
+    };
+  }
+  if (
+    error instanceof Error &&
+    (error.message === "IMAGE_DIMENSIONS_UNAVAILABLE" ||
+      error.message === "IMAGE_PIXEL_LIMIT_EXCEEDED")
+  ) {
+    return {
+      code: error.message,
+      safeMessage:
+        error.message === "IMAGE_DIMENSIONS_UNAVAILABLE"
+          ? "无法读取图片尺寸。"
+          : "图片像素数量超过允许上限。",
+      failureClass: "PERMANENT",
+    };
+  }
+
+  return {
+    code: "FILE_PROCESSING_TRANSIENT_ERROR",
+    safeMessage: "文件处理暂时失败，将按策略重试。",
+    failureClass: "TRANSIENT",
+  };
 }
 
 export async function processFileRecognitionJob(
   job: FileRecognitionJob,
-  prisma = new PrismaClient(),
+  dependencies: FileProcessingDependencies = {},
 ): Promise<"COMPLETED" | "IGNORED" | "FAILED" | "BLOCKED"> {
-  const runtime = createRuntime(prisma);
+  const ownsPrisma = !dependencies.prisma;
+  const prisma = dependencies.prisma ?? new PrismaClient();
+  const runtime = createRuntime(prisma, dependencies.storage);
+  const currentTime = (): Date => dependencies.now?.() ?? new Date();
+  let claim: ProcessingClaim | null = null;
+  let actorUserId: string | null = null;
 
   try {
     const extraction = await prisma.fileExtraction.findUnique({
@@ -224,7 +353,7 @@ export async function processFileRecognitionJob(
       !extraction ||
       extraction.fileVersionId !== job.fileVersionId
     ) {
-      throw new Error("FILE_PROCESSING_RESOURCE_MISMATCH");
+      return "IGNORED";
     }
 
     if (
@@ -235,52 +364,49 @@ export async function processFileRecognitionJob(
       return "IGNORED";
     }
 
-    const now = new Date();
-    const staleBefore = new Date(now.getTime() - STALE_PROCESSING_MS);
-    const claim =
-      extraction.status === "QUEUED"
-        ? await prisma.fileExtraction.updateMany({
-            where: {
-              id: extraction.id,
-              status: "QUEUED",
-            },
-            data: {
-              status: "PROCESSING",
-              startedAt: now,
-              attempt: { increment: 1 },
-            },
-          })
-        : await prisma.fileExtraction.updateMany({
-            where: {
-              id: extraction.id,
-              status: "PROCESSING",
-              startedAt: { lt: staleBefore },
-            },
-            data: {
-              startedAt: now,
-              attempt: { increment: 1 },
-            },
-          });
+    const now = currentTime();
+    const exhausted =
+      extraction.attempt >= runtime.env.FILE_PROCESSING_MAX_ATTEMPTS &&
+      (extraction.status === "QUEUED" ||
+        (extraction.status === "PROCESSING" &&
+          extraction.leaseExpiresAt !== null &&
+          extraction.leaseExpiresAt.getTime() < now.getTime()));
+    if (exhausted) {
+      const failed = await failExhaustedUnclaimedFileExtraction(prisma, {
+        extractionId: extraction.id,
+        fileVersionId: extraction.fileVersionId,
+        expectedToken: extraction.processingToken,
+        actorUserId: extraction.fileVersion.uploadedById,
+        attempt: extraction.attempt,
+        failedAt: now,
+      });
+      return failed ? "FAILED" : "IGNORED";
+    }
 
-    if (claim.count !== 1) {
+    claim = await claimFileExtraction(prisma, {
+      extractionId: extraction.id,
+      fileVersionId: extraction.fileVersionId,
+      maxAttempts: runtime.env.FILE_PROCESSING_MAX_ATTEMPTS,
+      leaseMs: runtime.env.FILE_PROCESSING_LEASE_MS,
+      now,
+    });
+    if (!claim) {
       return "IGNORED";
     }
+
+    await runCheckpoint(dependencies, "AFTER_CLAIM");
 
     const user = await prisma.user.findUnique({
       where: { id: job.requestedByUserId },
       select: { id: true },
     });
     if (!user) {
-      const marked = await markExtractionFailed(runtime, {
-        extractionId: extraction.id,
-        fileVersionId: extraction.fileVersion.id,
-        fileId: extraction.fileVersion.file.id,
-        actorUserId: null,
-        code: "PROCESSING_USER_NOT_FOUND",
-        message: "处理请求账号不存在。",
-      });
-      return marked ? "FAILED" : "IGNORED";
+      throw permanentProcessingError(
+        "PROCESSING_USER_NOT_FOUND",
+        "处理请求账号不存在。",
+      );
     }
+    actorUserId = user.id;
 
     const permissions = await loadProjectPermissions(
       prisma,
@@ -291,15 +417,10 @@ export async function processFileRecognitionJob(
       permissions.global.has("file.upload") ||
       permissions.project.has("file.upload");
     if (!hasUploadPermission) {
-      const marked = await markExtractionFailed(runtime, {
-        extractionId: extraction.id,
-        fileVersionId: extraction.fileVersion.id,
-        fileId: extraction.fileVersion.file.id,
-        actorUserId: job.requestedByUserId,
-        code: "PROCESSING_PERMISSION_DENIED",
-        message: "请求账号没有该项目的文件上传权限。",
-      });
-      return marked ? "FAILED" : "IGNORED";
+      throw blockedProcessingError(
+        "PROCESSING_PERMISSION_DENIED",
+        "请求账号没有该项目的文件上传权限。",
+      );
     }
 
     const testIdentityVerified = await verifyTestIdentity(runtime);
@@ -317,83 +438,91 @@ export async function processFileRecognitionJob(
     });
 
     if (!policy.allowed) {
-      const marked = await markExtractionFailed(runtime, {
-        extractionId: extraction.id,
+      await recordSecurityEvent(prisma, {
         fileVersionId: extraction.fileVersion.id,
-        fileId: extraction.fileVersion.file.id,
-        actorUserId: job.requestedByUserId,
-        code: policy.reason,
-        message: "当前环境不允许处理该文件。",
-        recognitionStatus: "BLOCKED",
+        eventType:
+          policy.reason === "MALWARE_SCAN_REQUIRED"
+            ? "SCAN_UNAVAILABLE_BLOCK"
+            : "POLICY_BLOCKED",
+        severity: "HIGH",
+        actorUserId,
+        jobId: dependencies.jobId,
+        policyCode: policy.reason,
       });
-      return marked ? "BLOCKED" : "IGNORED";
+      throw blockedProcessingError(
+        policy.reason,
+        "当前环境不允许处理该文件。",
+      );
     }
 
     let objectBytes: Buffer;
-
     try {
-      objectBytes = await readObjectBytes(
-        runtime,
+      objectBytes = await (dependencies.readObject ?? readObjectBytes)(
+        runtime.storage,
         extraction.fileVersion.storageKey,
       );
-    } catch {
-      await prisma.$transaction(async (tx) => {
-        await tx.fileVersion.update({
-          where: { id: extraction.fileVersion.id },
-          data: { integrityStatus: "FAILED" },
+    } catch (error) {
+      if (error instanceof SimulatedWorkerCrashError) {
+        throw error;
+      }
+
+      const code = getSafeErrorCode(error);
+      if (code === "ENOENT" || code === "FILE_TOO_LARGE") {
+        await prisma.$transaction(async (tx) => {
+          await tx.fileVersion.update({
+            where: { id: extraction.fileVersion.id },
+            data: { integrityStatus: "FAILED" },
+          });
         });
-        await tx.fileSecurityEvent.create({
-          data: {
-            fileVersionId: extraction.fileVersion.id,
-            eventType: "STORAGE_OBJECT_MISSING",
-            severity: "CRITICAL",
-            expectedChecksum: extraction.fileVersion.checksumSha256,
-            policyCode: "PROCESSING_INTEGRITY_PREFLIGHT",
-            actorUserId: job.requestedByUserId,
-          },
+        await recordSecurityEvent(prisma, {
+          fileVersionId: extraction.fileVersion.id,
+          eventType:
+            code === "ENOENT"
+              ? "STORAGE_OBJECT_MISSING"
+              : "VALIDATION_FAILED",
+          severity: "CRITICAL",
+          expectedChecksum: extraction.fileVersion.checksumSha256,
+          actorUserId,
+          jobId: dependencies.jobId,
+          policyCode: "PROCESSING_INTEGRITY_PREFLIGHT",
         });
-      });
-      const marked = await markExtractionFailed(runtime, {
-        extractionId: extraction.id,
-        fileVersionId: extraction.fileVersion.id,
-        fileId: extraction.fileVersion.file.id,
-        actorUserId: job.requestedByUserId,
-        code: "STORAGE_OBJECT_MISSING",
-        message: "原始文件对象不存在。",
-      });
-      return marked ? "FAILED" : "IGNORED";
+        throw permanentProcessingError(
+          code === "ENOENT"
+            ? "STORAGE_OBJECT_MISSING"
+            : "FILE_TOO_LARGE",
+          code === "ENOENT"
+            ? "原始文件对象不存在。"
+            : "原始文件大小超过处理上限。",
+        );
+      }
+
+      throw error;
     }
+
+    await runCheckpoint(dependencies, "AFTER_READ");
 
     const actualChecksum = createHash("sha256")
       .update(objectBytes)
       .digest("hex");
     if (actualChecksum !== extraction.fileVersion.checksumSha256) {
-      await prisma.$transaction(async (tx) => {
-        await tx.fileVersion.update({
-          where: { id: extraction.fileVersion.id },
-          data: { integrityStatus: "FAILED" },
-        });
-        await tx.fileSecurityEvent.create({
-          data: {
-            fileVersionId: extraction.fileVersion.id,
-            eventType: "CHECKSUM_MISMATCH",
-            severity: "CRITICAL",
-            expectedChecksum: extraction.fileVersion.checksumSha256,
-            actualChecksum,
-            policyCode: "PROCESSING_INTEGRITY_PREFLIGHT",
-            actorUserId: job.requestedByUserId,
-          },
-        });
+      await prisma.fileVersion.update({
+        where: { id: extraction.fileVersion.id },
+        data: { integrityStatus: "FAILED" },
       });
-      const marked = await markExtractionFailed(runtime, {
-        extractionId: extraction.id,
+      await recordSecurityEvent(prisma, {
         fileVersionId: extraction.fileVersion.id,
-        fileId: extraction.fileVersion.file.id,
-        actorUserId: job.requestedByUserId,
-        code: "FILE_INTEGRITY_FAILED",
-        message: "文件完整性校验失败。",
+        eventType: "CHECKSUM_MISMATCH",
+        severity: "CRITICAL",
+        expectedChecksum: extraction.fileVersion.checksumSha256,
+        actualChecksum,
+        actorUserId,
+        jobId: dependencies.jobId,
+        policyCode: "PROCESSING_INTEGRITY_PREFLIGHT",
       });
-      return marked ? "FAILED" : "IGNORED";
+      throw permanentProcessingError(
+        "FILE_INTEGRITY_FAILED",
+        "文件完整性校验失败。",
+      );
     }
 
     let detected;
@@ -406,205 +535,214 @@ export async function processFileRecognitionJob(
         error instanceof PrivateStorageError
           ? error.code
           : "FILE_TYPE_UNKNOWN";
-      const marked = await markExtractionFailed(runtime, {
-        extractionId: extraction.id,
+      await recordSecurityEvent(prisma, {
         fileVersionId: extraction.fileVersion.id,
-        fileId: extraction.fileVersion.file.id,
-        actorUserId: job.requestedByUserId,
-        code,
-        message: "文件类型无法确认或不受支持。",
+        eventType: "VALIDATION_FAILED",
+        severity: "HIGH",
+        actorUserId,
+        jobId: dependencies.jobId,
+        policyCode: "PROCESSING_TYPE_PREFLIGHT",
       });
-      return marked ? "FAILED" : "IGNORED";
+      throw permanentProcessingError(
+        code,
+        "文件类型无法确认或不受支持。",
+      );
     }
 
     if (detected.mimeType !== extraction.fileVersion.detectedMimeType) {
-      await prisma.fileSecurityEvent.create({
-        data: {
-          fileVersionId: extraction.fileVersion.id,
-          eventType: "MIME_MISMATCH",
-          severity: "HIGH",
-          policyCode: "PROCESSING_TYPE_PREFLIGHT",
-          actorUserId: job.requestedByUserId,
-          details: {
-            expectedMimeType: extraction.fileVersion.detectedMimeType,
-            actualMimeType: detected.mimeType,
-          },
+      await recordSecurityEvent(prisma, {
+        fileVersionId: extraction.fileVersion.id,
+        eventType: "MIME_MISMATCH",
+        severity: "HIGH",
+        actorUserId,
+        jobId: dependencies.jobId,
+        policyCode: "PROCESSING_TYPE_PREFLIGHT",
+        details: {
+          expectedMimeType:
+            extraction.fileVersion.detectedMimeType ?? "UNKNOWN",
+          actualMimeType: detected.mimeType,
         },
       });
-      const marked = await markExtractionFailed(runtime, {
-        extractionId: extraction.id,
-        fileVersionId: extraction.fileVersion.id,
-        fileId: extraction.fileVersion.file.id,
-        actorUserId: job.requestedByUserId,
-        code: "MIME_MISMATCH",
-        message: "文件实际类型与已存版本不一致。",
-      });
-      return marked ? "FAILED" : "IGNORED";
+      throw permanentProcessingError(
+        "MIME_MISMATCH",
+        "文件实际类型与已存版本不一致。",
+      );
     }
 
-    try {
-      let providerMetadata: object;
-      let extractedText = "";
-      let outputCharacterCount = 0;
-      let pageCount: number | null = null;
-      let parserVersion: string;
-      let blocks: Array<{
-        pageNumber: number | null;
-        blockIndex: number;
-        text: string;
-        sourceKind: string;
-        sourceRef: string | null;
-        positionData: unknown;
-        characterCount: number;
-      }> = [];
-      let safetyNotes: string | null = null;
+    let providerMetadata: object;
+    let extractedText = "";
+    let outputCharacterCount = 0;
+    let pageCount: number | null = null;
+    let parserVersion: string;
+    let blocks: CompletionBlock[] = [];
+    let safetyNotes: string | null = null;
 
-      if (detected.mimeType === "application/pdf") {
-        const parsed = await parsePdfInWorker(objectBytes, {
+    await runCheckpoint(dependencies, "BEFORE_PARSE");
+    if (detected.mimeType === "application/pdf") {
+      const parsed = await (dependencies.parsePdf ?? parsePdfInWorker)(
+        objectBytes,
+        {
           maxPages: runtime.env.PDF_MAX_PAGES,
           maxCharacters: runtime.env.PDF_MAX_TEXT_CHARS,
           timeoutMs: runtime.env.PDF_PARSE_TIMEOUT_MS,
+        },
+      );
+      providerMetadata = {
+        pageCount: parsed.pageCount,
+        textLayerEmpty: parsed.textLayerEmpty,
+      };
+      extractedText = parsed.extractedText;
+      outputCharacterCount = parsed.outputCharacterCount;
+      pageCount = parsed.pageCount;
+      parserVersion = PDF_PROVIDER_VERSION;
+      blocks = parsed.blocks;
+      if (parsed.textLayerEmpty) {
+        safetyNotes = "PDF 未包含可提取文字层；当前版本不执行 OCR。";
+      }
+    } else {
+      providerMetadata = extractImageMetadata(
+        objectBytes,
+        runtime.env.IMAGE_MAX_PIXELS,
+      );
+      parserVersion = IMAGE_PROVIDER_VERSION;
+      safetyNotes =
+        "当前版本尚未进行图片文字提取或 AI 图像识别。图片仅完成基础文件校验和元数据读取，不构成现场情况、结构、尺寸或工程可行性判断。";
+    }
+    await runCheckpoint(dependencies, "AFTER_PARSE");
+    await runCheckpoint(dependencies, "BEFORE_COMMIT");
+
+    const completed = await completeFileExtraction(prisma, {
+      claim,
+      actorUserId,
+      extractedText,
+      providerMetadata,
+      pageCount,
+      outputCharacterCount,
+      parserVersion,
+      safetyNotes,
+      blocks,
+      completedAt: currentTime(),
+    });
+    if (!completed) {
+      return "IGNORED";
+    }
+
+    await runCheckpoint(dependencies, "AFTER_COMMIT");
+
+    logger.info(
+      {
+        event: "file.processing.completed",
+        extractionId: extraction.id,
+        fileVersionId: extraction.fileVersion.id,
+        mimeType: detected.mimeType,
+        attempt: claim.attempt,
+      },
+      "File processing completed",
+    );
+    return "COMPLETED";
+  } catch (error) {
+    if (error instanceof SimulatedWorkerCrashError) {
+      throw error;
+    }
+
+    const failure = classifyFileProcessingError(error);
+    if (!claim) {
+      logger.error(
+        {
+          event: "file.processing.pre_claim_failed",
+          code: failure.code,
+          extractionId: job.extractionId,
+        },
+        "File processing failed before claim",
+      );
+      throw error;
+    }
+
+    if (failure.failureClass === "TRANSIENT") {
+      if (claim.attempt >= runtime.env.FILE_PROCESSING_MAX_ATTEMPTS) {
+        const failed = await failExhaustedFileExtraction(prisma, {
+          extractionId: claim.extractionId,
+          fileVersionId: claim.fileVersionId,
+          expectedToken: claim.token,
+          actorUserId: actorUserId ?? job.requestedByUserId,
+          attempt: claim.attempt,
+          code: failure.code,
+          failedAt: currentTime(),
         });
-        providerMetadata = {
-          pageCount: parsed.pageCount,
-          textLayerEmpty: parsed.textLayerEmpty,
-        };
-        extractedText = parsed.extractedText;
-        outputCharacterCount = parsed.outputCharacterCount;
-        pageCount = parsed.pageCount;
-        parserVersion = PDF_PROVIDER_VERSION;
-        blocks = parsed.blocks;
-        if (parsed.textLayerEmpty) {
-          safetyNotes = "PDF 未包含可提取文字层；当前版本不执行 OCR。";
-        }
-      } else {
-        providerMetadata = extractImageMetadata(
-          objectBytes,
-          runtime.env.IMAGE_MAX_PIXELS,
+        logger.error(
+          {
+            event: "file.processing.retry_exhausted",
+            extractionId: claim.extractionId,
+            attempt: claim.attempt,
+            code: failure.code,
+          },
+          "File processing retry exhausted",
         );
-        parserVersion = IMAGE_PROVIDER_VERSION;
-        safetyNotes =
-          "当前版本尚未进行图片文字提取或 AI 图像识别。图片仅完成基础文件校验和元数据读取，不构成现场情况、结构、尺寸或工程可行性判断。";
+        return failed ? "FAILED" : "IGNORED";
       }
 
-      const completed = await prisma.$transaction(async (tx) => {
-        const current = await tx.fileExtraction.findUnique({
-          where: { id: extraction.id },
-          select: { status: true },
-        });
-        if (current?.status !== "PROCESSING") {
-          return false;
-        }
-
-        if (blocks.length > 0) {
-          await tx.extractionTextBlock.createMany({
-            data: blocks.map((block) => ({
-              extractionId: extraction.id,
-              pageNumber: block.pageNumber,
-              blockIndex: block.blockIndex,
-              text: block.text,
-              sourceKind: block.sourceKind,
-              sourceRef: block.sourceRef,
-              positionData: block.positionData as object,
-              characterCount: block.characterCount,
-            })),
-          });
-        }
-
-        await tx.fileExtraction.update({
-          where: { id: extraction.id },
-          data: {
-            status: "COMPLETED",
-            extractedText,
-            providerMetadata: providerMetadata as object,
-            pageCount,
-            outputCharacterCount,
-            parserVersion,
-            safetyNotes,
-            completedAt: new Date(),
-          },
-        });
-        const latest = await tx.fileExtraction.findFirst({
-          where: { fileVersionId: extraction.fileVersion.id },
-          orderBy: { extractionVersion: "desc" },
-          select: { id: true },
-        });
-        if (latest?.id === extraction.id) {
-          await tx.fileVersion.update({
-            where: { id: extraction.fileVersion.id },
-            data: { recognitionStatus: "COMPLETED" },
-          });
-        }
-        await tx.auditLog.create({
-          data: {
-            actorUserId: job.requestedByUserId,
-            action: "file.extraction.completed",
-            objectType: "FileVersion",
-            objectId: extraction.fileVersion.id,
-            newValue: {
-              extractionId: extraction.id,
-              pageCount,
-              outputCharacterCount,
-            },
-          },
-        });
-        return true;
+      const retryAt = computeRetryAt({
+        now: currentTime(),
+        attempt: claim.attempt,
+        baseDelaySeconds:
+          runtime.env.FILE_PROCESSING_RETRY_DELAY_SECONDS,
+        maxDelaySeconds:
+          runtime.env.FILE_PROCESSING_RETRY_MAX_SECONDS,
       });
-
-      if (!completed) {
+      const released = await scheduleFileExtractionRetry(prisma, {
+        claim,
+        actorUserId,
+        code: failure.code,
+        safeMessage: failure.safeMessage,
+        nextAttemptAt: retryAt,
+      });
+      if (!released) {
         return "IGNORED";
       }
 
-      logger.info(
+      logger.warn(
         {
-          event: "file.processing.completed",
-          extractionId: extraction.id,
-          fileVersionId: extraction.fileVersion.id,
-          mimeType: detected.mimeType,
+          event: "file.processing.retry_scheduled",
+          extractionId: claim.extractionId,
+          attempt: claim.attempt,
+          code: failure.code,
+          retryAt: retryAt.toISOString(),
         },
-        "File processing completed",
+        "File processing retry scheduled",
       );
-      return "COMPLETED";
-    } catch (error) {
-      const code =
-        error instanceof PdfParserError
-          ? error.code
-          : error instanceof Error &&
-              (error.message === "IMAGE_DIMENSIONS_UNAVAILABLE" ||
-                error.message === "IMAGE_PIXEL_LIMIT_EXCEEDED")
-            ? error.message
-            : "FILE_PROCESSING_FAILED";
-      const marked = await markExtractionFailed(runtime, {
-        extractionId: extraction.id,
-        fileVersionId: extraction.fileVersion.id,
-        fileId: extraction.fileVersion.file.id,
-        actorUserId: job.requestedByUserId,
-        code,
-        message:
-          code === "PDF_WORKER_TIMEOUT"
-            ? "PDF 解析超时，解析线程已终止。"
-            : code === "PDF_PAGE_LIMIT_EXCEEDED"
-              ? "PDF 页数超过允许上限。"
-              : code === "PDF_TEXT_LIMIT_EXCEEDED"
-                ? "PDF 提取文字超过允许上限。"
-                : code === "IMAGE_DIMENSIONS_UNAVAILABLE"
-                  ? "无法读取图片尺寸。"
-                  : code === "IMAGE_PIXEL_LIMIT_EXCEEDED"
-                    ? "图片像素数量超过允许上限。"
-                  : "文件处理失败。",
-      });
-      logger.error(
-        {
-          event: "file.processing.failed",
-          extractionId: extraction.id,
-          code,
-        },
-        "File processing failed",
+      throw new FileProcessingRetryError(
+        failure.code,
+        claim.attempt,
+        retryAt,
       );
-      return marked ? "FAILED" : "IGNORED";
     }
+
+    const isBlocked = failure.failureClass === "BLOCKED";
+    const failed = await failFileExtraction(prisma, {
+      claim,
+      actorUserId,
+      code: failure.code,
+      safeMessage: failure.safeMessage,
+      recognitionStatus: isBlocked ? "BLOCKED" : "FAILED",
+      auditAction: isBlocked
+        ? "file.extraction.blocked"
+        : "file.extraction.failed",
+      failedAt: currentTime(),
+    });
+    logger.error(
+      {
+        event: isBlocked
+          ? "file.processing.blocked"
+          : "file.processing.failed",
+        extractionId: claim.extractionId,
+        attempt: claim.attempt,
+        code: failure.code,
+      },
+      "File processing stopped",
+    );
+    return failed ? (isBlocked ? "BLOCKED" : "FAILED") : "IGNORED";
   } finally {
-    if (prisma === runtime.prisma) {
+    if (ownsPrisma) {
       await prisma.$disconnect();
     }
   }

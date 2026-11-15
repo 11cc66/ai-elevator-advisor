@@ -4,6 +4,8 @@ import { fileURLToPath } from "node:url";
 import { config as loadEnv } from "dotenv";
 import { z } from "zod";
 
+import { FILE_PROCESSING_RETRY_DEFAULTS } from "@elevator/contracts";
+
 const packageDirectory = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
   "..",
@@ -53,6 +55,42 @@ const workerEnvSchema = z.object({
     .min(1_000)
     .max(300_000)
     .default(60_000),
+  FILE_PROCESSING_MAX_ATTEMPTS: z.coerce
+    .number()
+    .int()
+    .min(1)
+    .max(10)
+    .default(FILE_PROCESSING_RETRY_DEFAULTS.maxAttempts),
+  FILE_PROCESSING_RETRY_DELAY_SECONDS: z.coerce
+    .number()
+    .int()
+    .min(1)
+    .max(300)
+    .default(FILE_PROCESSING_RETRY_DEFAULTS.retryDelaySeconds),
+  FILE_PROCESSING_RETRY_MAX_SECONDS: z.coerce
+    .number()
+    .int()
+    .min(1)
+    .max(3_600)
+    .default(FILE_PROCESSING_RETRY_DEFAULTS.retryDelayMaxSeconds),
+  FILE_PROCESSING_JOB_EXPIRE_SECONDS: z.coerce
+    .number()
+    .int()
+    .min(30)
+    .max(3_600)
+    .default(FILE_PROCESSING_RETRY_DEFAULTS.jobExpireSeconds),
+  FILE_PROCESSING_LEASE_MS: z.coerce
+    .number()
+    .int()
+    .min(30_000)
+    .max(600_000)
+    .default(120_000),
+  FILE_MAINTENANCE_LEASE_MS: z.coerce
+    .number()
+    .int()
+    .min(60_000)
+    .max(3_600_000)
+    .default(300_000),
   TEMP_RETENTION_MS: z.coerce
     .number()
     .int()

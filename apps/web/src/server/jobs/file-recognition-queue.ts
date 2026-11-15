@@ -1,5 +1,8 @@
 import type { FileRecognitionJob } from "@elevator/contracts";
-import { FILE_RECOGNITION_QUEUE } from "@elevator/contracts";
+import {
+  buildFileProcessingRetryOptions,
+  FILE_RECOGNITION_QUEUE,
+} from "@elevator/contracts";
 import { PgBoss } from "pg-boss";
 
 import { readWebEnv } from "@/server/env";
@@ -11,6 +14,12 @@ const globalForQueue = globalThis as unknown as {
 
 async function createBoss(): Promise<PgBoss> {
   const env = readWebEnv();
+  const retryOptions = buildFileProcessingRetryOptions({
+    maxAttempts: env.FILE_PROCESSING_MAX_ATTEMPTS,
+    retryDelaySeconds: env.FILE_PROCESSING_RETRY_DELAY_SECONDS,
+    retryDelayMaxSeconds: env.FILE_PROCESSING_RETRY_MAX_SECONDS,
+    jobExpireSeconds: env.FILE_PROCESSING_JOB_EXPIRE_SECONDS,
+  });
   const boss = new PgBoss({
     connectionString: env.DATABASE_URL,
     application_name: "elevator-web-file-queue",
@@ -26,9 +35,7 @@ async function createBoss(): Promise<PgBoss> {
 
   await boss.start({ attempts: 3 });
   await boss.createQueue(FILE_RECOGNITION_QUEUE, {
-    retryLimit: 2,
-    retryDelay: 5,
-    expireInSeconds: 180,
+    ...retryOptions,
   });
   return boss;
 }
@@ -45,10 +52,14 @@ export async function enqueueFileRecognition(
   job: FileRecognitionJob,
 ): Promise<void> {
   const boss = await getBoss();
+  const env = readWebEnv();
   await boss.send(FILE_RECOGNITION_QUEUE, job, {
     singletonKey: job.extractionId,
-    retryLimit: 2,
-    retryDelay: 5,
-    expireInSeconds: 180,
+    ...buildFileProcessingRetryOptions({
+      maxAttempts: env.FILE_PROCESSING_MAX_ATTEMPTS,
+      retryDelaySeconds: env.FILE_PROCESSING_RETRY_DELAY_SECONDS,
+      retryDelayMaxSeconds: env.FILE_PROCESSING_RETRY_MAX_SECONDS,
+      jobExpireSeconds: env.FILE_PROCESSING_JOB_EXPIRE_SECONDS,
+    }),
   });
 }

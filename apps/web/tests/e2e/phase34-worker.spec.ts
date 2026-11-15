@@ -123,6 +123,8 @@ test("worker extracts PDF pages and reads image metadata without OCR", async ({
   expect(pdfExtraction?.textBlocks[1]?.text).toContain(
     "Phase 3.4 second page",
   );
+  expect(JSON.stringify(pdfExtraction)).not.toContain("processingToken");
+  expect(JSON.stringify(pdfExtraction)).not.toContain("leaseExpiresAt");
 
   const prisma = new PrismaClient();
 

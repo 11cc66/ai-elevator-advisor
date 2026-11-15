@@ -6,6 +6,15 @@ import type { Readable } from "node:stream";
 
 import { PrivateStorageError } from "./errors.js";
 
+function isNotFoundError(error: unknown): boolean {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    error.code === "ENOENT"
+  );
+}
+
 export interface WrittenUpload {
   stagingKey: string;
   sizeBytes: bigint;
@@ -34,8 +43,12 @@ export interface PrivateStorageAdapter {
   cleanupOrphanObjects(
     referencedObjectKeys: readonly string[],
     olderThanMs: number,
+    onError?: (error: unknown) => void,
   ): Promise<number>;
-  cleanupTemp(olderThanMs: number): Promise<number>;
+  cleanupTemp(
+    olderThanMs: number,
+    onError?: (error: unknown) => void,
+  ): Promise<number>;
   openReadStream(objectKey: string): Readable;
 }
 
@@ -161,11 +174,21 @@ export class LocalPrivateStorage implements PrivateStorageAdapter {
   async cleanupOrphanObjects(
     referencedObjectKeys: readonly string[],
     olderThanMs: number,
+    onError?: (error: unknown) => void,
   ): Promise<number> {
     const objectsDirectory = this.#resolveKey("objects");
-    const entries = await fs
-      .readdir(objectsDirectory, { withFileTypes: true })
-      .catch(() => []);
+    let entries;
+    try {
+      entries = await fs.readdir(objectsDirectory, {
+        withFileTypes: true,
+      });
+    } catch (error) {
+      if (isNotFoundError(error)) {
+        return 0;
+      }
+      onError?.(error);
+      return 0;
+    }
     const referenced = new Set(referencedObjectKeys);
     const cutoff = Date.now() - olderThanMs;
     let removed = 0;
@@ -181,33 +204,67 @@ export class LocalPrivateStorage implements PrivateStorageAdapter {
       }
 
       const objectPath = path.join(objectsDirectory, entry.name);
-      const stats = await fs.stat(objectPath).catch(() => null);
+      let stats;
+      try {
+        stats = await fs.stat(objectPath);
+      } catch (error) {
+        onError?.(error);
+        continue;
+      }
       if (!stats || stats.mtimeMs >= cutoff) {
         continue;
       }
 
-      await fs.rm(objectPath, { force: true });
+      try {
+        await fs.rm(objectPath, { force: true });
+      } catch (error) {
+        onError?.(error);
+        continue;
+      }
       removed += 1;
     }
 
     return removed;
   }
 
-  async cleanupTemp(olderThanMs: number): Promise<number> {
+  async cleanupTemp(
+    olderThanMs: number,
+    onError?: (error: unknown) => void,
+  ): Promise<number> {
     const tempDirectory = this.#resolveKey("temp");
-    const entries = await fs
-      .readdir(tempDirectory, { withFileTypes: true })
-      .catch(() => []);
+    let entries;
+    try {
+      entries = await fs.readdir(tempDirectory, {
+        withFileTypes: true,
+      });
+    } catch (error) {
+      if (isNotFoundError(error)) {
+        return 0;
+      }
+      onError?.(error);
+      return 0;
+    }
     const cutoff = Date.now() - olderThanMs;
     let removed = 0;
 
     for (const entry of entries) {
       const entryPath = path.join(tempDirectory, entry.name);
-      const stats = await fs.stat(entryPath).catch(() => null);
+      let stats;
+      try {
+        stats = await fs.stat(entryPath);
+      } catch (error) {
+        onError?.(error);
+        continue;
+      }
       if (!stats || stats.mtimeMs >= cutoff) {
         continue;
       }
-      await fs.rm(entryPath, { recursive: true, force: true });
+      try {
+        await fs.rm(entryPath, { recursive: true, force: true });
+      } catch (error) {
+        onError?.(error);
+        continue;
+      }
       removed += 1;
     }
 

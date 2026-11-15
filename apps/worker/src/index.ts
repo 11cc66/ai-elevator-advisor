@@ -1,4 +1,5 @@
 import {
+  buildFileProcessingRetryOptions,
   FILE_MAINTENANCE_QUEUE,
   FILE_RECOGNITION_QUEUE,
   fileRecognitionJobSchema,
@@ -8,6 +9,7 @@ import { PgBoss } from "pg-boss";
 
 import { readWorkerEnv } from "./config.js";
 import { runFileMaintenance } from "./file-maintenance.js";
+import { FileProcessingRetryError } from "./file-processing-errors.js";
 import { processFileRecognitionJob } from "./file-processing.js";
 import { logger } from "./logger.js";
 import { createWorkerStorage } from "./storage.js";
@@ -17,6 +19,12 @@ async function startWorker(): Promise<void> {
   const env = readWorkerEnv();
   const prisma = new PrismaClient();
   const storage = createWorkerStorage(env);
+  const recognitionRetryOptions = buildFileProcessingRetryOptions({
+    maxAttempts: env.FILE_PROCESSING_MAX_ATTEMPTS,
+    retryDelaySeconds: env.FILE_PROCESSING_RETRY_DELAY_SECONDS,
+    retryDelayMaxSeconds: env.FILE_PROCESSING_RETRY_MAX_SECONDS,
+    jobExpireSeconds: env.FILE_PROCESSING_JOB_EXPIRE_SECONDS,
+  });
   const boss = new PgBoss({
     connectionString: env.DATABASE_URL,
     application_name: WORKER_SERVICE_NAME,
@@ -43,9 +51,7 @@ async function startWorker(): Promise<void> {
     await Promise.all([
       boss.createQueue(env.WORKER_QUEUE_NAME),
       boss.createQueue(FILE_RECOGNITION_QUEUE, {
-        retryLimit: 2,
-        retryDelay: 5,
-        expireInSeconds: 180,
+        ...recognitionRetryOptions,
       }),
       boss.createQueue(FILE_MAINTENANCE_QUEUE, {
         retryLimit: 1,
@@ -79,16 +85,34 @@ async function startWorker(): Promise<void> {
       async (jobs) => {
         for (const job of jobs) {
           const parsed = fileRecognitionJobSchema.parse(job.data);
-          const result = await processFileRecognitionJob(parsed);
-          logger.info(
-            {
-              event: "file.job_finished",
+          try {
+            const result = await processFileRecognitionJob(parsed, {
               jobId: job.id,
-              extractionId: parsed.extractionId,
-              result,
-            },
-            "File recognition job finished",
-          );
+            });
+            logger.info(
+              {
+                event: "file.job_finished",
+                jobId: job.id,
+                extractionId: parsed.extractionId,
+                retryCount: job.retryCount,
+                result,
+              },
+              "File recognition job finished",
+            );
+          } catch (error) {
+            logger.warn(
+              {
+                event: "file.job_retry_pending",
+                jobId: job.id,
+                extractionId: parsed.extractionId,
+                retryCount: job.retryCount,
+                retryScheduled:
+                  error instanceof FileProcessingRetryError,
+              },
+              "File recognition job will be retried by pg-boss",
+            );
+            throw error;
+          }
         }
         return { processed: jobs.length };
       },

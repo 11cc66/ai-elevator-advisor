@@ -152,6 +152,45 @@ export type UploadIntentInput = z.infer<typeof uploadIntentSchema>;
 export const FILE_RECOGNITION_QUEUE = "file-recognition";
 export const FILE_MAINTENANCE_QUEUE = "file-maintenance";
 
+export const FILE_PROCESSING_RETRY_DEFAULTS = {
+  maxAttempts: 3,
+  retryDelaySeconds: 5,
+  retryDelayMaxSeconds: 60,
+  jobExpireSeconds: 180,
+} as const;
+
+export interface FileProcessingRetryPolicy {
+  maxAttempts: number;
+  retryDelaySeconds: number;
+  retryDelayMaxSeconds: number;
+  jobExpireSeconds: number;
+}
+
+export function buildFileProcessingRetryOptions(
+  policy: FileProcessingRetryPolicy,
+) {
+  const maxAttempts = Math.max(1, Math.floor(policy.maxAttempts));
+  const retryDelaySeconds = Math.max(
+    1,
+    Math.floor(policy.retryDelaySeconds),
+  );
+  const retryDelayMaxSeconds = Math.max(
+    retryDelaySeconds,
+    Math.floor(policy.retryDelayMaxSeconds),
+  );
+
+  return {
+    retryLimit: Math.max(0, maxAttempts - 1),
+    retryDelay: retryDelaySeconds,
+    retryBackoff: true,
+    retryDelayMax: retryDelayMaxSeconds,
+    expireInSeconds: Math.max(
+      1,
+      Math.floor(policy.jobExpireSeconds),
+    ),
+  };
+}
+
 export const fileRecognitionJobSchema = z.object({
   extractionId: z.string().min(1),
   fileVersionId: z.string().min(1),

@@ -60,6 +60,8 @@ Worker 重新查询队列 ID 对应的 Extraction、FileVersion、File 和项目
 
 ## 状态和恢复
 
+- Phase 3.5 已用执行租约和处理令牌替代固定 5 分钟状态推断；最新可靠性规则见
+  `docs/PHASE3_5_PROCESSING_RELIABILITY.md`。
 - `QUEUED → PROCESSING → COMPLETED / FAILED`。
 - 重复任务不会覆盖已完成 Extraction。
 - 超过 5 分钟的 PROCESSING 记录会恢复为 QUEUED。

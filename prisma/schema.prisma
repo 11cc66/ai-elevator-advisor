@@ -484,7 +484,10 @@ model FileExtraction {
   safetyNotes          String?               @db.Text
   safeErrorCode        String?               @db.VarChar(100)
   safeErrorMessage     String?               @db.Text
-  attempt              Int                   @default(1)
+  attempt              Int                   @default(0)
+  processingToken      String?               @unique @db.VarChar(64)
+  leaseExpiresAt       DateTime?             @db.Timestamptz(6)
+  nextAttemptAt        DateTime?             @db.Timestamptz(6)
   queuedAt             DateTime?             @db.Timestamptz(6)
   startedAt            DateTime?             @db.Timestamptz(6)
   completedAt          DateTime?             @db.Timestamptz(6)
@@ -498,6 +501,8 @@ model FileExtraction {
   @@index([status])
   @@index([status, queuedAt])
   @@index([status, startedAt])
+  @@index([status, leaseExpiresAt])
+  @@index([status, nextAttemptAt])
   @@map("file_extraction")
 }
 

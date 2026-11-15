@@ -251,6 +251,8 @@ it("recovers stale processing jobs and cleans temporary upload artifacts safely"
     data: {
       status: "PROCESSING",
       startedAt: new Date(Date.now() - 10 * 60_000),
+      processingToken: randomUUID(),
+      leaseExpiresAt: new Date(Date.now() - 60_000),
     },
   });
   await prisma.fileVersion.update({
