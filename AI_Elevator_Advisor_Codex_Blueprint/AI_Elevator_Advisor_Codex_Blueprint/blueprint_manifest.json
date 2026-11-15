@@ -1,0 +1,27 @@
+{
+  "project": "AI Elevator Selection Advisor",
+  "version": "1.0-MVP-blueprint",
+  "language": "zh-CN",
+  "entrypoint": "AGENTS.md",
+  "codex_kickoff": "CODEX_START_HERE.md",
+  "documents": [
+    "AGENTS.md",
+    "CODEX_START_HERE.md",
+    "README.md",
+    "docs/01_PRODUCT_SCOPE.md",
+    "docs/02_USER_FLOWS.md",
+    "docs/03_BUSINESS_RULES.md",
+    "docs/04_AI_ENGINEERING_GUARDRAILS.md",
+    "docs/05_DATA_MODEL.md",
+    "docs/06_UI_UX_SPEC.md",
+    "docs/07_PRODUCT_CATALOG_AND_SELECTION.md",
+    "docs/08_API_AND_INTEGRATION.md",
+    "docs/09_TEST_PLAN.md",
+    "docs/10_IMPLEMENTATION_ROADMAP.md",
+    "docs/11_OPEN_DECISIONS.md"
+  ],
+  "demo_data": [
+    "examples/demo_catalog.json"
+  ],
+  "warning": "Design blueprint only. Not deployed software and not validated engineering guidance."
+}

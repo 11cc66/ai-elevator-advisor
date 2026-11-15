@@ -1,0 +1,157 @@
+{
+  "data_classification": "DEMO_MOCK",
+  "warning": "以下品牌、型号、参数和价格均为虚构测试数据，不代表真实产品或市场报价。禁止用于真实工程选型。",
+  "currency": "CNY",
+  "products": [
+    {
+      "manufacturer": "虚构厂家甲",
+      "brand": "甲品牌",
+      "model_code": "E100",
+      "spec_version": 1,
+      "review_status": "APPROVED_DEMO",
+      "specs": {
+        "capacity_kg": 1000,
+        "speed_mps": 1.0,
+        "max_stops": 18,
+        "max_travel_m": 51,
+        "shaft_width_mm": 2200,
+        "shaft_depth_mm": 2100,
+        "pit_depth_mm": 1500,
+        "overhead_mm": 4500,
+        "machine_room": "MRL"
+      },
+      "price": {
+        "min": 280000,
+        "max": 310000,
+        "region": "DEMO",
+        "effective_status": "VALID_DEMO",
+        "source": "虚构测试数据"
+      }
+    },
+    {
+      "manufacturer": "虚构厂家甲",
+      "brand": "甲品牌",
+      "model_code": "E200",
+      "spec_version": 1,
+      "review_status": "APPROVED_DEMO",
+      "specs": {
+        "capacity_kg": 1000,
+        "speed_mps": 1.5,
+        "max_stops": 18,
+        "max_travel_m": 51,
+        "shaft_width_mm": 2200,
+        "shaft_depth_mm": 2100,
+        "pit_depth_mm": 1500,
+        "overhead_mm": 4500,
+        "machine_room": "MRL"
+      },
+      "price": {
+        "min": 320000,
+        "max": 360000,
+        "region": "DEMO",
+        "effective_status": "VALID_DEMO",
+        "source": "虚构测试数据"
+      }
+    },
+    {
+      "manufacturer": "虚构厂家乙",
+      "brand": "乙品牌",
+      "model_code": "B300",
+      "spec_version": 1,
+      "review_status": "APPROVED_DEMO",
+      "specs": {
+        "capacity_kg": 1150,
+        "speed_mps": 1.75,
+        "max_stops": 18,
+        "max_travel_m": 51,
+        "shaft_width_mm": 2300,
+        "shaft_depth_mm": 2200,
+        "pit_depth_mm": 1500,
+        "overhead_mm": 4500,
+        "machine_room": "MRL"
+      },
+      "price": {
+        "min": 330000,
+        "max": 370000,
+        "region": "DEMO",
+        "effective_status": "VALID_DEMO",
+        "source": "虚构测试数据"
+      }
+    },
+    {
+      "manufacturer": "虚构厂家乙",
+      "brand": "乙品牌",
+      "model_code": "B400",
+      "spec_version": 1,
+      "review_status": "APPROVED_DEMO",
+      "specs": {
+        "capacity_kg": 800,
+        "speed_mps": 1.0,
+        "max_stops": 18,
+        "max_travel_m": 51,
+        "shaft_width_mm": 2000,
+        "shaft_depth_mm": 1900,
+        "pit_depth_mm": 1500,
+        "overhead_mm": 4500,
+        "machine_room": "MRL"
+      },
+      "price": {
+        "min": 250000,
+        "max": 280000,
+        "region": "DEMO",
+        "effective_status": "VALID_DEMO",
+        "source": "虚构测试数据"
+      }
+    },
+    {
+      "manufacturer": "虚构厂家丙",
+      "brand": "丙品牌",
+      "model_code": "C500",
+      "spec_version": 1,
+      "review_status": "PENDING_DEMO",
+      "specs": {
+        "capacity_kg": 1000,
+        "speed_mps": 1.0,
+        "max_stops": 18,
+        "max_travel_m": 51,
+        "shaft_width_mm": null,
+        "shaft_depth_mm": null,
+        "pit_depth_mm": null,
+        "overhead_mm": null,
+        "machine_room": "MRL"
+      },
+      "price": {
+        "min": 290000,
+        "max": 320000,
+        "region": "DEMO",
+        "effective_status": "VALID_DEMO",
+        "source": "虚构测试数据"
+      }
+    },
+    {
+      "manufacturer": "虚构厂家丙",
+      "brand": "丙品牌",
+      "model_code": "C600",
+      "spec_version": 2,
+      "review_status": "APPROVED_DEMO",
+      "specs": {
+        "capacity_kg": 1150,
+        "speed_mps": 1.5,
+        "max_stops": 18,
+        "max_travel_m": 51,
+        "shaft_width_mm": 2200,
+        "shaft_depth_mm": 2100,
+        "pit_depth_mm": 1500,
+        "overhead_mm": 4500,
+        "machine_room": "MRL"
+      },
+      "price": {
+        "min": null,
+        "max": null,
+        "region": "DEMO",
+        "effective_status": "EXPIRED_DEMO",
+        "source": "虚构测试数据"
+      }
+    }
+  ]
+}
