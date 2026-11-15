@@ -39,6 +39,25 @@ describe("download security policy", () => {
     });
   });
 
+  it("never enables test access outside an explicit test runtime", () => {
+    for (const nodeEnvironment of [
+      undefined,
+      "development",
+      "staging",
+      "production",
+    ]) {
+      expect(
+        evaluateDownloadPolicy({
+          ...validBase,
+          nodeEnvironment,
+        }),
+      ).toEqual({
+        allowed: false,
+        reason: "MALWARE_SCAN_REQUIRED",
+      });
+    }
+  });
+
   it("requires verified test identity and explicit project permission", () => {
     expect(evaluateDownloadPolicy(validBase)).toEqual({
       allowed: true,

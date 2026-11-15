@@ -1,6 +1,9 @@
 import { createHash } from "node:crypto";
 
-import type { FileRecognitionJob } from "@elevator/contracts";
+import {
+  isVerifiedTestRuntime,
+  type FileRecognitionJob,
+} from "@elevator/contracts";
 import {
   detectAllowedFileType,
   LocalPrivateStorage,
@@ -128,17 +131,15 @@ async function loadProjectPermissions(
 
 async function verifyTestIdentity(runtime: WorkerRuntime): Promise<boolean> {
   if (
-    process.env.NODE_ENV === "production" ||
+    process.env.NODE_ENV !== "test" ||
     runtime.env.FILE_ACCESS_MODE !== "test"
   ) {
     return false;
   }
 
-  const expectedDatabase = runtime.env.TEST_DATABASE_NAME;
-  const expectedRole = runtime.env.TEST_DATABASE_ROLE;
   const expectedMarker = runtime.env.TEST_DATABASE_MARKER;
 
-  if (!expectedDatabase || !expectedRole || !expectedMarker) {
+  if (!expectedMarker) {
     return false;
   }
 
@@ -149,10 +150,7 @@ async function verifyTestIdentity(runtime: WorkerRuntime): Promise<boolean> {
       current_database() AS "databaseName",
       current_user AS "databaseRole"
   `;
-  if (
-    context[0]?.databaseName !== expectedDatabase ||
-    context[0]?.databaseRole !== expectedRole
-  ) {
+  if (!context[0]) {
     return false;
   }
 
@@ -162,7 +160,14 @@ async function verifyTestIdentity(runtime: WorkerRuntime): Promise<boolean> {
     WHERE "key" = 'test_database_marker'
     LIMIT 1
   `;
-  return marker[0]?.value === expectedMarker;
+  return isVerifiedTestRuntime({
+    nodeEnvironment: process.env.NODE_ENV,
+    fileAccessMode: runtime.env.FILE_ACCESS_MODE,
+    databaseName: context[0].databaseName,
+    databaseRole: context[0].databaseRole,
+    databaseMarker: marker[0]?.value,
+    expectedDatabaseMarker: expectedMarker,
+  });
 }
 
 async function readObjectBytes(

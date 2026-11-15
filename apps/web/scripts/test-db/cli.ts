@@ -15,6 +15,10 @@ import {
   type DatabaseGuardMode,
 } from "./guard.js";
 import { seedTestDatabase } from "./seed.js";
+import {
+  resolveVerifiedTestStorageRoot,
+  TestStorageRootError,
+} from "./storage-root.js";
 
 type Command = "init" | "reset" | "verify";
 
@@ -76,15 +80,10 @@ async function main(): Promise<void> {
   await verifyTestDatabaseIdentity(mode, env);
 
   if (command === "reset") {
-    const testStorageRoot = path.resolve(
+    const testStorageRoot = await resolveVerifiedTestStorageRoot(
       workspaceRoot,
       env.TEST_PRIVATE_STORAGE_ROOT,
     );
-    const expectedSuffix = path.join("storage", "private-test");
-
-    if (!testStorageRoot.endsWith(expectedSuffix)) {
-      throw new Error("TEST_STORAGE_ROOT_IDENTITY_MISMATCH");
-    }
 
     await fs.rm(testStorageRoot, { recursive: true, force: true });
     const resetPrisma = new PrismaClient({
@@ -139,6 +138,9 @@ async function main(): Promise<void> {
       databaseRole: result.databaseRole,
       markerVerified: result.markerVerified,
       developmentUrlDiffers: result.developmentUrlDiffers,
+      developmentConnectBlocked: result.developmentConnectBlocked,
+      developmentRoleMembershipBlocked:
+        result.developmentRoleMembershipBlocked,
     }),
   );
 }
@@ -146,6 +148,8 @@ async function main(): Promise<void> {
 main().catch((error: unknown) => {
   if (error instanceof TestDatabaseIdentityError) {
     console.error(`test_db_guard_failed=${error.code}`);
+  } else if (error instanceof TestStorageRootError) {
+    console.error(`test_storage_guard_failed=${error.code}`);
   } else if (error instanceof TestEnvironmentError) {
     console.error(`test_environment_invalid_fields=${error.fields}`);
   } else {

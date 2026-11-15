@@ -3,14 +3,14 @@ import { fileURLToPath } from "node:url";
 
 import { defineConfig } from "@playwright/test";
 import { readTestEnvironment } from "./scripts/test-db/env";
+import { resolveTestStorageRootPath } from "./scripts/test-db/storage-root";
 
 const configDirectory = path.dirname(fileURLToPath(import.meta.url));
 const testEnv = readTestEnvironment();
 const baseURL = testEnv.TEST_APP_BASE_URL;
 const basePort = new URL(baseURL).port || "3100";
-const testStorageRoot = path.resolve(
-  configDirectory,
-  "../..",
+const testStorageRoot = resolveTestStorageRootPath(
+  path.resolve(configDirectory, "../.."),
   testEnv.TEST_PRIVATE_STORAGE_ROOT,
 );
 

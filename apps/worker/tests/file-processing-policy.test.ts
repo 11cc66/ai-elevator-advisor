@@ -51,6 +51,25 @@ describe("file processing security policy", () => {
     });
   });
 
+  it("never enables test processing outside an explicit test runtime", () => {
+    for (const nodeEnvironment of [
+      undefined,
+      "development",
+      "staging",
+      "production",
+    ]) {
+      expect(
+        evaluateFileProcessingPolicy({
+          ...base,
+          nodeEnvironment,
+        }),
+      ).toEqual({
+        allowed: false,
+        reason: "MALWARE_SCAN_REQUIRED",
+      });
+    }
+  });
+
   it("allows only a clean scanned file in production", () => {
     expect(
       evaluateFileProcessingPolicy({

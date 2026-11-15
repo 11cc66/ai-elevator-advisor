@@ -17,12 +17,34 @@ export interface GuardResult {
   databaseRole: string;
   markerVerified: boolean;
   developmentUrlDiffers: boolean;
+  developmentConnectBlocked: boolean;
+  developmentRoleMembershipBlocked: boolean;
 }
+
+const DEVELOPMENT_DATABASE_NAME = "elevator_advisor";
+const DEVELOPMENT_DATABASE_ROLE = "elevator_app";
 
 export class TestDatabaseIdentityError extends Error {
   constructor(public readonly code: string) {
     super(code);
     this.name = "TestDatabaseIdentityError";
+  }
+}
+
+export function assertDevelopmentDatabaseAclIsolation(input: {
+  canConnectDevelopment: boolean;
+  memberOfDevelopmentRole: boolean;
+}): void {
+  if (input.canConnectDevelopment) {
+    throw new TestDatabaseIdentityError(
+      "TEST_ROLE_CAN_CONNECT_DEVELOPMENT",
+    );
+  }
+
+  if (input.memberOfDevelopmentRole) {
+    throw new TestDatabaseIdentityError(
+      "TEST_ROLE_MEMBER_OF_DEVELOPMENT_ROLE",
+    );
   }
 }
 
@@ -124,6 +146,37 @@ export async function verifyTestDatabaseIdentity(
       throw new TestDatabaseIdentityError("CURRENT_ROLE_MISMATCH");
     }
 
+    const aclRows = await prisma.$queryRaw<
+      Array<{
+        canConnectDevelopment: boolean;
+        memberOfDevelopmentRole: boolean;
+      }>
+    >`
+      SELECT
+        has_database_privilege(
+          current_user,
+          ${DEVELOPMENT_DATABASE_NAME},
+          'CONNECT'
+        ) AS "canConnectDevelopment",
+        pg_has_role(
+          current_user,
+          ${DEVELOPMENT_DATABASE_ROLE},
+          'MEMBER'
+        ) AS "memberOfDevelopmentRole"
+    `;
+    const acl = aclRows[0];
+
+    if (!acl) {
+      throw new TestDatabaseIdentityError(
+        "TEST_DATABASE_ACL_UNAVAILABLE",
+      );
+    }
+
+    assertDevelopmentDatabaseAclIsolation({
+      canConnectDevelopment: acl.canConnectDevelopment,
+      memberOfDevelopmentRole: acl.memberOfDevelopmentRole,
+    });
+
     const tableRows = await prisma.$queryRaw<
       Array<{ exists: boolean }>
     >`
@@ -161,6 +214,8 @@ export async function verifyTestDatabaseIdentity(
       databaseRole: actual.databaseRole,
       markerVerified,
       developmentUrlDiffers,
+      developmentConnectBlocked: true,
+      developmentRoleMembershipBlocked: true,
     };
   } finally {
     await prisma.$disconnect();

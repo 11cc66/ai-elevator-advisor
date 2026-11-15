@@ -46,11 +46,8 @@ export function evaluateDownloadPolicy(
     return { allowed: true, reason: "CLEAN" };
   }
 
-  if (input.nodeEnvironment === "production") {
-    return { allowed: false, reason: "MALWARE_SCAN_REQUIRED" };
-  }
-
   if (
+    input.nodeEnvironment === "test" &&
     input.fileAccessMode === "test" &&
     input.testIdentityVerified &&
     input.hasUnscannedTestAccess

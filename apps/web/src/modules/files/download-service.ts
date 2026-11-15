@@ -4,6 +4,9 @@ import {
   ALLOWED_FILE_MIME_TYPES,
   type PrivateStorageAdapter,
 } from "@elevator/file-storage";
+import {
+  isVerifiedTestRuntime,
+} from "@elevator/contracts";
 
 import type { Actor } from "@/modules/access/actor";
 import { PERMISSIONS } from "@/modules/access/permissions";
@@ -22,21 +25,19 @@ export interface PreparedDownload {
   stream: Readable;
 }
 
-async function verifyIsolatedTestFileEnvironment(
+export async function verifyIsolatedTestFileEnvironment(
   env: WebEnv,
 ): Promise<boolean> {
   if (
-    process.env.NODE_ENV === "production" ||
+    process.env.NODE_ENV !== "test" ||
     env.FILE_ACCESS_MODE !== "test"
   ) {
     return false;
   }
 
-  const expectedDatabase = process.env.TEST_DATABASE_NAME;
-  const expectedRole = process.env.TEST_DATABASE_ROLE;
   const expectedMarker = process.env.TEST_DATABASE_MARKER;
 
-  if (!expectedDatabase || !expectedRole || !expectedMarker) {
+  if (!expectedMarker) {
     return false;
   }
 
@@ -48,10 +49,7 @@ async function verifyIsolatedTestFileEnvironment(
         current_database() AS "databaseName",
         current_user AS "databaseRole"
     `;
-    if (
-      context[0]?.databaseName !== expectedDatabase ||
-      context[0]?.databaseRole !== expectedRole
-    ) {
+    if (!context[0]) {
       return false;
     }
 
@@ -62,7 +60,14 @@ async function verifyIsolatedTestFileEnvironment(
       LIMIT 1
     `;
 
-    return marker[0]?.value === expectedMarker;
+    return isVerifiedTestRuntime({
+      nodeEnvironment: process.env.NODE_ENV,
+      fileAccessMode: env.FILE_ACCESS_MODE,
+      databaseName: context[0].databaseName,
+      databaseRole: context[0].databaseRole,
+      databaseMarker: marker[0]?.value,
+      expectedDatabaseMarker: expectedMarker,
+    });
   } catch {
     return false;
   }

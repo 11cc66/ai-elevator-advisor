@@ -8,6 +8,7 @@ import {
 import {
   verifyTestDatabaseIdentity,
 } from "../../scripts/test-db/guard";
+import { resolveVerifiedTestStorageRoot } from "../../scripts/test-db/storage-root";
 
 let workerProcess: ChildProcess | null = null;
 
@@ -34,13 +35,10 @@ async function stopWorker(): Promise<void> {
 
 async function startWorker(
   testEnvironment: TestEnvironment,
+  storageRoot: string,
 ): Promise<void> {
   const workspaceRoot = path.resolve(process.cwd(), "../..");
   const workerDirectory = path.join(workspaceRoot, "apps", "worker");
-  const storageRoot = path.resolve(
-    workspaceRoot,
-    testEnvironment.TEST_PRIVATE_STORAGE_ROOT,
-  );
   const child = spawn(
     process.execPath,
     ["--import", "tsx", "src/index.ts"],
@@ -94,6 +92,10 @@ export default async function globalSetup(): Promise<
 > {
   const testEnvironment = readTestEnvironment();
   await verifyTestDatabaseIdentity("verify", testEnvironment);
-  await startWorker(testEnvironment);
+  const storageRoot = await resolveVerifiedTestStorageRoot(
+    path.resolve(process.cwd(), "../.."),
+    testEnvironment.TEST_PRIVATE_STORAGE_ROOT,
+  );
+  await startWorker(testEnvironment, storageRoot);
   return stopWorker;
 }

@@ -206,6 +206,39 @@ export type FieldReviewInput = z.infer<
 export const FILE_RECOGNITION_QUEUE = "file-recognition";
 export const FILE_MAINTENANCE_QUEUE = "file-maintenance";
 
+export const TEST_DATABASE_NAME = "elevator_advisor_test";
+export const TEST_DATABASE_ROLE = "elevator_test_app";
+
+export function isStrictTestRuntime(input: {
+  nodeEnvironment: string | undefined;
+  fileAccessMode: "enforce" | "test";
+  databaseName: string;
+  databaseRole: string;
+}): boolean {
+  return (
+    input.nodeEnvironment === "test" &&
+    input.fileAccessMode === "test" &&
+    input.databaseName === TEST_DATABASE_NAME &&
+    input.databaseRole === TEST_DATABASE_ROLE
+  );
+}
+
+export function isVerifiedTestRuntime(input: {
+  nodeEnvironment: string | undefined;
+  fileAccessMode: "enforce" | "test";
+  databaseName: string;
+  databaseRole: string;
+  databaseMarker: unknown;
+  expectedDatabaseMarker: string | undefined;
+}): boolean {
+  return (
+    isStrictTestRuntime(input) &&
+    typeof input.expectedDatabaseMarker === "string" &&
+    input.expectedDatabaseMarker.length > 0 &&
+    input.databaseMarker === input.expectedDatabaseMarker
+  );
+}
+
 export const FILE_PROCESSING_RETRY_DEFAULTS = {
   maxAttempts: 3,
   retryDelaySeconds: 5,

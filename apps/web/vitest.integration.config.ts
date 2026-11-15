@@ -4,14 +4,14 @@ import { fileURLToPath } from "node:url";
 import { defineConfig } from "vitest/config";
 
 import { readTestEnvironment } from "./scripts/test-db/env";
+import { resolveTestStorageRootPath } from "./scripts/test-db/storage-root";
 
 const directory = path.dirname(fileURLToPath(import.meta.url));
 const testEnv = readTestEnvironment();
 
 process.env.DATABASE_URL = testEnv.TEST_DATABASE_URL;
-process.env.PRIVATE_STORAGE_ROOT = path.resolve(
-  directory,
-  "../..",
+process.env.PRIVATE_STORAGE_ROOT = resolveTestStorageRootPath(
+  path.resolve(directory, "../.."),
   testEnv.TEST_PRIVATE_STORAGE_ROOT,
 );
 process.env.FILE_ACCESS_MODE = "test";
