@@ -15,6 +15,10 @@ const TEST_CUSTOMER_ID = "phase3_test_customer";
 const TEST_PROJECT_ID = "phase3_test_project";
 const TEST_BUILDING_ID = "phase3_test_building";
 const TEST_UNIT_ID = "phase3_test_unit";
+const TEST_CUSTOMER_2_ID = "phase3_test_customer_2";
+const TEST_PROJECT_2_ID = "phase3_test_project_2";
+const TEST_BUILDING_2_ID = "phase3_test_building_2";
+const TEST_UNIT_2_ID = "phase3_test_unit_2";
 
 async function ensureCredentialAccount(
   prisma: PrismaClient,
@@ -64,6 +68,8 @@ export async function seedTestDatabase(
   const adminUsername = env.TEST_ADMIN_USERNAME.toLowerCase();
   const customerUsername =
     env.TEST_CUSTOMER_USERNAME.toLowerCase();
+  const customer2Username =
+    env.TEST_CUSTOMER_2_USERNAME.toLowerCase();
 
   try {
     await prisma.systemMetadata.upsert({
@@ -204,6 +210,24 @@ export async function seedTestDatabase(
         },
       });
 
+      const customer2User = await tx.user.upsert({
+        where: { email: `${customer2Username}@test.invalid` },
+        create: {
+          id: randomUUID(),
+          name: env.TEST_CUSTOMER_2_NAME,
+          email: `${customer2Username}@test.invalid`,
+          emailVerified: true,
+          username: customer2Username,
+          displayUsername: env.TEST_CUSTOMER_2_USERNAME,
+        },
+        update: {
+          name: env.TEST_CUSTOMER_2_NAME,
+          username: customer2Username,
+          displayUsername: env.TEST_CUSTOMER_2_USERNAME,
+          emailVerified: true,
+        },
+      });
+
       await ensureCredentialAccount(
         tx as PrismaClient,
         admin.id,
@@ -212,6 +236,11 @@ export async function seedTestDatabase(
       await ensureCredentialAccount(
         tx as PrismaClient,
         customerUser.id,
+        env.TEST_CUSTOMER_PASSWORD,
+      );
+      await ensureCredentialAccount(
+        tx as PrismaClient,
+        customer2User.id,
         env.TEST_CUSTOMER_PASSWORD,
       );
 
@@ -290,6 +319,81 @@ export async function seedTestDatabase(
         },
       });
 
+      const customer2 = await tx.customer.upsert({
+        where: { id: TEST_CUSTOMER_2_ID },
+        create: {
+          id: TEST_CUSTOMER_2_ID,
+          organizationName: "DEMO_PHASE3 第二测试客户",
+          contactName: env.TEST_CUSTOMER_2_NAME,
+          contactPhone: "000-0000-DEMO2",
+          dataClassification: "DEMO_MOCK",
+          createdById: admin.id,
+        },
+        update: {
+          organizationName: "DEMO_PHASE3 第二测试客户",
+          contactName: env.TEST_CUSTOMER_2_NAME,
+          createdById: admin.id,
+        },
+      });
+
+      const project2 = await tx.project.upsert({
+        where: { id: TEST_PROJECT_2_ID },
+        create: {
+          id: TEST_PROJECT_2_ID,
+          projectCode: "DEMO-PHASE3-TEST-PROJECT-2",
+          customerId: customer2.id,
+          name: "DEMO_PHASE3 第二隔离测试项目",
+          address: "DEMO_PHASE3 第二测试地址",
+          projectType: "OLD_BUILDING_ELEVATOR",
+          status: "DRAFT",
+          dataClassification: "DEMO_MOCK",
+          createdById: admin.id,
+        },
+        update: {
+          customerId: customer2.id,
+          name: "DEMO_PHASE3 第二隔离测试项目",
+          address: "DEMO_PHASE3 第二测试地址",
+          createdById: admin.id,
+        },
+      });
+
+      const building2 = await tx.building.upsert({
+        where: { id: TEST_BUILDING_2_ID },
+        create: {
+          id: TEST_BUILDING_2_ID,
+          buildingCode: "DEMO-PHASE3-TEST-BUILDING-2",
+          projectId: project2.id,
+          name: "DEMO_PHASE3 第二测试建筑",
+          usageType: "住宅",
+          status: "DRAFT",
+          dataClassification: "DEMO_MOCK",
+          createdById: admin.id,
+        },
+        update: {
+          projectId: project2.id,
+          name: "DEMO_PHASE3 第二测试建筑",
+          createdById: admin.id,
+        },
+      });
+
+      await tx.installationUnit.upsert({
+        where: { id: TEST_UNIT_2_ID },
+        create: {
+          id: TEST_UNIT_2_ID,
+          unitCode: "DEMO-PHASE3-TEST-UNIT-2",
+          buildingId: building2.id,
+          intendedLocation: "DEMO_PHASE3 第二测试位置",
+          status: "PENDING_CONFIRMATION",
+          dataClassification: "DEMO_MOCK",
+          createdById: admin.id,
+        },
+        update: {
+          buildingId: building2.id,
+          intendedLocation: "DEMO_PHASE3 第二测试位置",
+          createdById: admin.id,
+        },
+      });
+
       const adminAssignment = await tx.userRole.findFirst({
         where: {
           userId: admin.id,
@@ -328,6 +432,26 @@ export async function seedTestDatabase(
           },
         });
       }
+
+      const customer2Assignment = await tx.userRole.findFirst({
+        where: {
+          userId: customer2User.id,
+          roleId: customerRole.id,
+          scope: "PROJECT",
+          projectId: project2.id,
+        },
+      });
+
+      if (!customer2Assignment) {
+        await tx.userRole.create({
+          data: {
+            userId: customer2User.id,
+            roleId: customerRole.id,
+            scope: "PROJECT",
+            projectId: project2.id,
+          },
+        });
+      }
     });
   } finally {
     await prisma.$disconnect();
@@ -339,4 +463,8 @@ export const TEST_FIXTURE_IDS = {
   project: TEST_PROJECT_ID,
   building: TEST_BUILDING_ID,
   installationUnit: TEST_UNIT_ID,
+  customer2: TEST_CUSTOMER_2_ID,
+  project2: TEST_PROJECT_2_ID,
+  building2: TEST_BUILDING_2_ID,
+  installationUnit2: TEST_UNIT_2_ID,
 } as const;

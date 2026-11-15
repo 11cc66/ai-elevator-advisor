@@ -185,6 +185,26 @@ test("Phase 3.2 private streaming upload flow", async ({ request }) => {
     expect(uploadBody.fileVersion.integrityStatus).toBe("VERIFIED");
     expect(JSON.stringify(uploadBody)).not.toContain("storageKey");
 
+    const filesPage = await request.get(
+      `/projects/${projectId}/files`,
+    );
+    expect(filesPage.status()).toBe(200);
+    const filesPageHtml = await filesPage.text();
+    expect(filesPageHtml).toContain("demo.pdf");
+    expect(filesPageHtml).toContain("SCAN_UNAVAILABLE");
+
+    const fileDetailPage = await request.get(
+      `/projects/${projectId}/files/${uploadBody.fileVersion.fileId}`,
+    );
+    expect(fileDetailPage.status()).toBe(200);
+    const fileDetailPageHtml = await fileDetailPage.text();
+    const normalizedDetailHtml = fileDetailPageHtml.replaceAll(
+      "<!-- -->",
+      "",
+    );
+    expect(normalizedDetailHtml).toContain("版本 1");
+    expect(normalizedDetailHtml).toContain("受控下载");
+
     const storedVersion = await prisma.fileVersion.findUniqueOrThrow({
       where: { id: uploadBody.fileVersion.id },
       include: { file: true },
@@ -192,6 +212,8 @@ test("Phase 3.2 private streaming upload flow", async ({ request }) => {
     expect(storedVersion.checksumSha256).toBe(expectedChecksum);
     expect(storedVersion.file.currentVersionId).toBe(storedVersion.id);
     expect(storedVersion.storageKey).not.toContain("demo.pdf");
+    expect(filesPageHtml).not.toContain(storedVersion.storageKey);
+    expect(fileDetailPageHtml).not.toContain(storedVersion.storageKey);
 
     const objectPath = path.join(storageRoot, storedVersion.storageKey);
     const objectBytes = await fs.readFile(objectPath);
@@ -216,6 +238,68 @@ test("Phase 3.2 private streaming upload flow", async ({ request }) => {
     await expect(
       fs.access(path.join(storageRoot, intentRecord.stagingKey)),
     ).rejects.toBeDefined();
+
+    const fileList = await request.get(
+      `/api/projects/${projectId}/files`,
+    );
+    expect(fileList.status()).toBe(200);
+    const fileListText = await fileList.text();
+    expect(fileListText).toContain(storedVersion.id);
+    expect(fileListText).not.toContain(storedVersion.storageKey);
+
+    const fileDetail = await request.get(
+      `/api/projects/${projectId}/files/${storedVersion.fileId}`,
+    );
+    expect(fileDetail.status()).toBe(200);
+    const fileDetailText = await fileDetail.text();
+    expect(fileDetailText).not.toContain(storedVersion.storageKey);
+    expect(fileDetailText).toContain('"currentVersionId"');
+
+    const downloadUrl = `/api/projects/${projectId}/files/${storedVersion.fileId}/versions/${storedVersion.id}/content`;
+    const download = await request.get(downloadUrl);
+    expect(download.status()).toBe(200);
+    expect(download.headers()["content-type"]).toBe("application/pdf");
+    expect(download.headers()["content-disposition"]).toContain(
+      "attachment",
+    );
+    expect(download.headers()["cache-control"]).toContain("no-store");
+    expect(download.headers()["x-content-type-options"]).toBe("nosniff");
+    expect(
+      createHash("sha256").update(await download.body()).digest("hex"),
+    ).toBe(expectedChecksum);
+
+    const wrongProjectDownload = await request.get(
+      `/api/projects/phase3_test_project_2/files/${storedVersion.fileId}/versions/${storedVersion.id}/content`,
+    );
+    expect(wrongProjectDownload.status()).toBe(404);
+    const wrongFileDownload = await request.get(
+      `/api/projects/${projectId}/files/nonexistent-file/versions/${storedVersion.id}/content`,
+    );
+    expect(wrongFileDownload.status()).toBe(404);
+    const wrongVersionDownload = await request.get(
+      `/api/projects/${projectId}/files/${storedVersion.fileId}/versions/nonexistent-version/content`,
+    );
+    expect(wrongVersionDownload.status()).toBe(404);
+
+    const downloadAudit = await request.get("/api/admin/audit");
+    expect(downloadAudit.status()).toBe(200);
+    const downloadAuditBody = (await downloadAudit.json()) as {
+      auditLogs: Array<{ action: string; objectId: string }>;
+    };
+    expect(
+      downloadAuditBody.auditLogs.some(
+        (entry) =>
+          entry.action === "file.downloaded" &&
+          entry.objectId === storedVersion.id,
+      ),
+    ).toBe(true);
+    expect(
+      downloadAuditBody.auditLogs.some(
+        (entry) =>
+          entry.action === "file.viewed" &&
+          entry.objectId === storedVersion.fileId,
+      ),
+    ).toBe(true);
 
     const repeatedUpload = await uploadBytes(
       request,
@@ -351,6 +435,9 @@ test("Phase 3.2 private streaming upload flow", async ({ request }) => {
       data: {},
     });
     expect(logout.status()).toBe(200);
+
+    const afterLogoutDownload = await request.get(downloadUrl);
+    expect(afterLogoutDownload.status()).toBe(401);
   } finally {
     await prisma.$disconnect();
   }

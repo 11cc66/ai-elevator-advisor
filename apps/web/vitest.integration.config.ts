@@ -14,6 +14,7 @@ process.env.PRIVATE_STORAGE_ROOT = path.resolve(
   "../..",
   testEnv.TEST_PRIVATE_STORAGE_ROOT,
 );
+process.env.FILE_ACCESS_MODE = "test";
 
 export default defineConfig({
   resolve: {

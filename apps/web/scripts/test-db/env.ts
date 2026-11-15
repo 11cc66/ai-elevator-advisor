@@ -75,6 +75,19 @@ const testEnvSchema = z
       .regex(/^[A-Za-z0-9_]+$/),
     TEST_CUSTOMER_NAME: z.string().trim().min(1).max(120),
     TEST_CUSTOMER_PASSWORD: credentialSchema,
+    TEST_CUSTOMER_2_USERNAME: z
+      .string()
+      .trim()
+      .min(3)
+      .max(64)
+      .regex(/^[A-Za-z0-9_]+$/)
+      .default("test_customer_2"),
+    TEST_CUSTOMER_2_NAME: z
+      .string()
+      .trim()
+      .min(1)
+      .max(120)
+      .default("测试客户二"),
   })
   .superRefine((value, context) => {
     if (

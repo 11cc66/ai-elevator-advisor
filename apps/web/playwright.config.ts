@@ -18,6 +18,9 @@ process.env.DATABASE_URL = testEnv.TEST_DATABASE_URL;
 process.env.BETTER_AUTH_URL = testEnv.BETTER_AUTH_URL;
 process.env.BETTER_AUTH_SECRET = testEnv.BETTER_AUTH_SECRET;
 process.env.PRIVATE_STORAGE_ROOT = testStorageRoot;
+process.env.TEST_CUSTOMER_2_USERNAME =
+  testEnv.TEST_CUSTOMER_2_USERNAME;
+process.env.TEST_CUSTOMER_2_NAME = testEnv.TEST_CUSTOMER_2_NAME;
 
 export default defineConfig({
   testDir: "./tests/e2e",
@@ -44,6 +47,7 @@ export default defineConfig({
       BETTER_AUTH_URL: testEnv.BETTER_AUTH_URL,
       BETTER_AUTH_SECRET: testEnv.BETTER_AUTH_SECRET,
       PRIVATE_STORAGE_ROOT: testStorageRoot,
+      FILE_ACCESS_MODE: "test",
     },
   },
 });

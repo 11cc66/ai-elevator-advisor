@@ -83,6 +83,14 @@ export default async function ProjectDetailPage({
           </div>
         </dl>
       </header>
+      <div>
+        <Link
+          className="inline-block rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium hover:bg-slate-50"
+          href={`/projects/${project.id}/files`}
+        >
+          查看项目资料文件
+        </Link>
+      </div>
       {canManage ? <BuildingForm projectId={project.id} /> : null}
       <section className="space-y-4">
         <h2 className="text-xl font-semibold">建筑与安装单元</h2>
