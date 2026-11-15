@@ -1,19 +1,19 @@
 import { PrismaClient } from "@prisma/client";
 import { expect, test } from "@playwright/test";
 
-const username = process.env.DEV_ADMIN_USERNAME;
-const password = process.env.DEV_ADMIN_PASSWORD;
+const username = process.env.TEST_ADMIN_USERNAME;
+const password = process.env.TEST_ADMIN_PASSWORD;
 
 test("Phase 2 authentication, RBAC boundary and DEMO project flow", async ({
   request,
 }) => {
   expect(
     username,
-    "DEV_ADMIN_USERNAME must be configured locally",
+    "TEST_ADMIN_USERNAME must be configured locally",
   ).toBeTruthy();
   expect(
     password,
-    "DEV_ADMIN_PASSWORD must be configured locally",
+    "TEST_ADMIN_PASSWORD must be configured locally",
   ).toBeTruthy();
 
   const unauthenticatedPage = await request.get("/admin", {

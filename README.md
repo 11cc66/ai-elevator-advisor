@@ -111,6 +111,23 @@ pnpm build
 当前 Playwright 测试使用 HTTP 请求验证健康检查、登录、Cookie、退出、
 Session 过期、权限拒绝和完整 DEMO 项目流程，不下载或启动浏览器。
 
+Phase 3 的 E2E 必须使用独立测试数据库。首次配置：
+
+```powershell
+Copy-Item .env.test.example .env.test
+```
+
+填写本地测试数据库、测试账号和测试密钥后：
+
+```powershell
+pnpm test:db:verify
+pnpm test:db:init
+```
+
+后续执行 `pnpm test:e2e` 时会先严格校验测试数据库身份，再重置并初始化
+`elevator_advisor_test`，不会使用开发数据库。详情见
+`docs/PHASE3_0_TEST_ENVIRONMENT.md`。
+
 ## 目录
 
 ```text
