@@ -144,15 +144,43 @@ test("customer confirms ordinary fields while professional data stays pending", 
         requiresProfessionalReview: true,
       },
     });
+    const conflictingField = await prisma.extractionField.create({
+      data: {
+        extractionId: uploaded.extractionId,
+        fieldKey: "conflicting_ordinary",
+        fieldLabel: "配置冲突测试字段",
+        valueType: "TEXT",
+        originalRawValue: "DEMO_MOCK 配置冲突",
+        originalNormalizedValue: "DEMO_MOCK 配置冲突",
+        pageNumber: 1,
+        confidence: 0.6,
+        fieldClassification: "ORDINARY",
+        initialStatus: "EXTRACTED",
+        customerConfirmable: true,
+        requiresProfessionalReview: true,
+      },
+    });
     const baseFieldPath =
       `${extractionPath}/fields`;
     const ordinaryReviewPath = `${baseFieldPath}/${ordinaryField.id}/reviews`;
     const professionalReviewPath = `${baseFieldPath}/${professionalField.id}/reviews`;
+    const conflictingReviewPath =
+      `${baseFieldPath}/${conflictingField.id}/reviews`;
 
     const detailResponse = await request.get(extractionPath);
     expect(detailResponse.status()).toBe(200);
     const detailBody = await detailResponse.json();
-    expect(detailBody.extraction.fields).toHaveLength(2);
+    expect(detailBody.extraction.fields).toHaveLength(3);
+    const conflictingDetails =
+      detailBody.extraction.fields.find(
+        (field: { fieldKey: string }) =>
+          field.fieldKey === "conflicting_ordinary",
+      );
+    expect(conflictingDetails.availableActions).toEqual({
+      canConfirm: false,
+      canCorrect: false,
+      canReject: false,
+    });
     expect(JSON.stringify(detailBody)).not.toContain("storageKey");
     expect(JSON.stringify(detailBody)).not.toContain("processingToken");
 
@@ -163,6 +191,10 @@ test("customer confirms ordinary fields while professional data stays pending", 
     expect(populatedHtml).toContain("专业工程信息");
     expect(populatedHtml).toContain("待专业人员核实");
     expect(populatedHtml).toContain("提交修正建议");
+    expect(populatedHtml).toContain("配置冲突测试字段");
+    expect(populatedHtml).toContain(
+      "当前字段配置或状态不允许客户操作",
+    );
 
     const confirmation = await request.post(ordinaryReviewPath, {
       data: {
@@ -219,6 +251,24 @@ test("customer confirms ordinary fields while professional data stays pending", 
       (await professionalCorrection.json()).fieldReview.effectiveStatus,
     ).toBe("PENDING_VERIFICATION");
 
+    for (const requestBody of [
+      { action: "CONFIRM", expectedReviewSequence: 0 },
+      {
+        action: "CORRECT",
+        correctedRawValue: "DEMO_MOCK 冲突绕过",
+        expectedReviewSequence: 0,
+      },
+      { action: "REJECT", expectedReviewSequence: 0 },
+    ]) {
+      const denied = await request.post(conflictingReviewPath, {
+        data: requestBody,
+      });
+      expect(denied.status()).toBe(403);
+      expect(await denied.json()).toMatchObject({
+        error: { code: "FIELD_CONFIGURATION_INVALID" },
+      });
+    }
+
     const storedOrdinary =
       await prisma.extractionField.findUniqueOrThrow({
         where: { id: ordinaryField.id },
@@ -248,6 +298,11 @@ test("customer confirms ordinary fields while professional data stays pending", 
         },
       }),
     ).toBe(2);
+    expect(
+      await prisma.extractionFieldReview.count({
+        where: { extractionFieldId: conflictingField.id },
+      }),
+    ).toBe(0);
 
     const confirmedPage = await request.get(pagePath);
     expect(confirmedPage.status()).toBe(200);

@@ -133,6 +133,10 @@ export default async function ExtractionDetailPage({
             {extraction.fields.map((field) => {
               const professional =
                 field.fieldClassification === "PROFESSIONAL";
+              const hasCustomerAction =
+                field.availableActions.canConfirm ||
+                field.availableActions.canCorrect ||
+                field.availableActions.canReject;
               const endpoint =
                 `/api/projects/${projectId}/files/${fileId}` +
                 `/versions/${versionId}/extractions/${extractionId}` +
@@ -196,15 +200,21 @@ export default async function ExtractionDetailPage({
                     </p>
                   ) : null}
 
-                  <FieldReviewForm
-                    canConfirm={field.availableActions.canConfirm}
-                    canCorrect={field.availableActions.canCorrect}
-                    canReject={field.availableActions.canReject}
-                    endpoint={endpoint}
-                    expectedReviewSequence={field.latestReviewSequence}
-                    professional={professional}
-                    valueType={field.valueType}
-                  />
+                  {hasCustomerAction ? (
+                    <FieldReviewForm
+                      canConfirm={field.availableActions.canConfirm}
+                      canCorrect={field.availableActions.canCorrect}
+                      canReject={field.availableActions.canReject}
+                      endpoint={endpoint}
+                      expectedReviewSequence={field.latestReviewSequence}
+                      professional={professional}
+                      valueType={field.valueType}
+                    />
+                  ) : (
+                    <p className="mt-4 rounded-xl bg-slate-100 p-3 text-sm text-slate-600">
+                      当前字段配置或状态不允许客户操作，请联系工作人员核实。
+                    </p>
+                  )}
 
                   <div className="mt-5 border-t border-slate-100 pt-4">
                     <h4 className="text-sm font-semibold text-slate-700">

@@ -59,6 +59,8 @@ POST /api/projects/{projectId}/files/{fileId}/versions/{versionId}/extractions/{
 ```text
 fieldClassification = ORDINARY
 customerConfirmable = true
+requiresProfessionalReview = false
+initialStatus IN (EXTRACTED, CUSTOMER_CONFIRMED, CUSTOMER_REJECTED)
 ```
 
 - CONFIRM -> CUSTOMER_CONFIRMED
@@ -67,11 +69,21 @@ customerConfirmable = true
 
 专业字段：
 
+- 合法初始状态只能为 `PENDING_VERIFICATION`。
 - 只允许 CORRECT，记录为客户修正建议。
 - CONFIRM 和 REJECT 返回 403。
 - 操作后状态始终为 PENDING_VERIFICATION。
 - 即使数据库中的 `initialStatus` 异常为 EXTRACTED，页面也按
   PENDING_VERIFICATION 展示。
+
+以下情况全部 Fail Closed，不生成 Review 或成功审计：
+
+- 普通字段仍标记 `requiresProfessionalReview=true`。
+- `customerConfirmable` 或 `requiresProfessionalReview` 缺失、非布尔值。
+- 普通字段初始状态为 `PENDING_VERIFICATION` 或 `INVALIDATED`。
+- 专业字段使用不一致的客户确认/专业核实标志。
+- 专业字段初始状态不是 `PENDING_VERIFICATION`，包括 `INVALIDATED`。
+- 字段分类、初始状态或操作类型未知。
 
 ## 并发和事务
 

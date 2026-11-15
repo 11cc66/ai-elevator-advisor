@@ -1,6 +1,9 @@
 import { randomUUID } from "node:crypto";
 
-import { PrismaClient } from "@prisma/client";
+import {
+  PrismaClient,
+  type ExtractionFieldStatus,
+} from "@prisma/client";
 import { afterAll, beforeAll, expect, it } from "vitest";
 
 import type { Actor } from "../../src/modules/access/actor";
@@ -94,6 +97,9 @@ async function createField(
     classification: "ORDINARY" | "PROFESSIONAL";
     fieldKey: string;
     value: string | number;
+    initialStatus?: ExtractionFieldStatus;
+    customerConfirmable?: boolean;
+    requiresProfessionalReview?: boolean;
   },
 ) {
   return prisma.extractionField.create({
@@ -112,12 +118,16 @@ async function createField(
       confidence: 0.88,
       fieldClassification: input.classification,
       initialStatus:
-        input.classification === "PROFESSIONAL"
+        input.initialStatus ??
+        (input.classification === "PROFESSIONAL"
           ? "PENDING_VERIFICATION"
-          : "EXTRACTED",
-      customerConfirmable: input.classification === "ORDINARY",
+          : "EXTRACTED"),
+      customerConfirmable:
+        input.customerConfirmable ??
+        (input.classification === "ORDINARY"),
       requiresProfessionalReview:
-        input.classification === "PROFESSIONAL",
+        input.requiresProfessionalReview ??
+        (input.classification === "PROFESSIONAL"),
     },
   });
 }
@@ -270,6 +280,144 @@ it("allows only correction suggestions for professional fields", async () => {
   expect(stored.reviews[0]?.statusAfterReview).toBe(
     "PENDING_VERIFICATION",
   );
+});
+
+it("fails closed for conflicting review requirements and abnormal initial states", async () => {
+  const fixture = await createFixture();
+  const conflictingOrdinary = await createField(
+    fixture.extraction.id,
+    {
+      classification: "ORDINARY",
+      fieldKey: "conflicting_ordinary",
+      value: "DEMO_MOCK 冲突普通字段",
+      initialStatus: "EXTRACTED",
+      customerConfirmable: true,
+      requiresProfessionalReview: true,
+    },
+  );
+  const pendingOrdinary = await createField(fixture.extraction.id, {
+    classification: "ORDINARY",
+    fieldKey: "pending_ordinary",
+    value: "DEMO_MOCK 待核实普通字段",
+    initialStatus: "PENDING_VERIFICATION",
+    customerConfirmable: true,
+    requiresProfessionalReview: false,
+  });
+  const invalidatedOrdinary = await createField(
+    fixture.extraction.id,
+    {
+      classification: "ORDINARY",
+      fieldKey: "invalidated_ordinary",
+      value: "DEMO_MOCK 已作废普通字段",
+      initialStatus: "INVALIDATED",
+      customerConfirmable: true,
+      requiresProfessionalReview: false,
+    },
+  );
+  const invalidatedProfessional = await createField(
+    fixture.extraction.id,
+    {
+      classification: "PROFESSIONAL",
+      fieldKey: "invalidated_professional",
+      value: 2200,
+      initialStatus: "INVALIDATED",
+      customerConfirmable: false,
+      requiresProfessionalReview: true,
+    },
+  );
+  const base = {
+    actor: customerActor,
+    projectId: TEST_FIXTURE_IDS.project,
+    fileId: fixture.file.id,
+    versionId: fixture.version.id,
+    extractionId: fixture.extraction.id,
+  };
+
+  for (const [action, correctedRawValue] of [
+    ["CONFIRM", undefined],
+    ["CORRECT", "DEMO_MOCK 冲突修正"],
+    ["REJECT", undefined],
+  ] as const) {
+    await expect(
+      submitCustomerFieldReview({
+        ...base,
+        fieldId: conflictingOrdinary.id,
+        requestId: randomUUID(),
+        review: {
+          action,
+          ...(correctedRawValue === undefined
+            ? {}
+            : { correctedRawValue }),
+          expectedReviewSequence: 0,
+        },
+      }),
+    ).rejects.toMatchObject({
+      code: "FIELD_CONFIGURATION_INVALID",
+      status: 403,
+    });
+  }
+
+  for (const field of [pendingOrdinary, invalidatedOrdinary]) {
+    for (const action of [
+      "CONFIRM",
+      "CORRECT",
+      "REJECT",
+    ] as const) {
+      await expect(
+        submitCustomerFieldReview({
+          ...base,
+          fieldId: field.id,
+          requestId: randomUUID(),
+          review: {
+            action,
+            ...(action === "CORRECT"
+              ? { correctedRawValue: "DEMO_MOCK 异常修正" }
+              : {}),
+            expectedReviewSequence: 0,
+          },
+        }),
+      ).rejects.toMatchObject({
+        code: "FIELD_INITIAL_STATUS_INVALID",
+        status: 403,
+      });
+    }
+  }
+
+  await expect(
+    submitCustomerFieldReview({
+      ...base,
+      fieldId: invalidatedProfessional.id,
+      requestId: randomUUID(),
+      review: {
+        action: "CORRECT",
+        correctedRawValue: 2250,
+        expectedReviewSequence: 0,
+      },
+    }),
+  ).rejects.toMatchObject({
+    code: "FIELD_INITIAL_STATUS_INVALID",
+    status: 403,
+  });
+
+  const fieldIds = [
+    conflictingOrdinary.id,
+    pendingOrdinary.id,
+    invalidatedOrdinary.id,
+    invalidatedProfessional.id,
+  ];
+  expect(
+    await prisma.extractionFieldReview.count({
+      where: { extractionFieldId: { in: fieldIds } },
+    }),
+  ).toBe(0);
+  expect(
+    await prisma.auditLog.count({
+      where: {
+        objectType: "ExtractionField",
+        objectId: { in: fieldIds },
+      },
+    }),
+  ).toBe(0);
 });
 
 it("serializes concurrent submissions with the expected sequence", async () => {

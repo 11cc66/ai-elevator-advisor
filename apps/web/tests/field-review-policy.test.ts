@@ -17,7 +17,7 @@ const ordinary = {
 
 const professional = {
   fieldClassification: "PROFESSIONAL" as const,
-  initialStatus: "EXTRACTED" as const,
+  initialStatus: "PENDING_VERIFICATION" as const,
   customerConfirmable: false,
   requiresProfessionalReview: true,
 };
@@ -81,6 +81,104 @@ describe("Phase 3.6 field review policy", () => {
     });
   });
 
+  it("fails closed for ordinary fields that still require professional review", () => {
+    const conflicting = {
+      ...ordinary,
+      requiresProfessionalReview: true,
+    };
+
+    for (const action of [
+      "CONFIRM",
+      "CORRECT",
+      "REJECT",
+    ] as const) {
+      expect(decideFieldReview(conflicting, action)).toMatchObject({
+        allowed: false,
+        code: "FIELD_CONFIGURATION_INVALID",
+      });
+    }
+  });
+
+  it("fails closed for missing or non-boolean configuration", () => {
+    expect(
+      decideFieldReview(
+        {
+          ...ordinary,
+          requiresProfessionalReview: undefined as never,
+        },
+        "CONFIRM",
+      ),
+    ).toMatchObject({
+      allowed: false,
+      code: "FIELD_CONFIGURATION_INVALID",
+    });
+    expect(
+      decideFieldReview(
+        {
+          ...ordinary,
+          customerConfirmable: "true" as never,
+        },
+        "CORRECT",
+      ),
+    ).toMatchObject({
+      allowed: false,
+      code: "FIELD_CONFIGURATION_INVALID",
+    });
+  });
+
+  it("fails closed for unknown classification, status or action", () => {
+    expect(
+      decideFieldReview(
+        { ...ordinary, fieldClassification: "UNKNOWN" },
+        "CONFIRM",
+      ),
+    ).toMatchObject({
+      allowed: false,
+      code: "FIELD_CLASSIFICATION_UNKNOWN",
+    });
+    expect(
+      decideFieldReview(
+        { ...ordinary, initialStatus: "UNKNOWN" },
+        "CONFIRM",
+      ),
+    ).toMatchObject({
+      allowed: false,
+      code: "FIELD_INITIAL_STATUS_INVALID",
+    });
+    expect(
+      decideFieldReview(
+        ordinary,
+        "UNKNOWN" as never,
+      ),
+    ).toMatchObject({
+      allowed: false,
+      code: "FIELD_REVIEW_ACTION_INVALID",
+    });
+  });
+
+  it("fails closed for abnormal ordinary initial states", () => {
+    for (const initialStatus of [
+      "PENDING_VERIFICATION",
+      "INVALIDATED",
+    ] as const) {
+      for (const action of [
+        "CONFIRM",
+        "CORRECT",
+        "REJECT",
+      ] as const) {
+        expect(
+          decideFieldReview(
+            { ...ordinary, initialStatus },
+            action,
+          ),
+        ).toMatchObject({
+          allowed: false,
+          code: "FIELD_INITIAL_STATUS_INVALID",
+        });
+      }
+    }
+  });
+
   it("allows only correction suggestions for professional fields", () => {
     expect(decideFieldReview(professional, "CONFIRM")).toMatchObject({
       allowed: false,
@@ -98,6 +196,42 @@ describe("Phase 3.6 field review policy", () => {
       canConfirm: false,
       canCorrect: true,
       canReject: false,
+    });
+  });
+
+  it("does not reactivate invalidated or config-conflicting professional fields", () => {
+    expect(
+      decideFieldReview(
+        { ...professional, initialStatus: "INVALIDATED" },
+        "CORRECT",
+      ),
+    ).toMatchObject({
+      allowed: false,
+      code: "FIELD_INITIAL_STATUS_INVALID",
+    });
+    expect(
+      decideFieldReview(
+        {
+          ...professional,
+          customerConfirmable: true,
+        },
+        "CORRECT",
+      ),
+    ).toMatchObject({
+      allowed: false,
+      code: "FIELD_CONFIGURATION_INVALID",
+    });
+    expect(
+      decideFieldReview(
+        {
+          ...professional,
+          requiresProfessionalReview: false,
+        },
+        "CORRECT",
+      ),
+    ).toMatchObject({
+      allowed: false,
+      code: "FIELD_CONFIGURATION_INVALID",
     });
   });
 
