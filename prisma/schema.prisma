@@ -36,10 +36,14 @@ model User {
   roleAssignments UserRole[]
   auditLogs       AuditLog[]
 
-  customersCreated Customer[]         @relation("CustomerCreatedBy")
-  projectsCreated  Project[]          @relation("ProjectCreatedBy")
-  buildingsCreated Building[]         @relation("BuildingCreatedBy")
-  unitsCreated     InstallationUnit[] @relation("UnitCreatedBy")
+  customersCreated     Customer[]              @relation("CustomerCreatedBy")
+  projectsCreated      Project[]               @relation("ProjectCreatedBy")
+  buildingsCreated     Building[]              @relation("BuildingCreatedBy")
+  unitsCreated         InstallationUnit[]      @relation("UnitCreatedBy")
+  filesCreated         File[]                  @relation("FileCreatedBy")
+  fileVersionsUploaded FileVersion[]           @relation("FileVersionUploadedBy")
+  fieldReviews         ExtractionFieldReview[]
+  securityEvents       FileSecurityEvent[]
 
   @@map("user")
 }
@@ -161,6 +165,7 @@ model Customer {
   updatedAt          DateTime           @updatedAt @db.Timestamptz(6)
   createdBy          User               @relation("CustomerCreatedBy", fields: [createdById], references: [id])
   projects           Project[]
+  files              File[]
 
   @@index([organizationName])
   @@map("customer")
@@ -192,7 +197,9 @@ model Project {
   createdBy          User               @relation("ProjectCreatedBy", fields: [createdById], references: [id])
   buildings          Building[]
   roleAssignments    UserRole[]
+  files              File[]
 
+  @@unique([id, customerId])
   @@index([customerId])
   @@index([createdById])
   @@map("project")
@@ -219,7 +226,9 @@ model Building {
   project            Project            @relation(fields: [projectId], references: [id])
   createdBy          User               @relation("BuildingCreatedBy", fields: [createdById], references: [id])
   installationUnits  InstallationUnit[]
+  files              File[]
 
+  @@unique([id, projectId])
   @@index([projectId])
   @@map("building")
 }
@@ -242,9 +251,280 @@ model InstallationUnit {
   updatedAt          DateTime               @updatedAt @db.Timestamptz(6)
   building           Building               @relation(fields: [buildingId], references: [id])
   createdBy          User                   @relation("UnitCreatedBy", fields: [createdById], references: [id])
+  files              File[]
 
+  @@unique([id, buildingId])
   @@index([buildingId])
   @@map("installation_unit")
+}
+
+enum FileStatus {
+  ACTIVE
+  ARCHIVED
+}
+
+enum FileVersionUploadStatus {
+  PENDING
+  UPLOADED
+  FAILED
+  EXPIRED
+}
+
+enum FileValidationStatus {
+  PENDING
+  PASSED
+  REJECTED
+  FAILED
+}
+
+enum MalwareScanStatus {
+  SCAN_UNAVAILABLE
+  PENDING
+  CLEAN
+  INFECTED
+  FAILED
+}
+
+enum FileIntegrityStatus {
+  UNVERIFIED
+  VERIFIED
+  FAILED
+}
+
+enum FileRecognitionStatus {
+  NOT_REQUESTED
+  QUEUED
+  PROCESSING
+  COMPLETED
+  FAILED
+  BLOCKED
+}
+
+enum ExtractionStatus {
+  QUEUED
+  PROCESSING
+  COMPLETED
+  FAILED
+  UNSUPPORTED
+}
+
+enum ExtractionFieldClassification {
+  ORDINARY
+  PROFESSIONAL
+}
+
+enum ExtractionFieldStatus {
+  EXTRACTED
+  CUSTOMER_CONFIRMED
+  CUSTOMER_REJECTED
+  PENDING_VERIFICATION
+  INVALIDATED
+}
+
+enum FieldReviewAction {
+  CONFIRM
+  CORRECT
+  REJECT
+}
+
+enum FileSecurityEventType {
+  CHECKSUM_MISMATCH
+  MIME_MISMATCH
+  VALIDATION_FAILED
+  POLICY_BLOCKED
+  SCAN_UNAVAILABLE_BLOCK
+  STORAGE_OBJECT_MISSING
+  STALE_JOB_IGNORED
+}
+
+enum FileSecuritySeverity {
+  INFO
+  WARNING
+  HIGH
+  CRITICAL
+}
+
+model File {
+  id                 String             @id @default(cuid())
+  customerId         String
+  projectId          String
+  buildingId         String?
+  installationUnitId String?
+  displayName        String             @db.VarChar(255)
+  status             FileStatus         @default(ACTIVE)
+  currentVersionId   String?            @unique
+  dataClassification DataClassification @default(DEMO_MOCK)
+  createdById        String
+  createdAt          DateTime           @default(now()) @db.Timestamptz(6)
+  updatedAt          DateTime           @updatedAt @db.Timestamptz(6)
+  customer           Customer           @relation(fields: [customerId], references: [id])
+  project            Project            @relation(fields: [projectId], references: [id])
+  building           Building?          @relation(fields: [buildingId], references: [id])
+  installationUnit   InstallationUnit?  @relation(fields: [installationUnitId], references: [id])
+  createdBy          User               @relation("FileCreatedBy", fields: [createdById], references: [id])
+  currentVersion     FileVersion?       @relation("CurrentFileVersion", fields: [currentVersionId], references: [id], onDelete: SetNull)
+  versions           FileVersion[]      @relation("FileVersions")
+
+  @@index([customerId])
+  @@index([projectId])
+  @@index([buildingId])
+  @@index([installationUnitId])
+  @@index([currentVersionId])
+  @@map("file")
+}
+
+model FileVersion {
+  id                      String                  @id @default(cuid())
+  fileId                  String
+  versionNumber           Int
+  originalFilename        String                  @db.VarChar(255)
+  sanitizedFilename       String                  @db.VarChar(255)
+  declaredMimeType        String                  @db.VarChar(150)
+  detectedMimeType        String?                 @db.VarChar(150)
+  sizeBytes               BigInt
+  checksumSha256          String                  @db.Char(64)
+  storageKey              String                  @unique @db.VarChar(255)
+  uploadStatus            FileVersionUploadStatus @default(PENDING)
+  validationStatus        FileValidationStatus    @default(PENDING)
+  validationDetail        Json?
+  malwareScanStatus       MalwareScanStatus       @default(SCAN_UNAVAILABLE)
+  malwareScanDetail       Json?
+  integrityStatus         FileIntegrityStatus     @default(UNVERIFIED)
+  lastIntegrityVerifiedAt DateTime?               @db.Timestamptz(6)
+  recognitionStatus       FileRecognitionStatus   @default(NOT_REQUESTED)
+  uploadRequestKey        String?                 @db.VarChar(100)
+  uploadedById            String
+  uploadExpiresAt         DateTime?               @db.Timestamptz(6)
+  finalizedAt             DateTime?               @db.Timestamptz(6)
+  createdAt               DateTime                @default(now()) @db.Timestamptz(6)
+  updatedAt               DateTime                @updatedAt @db.Timestamptz(6)
+  file                    File                    @relation("FileVersions", fields: [fileId], references: [id])
+  currentFor              File?                   @relation("CurrentFileVersion")
+  uploadedBy              User                    @relation("FileVersionUploadedBy", fields: [uploadedById], references: [id])
+  extractions             FileExtraction[]
+  securityEvents          FileSecurityEvent[]
+
+  @@unique([fileId, versionNumber])
+  @@unique([id, fileId])
+  @@unique([uploadedById, uploadRequestKey])
+  @@index([fileId, createdAt])
+  @@index([checksumSha256])
+  @@map("file_version")
+}
+
+model FileExtraction {
+  id                 String                @id @default(cuid())
+  fileVersionId      String
+  extractionVersion  Int
+  provider           String                @db.VarChar(100)
+  providerVersion    String                @db.VarChar(100)
+  dataClassification DataClassification    @default(DEMO_MOCK)
+  status             ExtractionStatus      @default(QUEUED)
+  extractedText      String?               @db.Text
+  missingItems       Json?
+  safetyNotes        String?               @db.Text
+  safeErrorCode      String?               @db.VarChar(100)
+  safeErrorMessage   String?               @db.Text
+  attempt            Int                   @default(1)
+  queuedAt           DateTime?             @db.Timestamptz(6)
+  startedAt          DateTime?             @db.Timestamptz(6)
+  completedAt        DateTime?             @db.Timestamptz(6)
+  createdAt          DateTime              @default(now()) @db.Timestamptz(6)
+  fileVersion        FileVersion           @relation(fields: [fileVersionId], references: [id])
+  textBlocks         ExtractionTextBlock[]
+  fields             ExtractionField[]
+
+  @@unique([fileVersionId, extractionVersion])
+  @@index([fileVersionId, createdAt])
+  @@index([status])
+  @@map("file_extraction")
+}
+
+model ExtractionTextBlock {
+  id             String         @id @default(cuid())
+  extractionId   String
+  pageNumber     Int?
+  blockIndex     Int
+  text           String         @db.Text
+  sourceKind     String         @db.VarChar(100)
+  sourceRef      String?        @db.VarChar(500)
+  characterCount Int
+  createdAt      DateTime       @default(now()) @db.Timestamptz(6)
+  extraction     FileExtraction @relation(fields: [extractionId], references: [id])
+
+  @@unique([extractionId, pageNumber, blockIndex])
+  @@index([extractionId])
+  @@map("extraction_text_block")
+}
+
+model ExtractionField {
+  id                         String                        @id @default(cuid())
+  extractionId               String
+  fieldKey                   String                        @db.VarChar(100)
+  fieldLabel                 String                        @db.VarChar(160)
+  valueType                  String                        @db.VarChar(50)
+  originalRawValue           Json
+  originalNormalizedValue    Json?
+  unit                       String?                       @db.VarChar(50)
+  pageNumber                 Int?
+  sourceText                 String?                       @db.Text
+  sourceRefs                 Json?
+  confidence                 Decimal?                      @db.Decimal(5, 4)
+  fieldClassification        ExtractionFieldClassification
+  initialStatus              ExtractionFieldStatus         @default(EXTRACTED)
+  customerConfirmable        Boolean                       @default(false)
+  requiresProfessionalReview Boolean                       @default(true)
+  createdAt                  DateTime                      @default(now()) @db.Timestamptz(6)
+  extraction                 FileExtraction                @relation(fields: [extractionId], references: [id])
+  reviews                    ExtractionFieldReview[]
+
+  @@index([extractionId])
+  @@index([fieldKey])
+  @@index([fieldClassification])
+  @@map("extraction_field")
+}
+
+model ExtractionFieldReview {
+  id                       String                @id @default(cuid())
+  extractionFieldId        String
+  reviewSequence           Int
+  action                   FieldReviewAction
+  originalValueSnapshot    Json
+  correctedRawValue        Json?
+  correctedNormalizedValue Json?
+  statusAfterReview        ExtractionFieldStatus
+  note                     String?               @db.Text
+  actorUserId              String
+  actorRoleSnapshot        Json
+  createdAt                DateTime              @default(now()) @db.Timestamptz(6)
+  extractionField          ExtractionField       @relation(fields: [extractionFieldId], references: [id])
+  actor                    User                  @relation(fields: [actorUserId], references: [id])
+
+  @@unique([extractionFieldId, reviewSequence])
+  @@index([extractionFieldId, createdAt])
+  @@index([actorUserId, createdAt])
+  @@map("extraction_field_review")
+}
+
+model FileSecurityEvent {
+  id               String                @id @default(cuid())
+  fileVersionId    String
+  eventType        FileSecurityEventType
+  severity         FileSecuritySeverity
+  expectedChecksum String?               @db.Char(64)
+  actualChecksum   String?               @db.Char(64)
+  policyCode       String?               @db.VarChar(100)
+  details          Json?
+  requestId        String?               @db.VarChar(100)
+  jobId            String?               @db.VarChar(100)
+  actorUserId      String?
+  createdAt        DateTime              @default(now()) @db.Timestamptz(6)
+  fileVersion      FileVersion           @relation(fields: [fileVersionId], references: [id])
+  actor            User?                 @relation(fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  @@index([fileVersionId, createdAt])
+  @@index([eventType, createdAt])
+  @@map("file_security_event")
 }
 
 model AuditLog {

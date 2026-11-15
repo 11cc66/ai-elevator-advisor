@@ -22,6 +22,9 @@
 
 尚未实现用户注册、文件上传、AI 模型、勘察、产品库、正式选型规则、审核、报价或真实业务数据。
 
+Phase 3.1 已建立文件、文件版本、提取结果、文字块、字段、确认历史和安全事件的
+数据模型与数据库约束，但尚未提供上传、存储、下载或 PDF 解析接口。
+
 ## 环境要求
 
 - Node.js 24
@@ -105,6 +108,7 @@ pnpm dev:worker
 pnpm typecheck
 pnpm test
 pnpm test:e2e
+pnpm test:db:constraints
 pnpm build
 ```
 

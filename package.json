@@ -18,11 +18,13 @@
     "test:db:init": "pnpm --filter @elevator/web test:db:init",
     "test:db:reset": "pnpm --filter @elevator/web test:db:reset",
     "test:db:verify": "pnpm --filter @elevator/web test:db:verify",
+    "test:db:constraints": "pnpm --filter @elevator/web test:db:constraints",
     "db:generate": "prisma generate",
     "db:validate": "prisma validate",
     "db:migrate:dev": "prisma migrate dev",
     "db:status": "prisma migrate status",
-    "db:seed": "pnpm --filter @elevator/web db:seed"
+    "db:seed": "pnpm --filter @elevator/web db:seed",
+    "db:seed:permissions": "pnpm --filter @elevator/web db:seed:permissions"
   },
   "devDependencies": {
     "@prisma/client": "6.19.0",

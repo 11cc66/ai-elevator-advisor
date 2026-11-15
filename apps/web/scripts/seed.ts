@@ -8,7 +8,7 @@ import { config as loadEnv } from "dotenv";
 import { z } from "zod";
 
 import {
-  PERMISSIONS,
+  PERMISSION_DESCRIPTIONS,
   SYSTEM_ADMIN_ROLE,
 } from "../src/modules/access/permissions";
 
@@ -49,14 +49,6 @@ function readSeedEnv() {
   return result.data;
 }
 
-const permissionDescriptions: Record<string, string> = {
-  [PERMISSIONS.CUSTOMER_READ]: "查看客户资料",
-  [PERMISSIONS.CUSTOMER_MANAGE]: "创建和维护客户资料",
-  [PERMISSIONS.PROJECT_READ]: "查看项目、建筑和安装单元",
-  [PERMISSIONS.PROJECT_MANAGE]: "创建和维护项目、建筑和安装单元",
-  [PERMISSIONS.AUDIT_READ]: "查看审计日志",
-};
-
 let prisma: PrismaClient | undefined;
 
 async function seed(): Promise<void> {
@@ -67,7 +59,9 @@ async function seed(): Promise<void> {
   const passwordHash = await hashPassword(seedEnv.DEV_ADMIN_PASSWORD);
 
   await prisma.$transaction(async (tx) => {
-    for (const [code, description] of Object.entries(permissionDescriptions)) {
+    for (const [code, description] of Object.entries(
+      PERMISSION_DESCRIPTIONS,
+    )) {
       await tx.permission.upsert({
         where: { code },
         create: { code, description },
@@ -89,7 +83,7 @@ async function seed(): Promise<void> {
       },
     });
 
-    for (const code of Object.keys(permissionDescriptions)) {
+    for (const code of Object.keys(PERMISSION_DESCRIPTIONS)) {
       await tx.rolePermission.upsert({
         where: {
           roleId_permissionCode: {

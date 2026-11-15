@@ -5,6 +5,7 @@ import { hashPassword } from "better-auth/crypto";
 
 import {
   PERMISSIONS,
+  PERMISSION_DESCRIPTIONS,
   SYSTEM_ADMIN_ROLE,
 } from "../../src/modules/access/permissions.js";
 import type { TestEnvironment } from "./env.js";
@@ -14,14 +15,6 @@ const TEST_CUSTOMER_ID = "phase3_test_customer";
 const TEST_PROJECT_ID = "phase3_test_project";
 const TEST_BUILDING_ID = "phase3_test_building";
 const TEST_UNIT_ID = "phase3_test_unit";
-
-const permissionDescriptions: Record<string, string> = {
-  [PERMISSIONS.CUSTOMER_READ]: "查看客户资料",
-  [PERMISSIONS.CUSTOMER_MANAGE]: "创建和维护客户资料",
-  [PERMISSIONS.PROJECT_READ]: "查看项目、建筑和安装单元",
-  [PERMISSIONS.PROJECT_MANAGE]: "创建和维护项目、建筑和安装单元",
-  [PERMISSIONS.AUDIT_READ]: "查看审计日志",
-};
 
 async function ensureCredentialAccount(
   prisma: PrismaClient,
@@ -86,7 +79,7 @@ export async function seedTestDatabase(
 
     await prisma.$transaction(async (tx) => {
       for (const [code, description] of Object.entries(
-        permissionDescriptions,
+        PERMISSION_DESCRIPTIONS,
       )) {
         await tx.permission.upsert({
           where: { code },
@@ -109,7 +102,7 @@ export async function seedTestDatabase(
         },
       });
 
-      for (const code of Object.keys(permissionDescriptions)) {
+      for (const code of Object.keys(PERMISSION_DESCRIPTIONS)) {
         await tx.rolePermission.upsert({
           where: {
             roleId_permissionCode: {
@@ -153,6 +146,27 @@ export async function seedTestDatabase(
         },
         update: {},
       });
+
+      for (const permissionCode of [
+        PERMISSIONS.FILE_READ,
+        PERMISSIONS.FILE_UPLOAD,
+        PERMISSIONS.FILE_CONFIRM,
+        PERMISSIONS.FILE_UNSCANNED_TEST_ACCESS,
+      ]) {
+        await tx.rolePermission.upsert({
+          where: {
+            roleId_permissionCode: {
+              roleId: customerRole.id,
+              permissionCode,
+            },
+          },
+          create: {
+            roleId: customerRole.id,
+            permissionCode,
+          },
+          update: {},
+        });
+      }
 
       const admin = await tx.user.upsert({
         where: { email: `${adminUsername}@test.invalid` },
