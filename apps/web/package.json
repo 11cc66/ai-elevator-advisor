@@ -14,6 +14,7 @@
     "test:db:init": "tsx scripts/test-db/cli.ts init",
     "test:db:reset": "tsx scripts/test-db/cli.ts reset",
     "test:db:verify": "tsx scripts/test-db/cli.ts verify",
+    "test:db:review-preflight": "tsx scripts/test-db/cli.ts preflight-review",
     "pretest:db:constraints": "tsx scripts/test-db/cli.ts reset",
     "test:db:constraints": "vitest run --config vitest.integration.config.ts",
     "pretest:e2e": "tsx scripts/test-db/cli.ts reset",

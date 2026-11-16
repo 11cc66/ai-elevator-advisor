@@ -284,17 +284,16 @@ it("allows only correction suggestions for professional fields", async () => {
 
 it("fails closed for conflicting review requirements and abnormal initial states", async () => {
   const fixture = await createFixture();
-  const conflictingOrdinary = await createField(
-    fixture.extraction.id,
-    {
+  await expect(
+    createField(fixture.extraction.id, {
       classification: "ORDINARY",
       fieldKey: "conflicting_ordinary",
       value: "DEMO_MOCK 冲突普通字段",
       initialStatus: "EXTRACTED",
       customerConfirmable: true,
       requiresProfessionalReview: true,
-    },
-  );
+    }),
+  ).rejects.toBeDefined();
   const pendingOrdinary = await createField(fixture.extraction.id, {
     classification: "ORDINARY",
     fieldKey: "pending_ordinary",
@@ -333,30 +332,6 @@ it("fails closed for conflicting review requirements and abnormal initial states
     extractionId: fixture.extraction.id,
   };
 
-  for (const [action, correctedRawValue] of [
-    ["CONFIRM", undefined],
-    ["CORRECT", "DEMO_MOCK 冲突修正"],
-    ["REJECT", undefined],
-  ] as const) {
-    await expect(
-      submitCustomerFieldReview({
-        ...base,
-        fieldId: conflictingOrdinary.id,
-        requestId: randomUUID(),
-        review: {
-          action,
-          ...(correctedRawValue === undefined
-            ? {}
-            : { correctedRawValue }),
-          expectedReviewSequence: 0,
-        },
-      }),
-    ).rejects.toMatchObject({
-      code: "FIELD_CONFIGURATION_INVALID",
-      status: 403,
-    });
-  }
-
   for (const field of [pendingOrdinary, invalidatedOrdinary]) {
     for (const action of [
       "CONFIRM",
@@ -377,7 +352,7 @@ it("fails closed for conflicting review requirements and abnormal initial states
           },
         }),
       ).rejects.toMatchObject({
-        code: "FIELD_INITIAL_STATUS_INVALID",
+        code: "FIELD_CURRENT_STATUS_INVALID",
         status: 403,
       });
     }
@@ -395,12 +370,11 @@ it("fails closed for conflicting review requirements and abnormal initial states
       },
     }),
   ).rejects.toMatchObject({
-    code: "FIELD_INITIAL_STATUS_INVALID",
+    code: "FIELD_CURRENT_STATUS_INVALID",
     status: 403,
   });
 
   const fieldIds = [
-    conflictingOrdinary.id,
     pendingOrdinary.id,
     invalidatedOrdinary.id,
     invalidatedProfessional.id,

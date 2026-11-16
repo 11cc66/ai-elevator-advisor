@@ -18,6 +18,7 @@
     "test:db:init": "pnpm --filter @elevator/web test:db:init",
     "test:db:reset": "pnpm --filter @elevator/web test:db:reset",
     "test:db:verify": "pnpm --filter @elevator/web test:db:verify",
+    "test:db:review-preflight": "pnpm --filter @elevator/web test:db:review-preflight",
     "test:db:constraints": "pnpm --filter @elevator/web test:db:constraints",
     "db:generate": "prisma generate",
     "db:validate": "prisma validate",

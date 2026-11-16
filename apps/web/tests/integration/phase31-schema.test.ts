@@ -9,6 +9,7 @@ import { TEST_FIXTURE_IDS } from "../../scripts/test-db/seed";
 const prisma = new PrismaClient();
 
 let adminUserId = "";
+let customerUserId = "";
 let sequence = 0;
 
 function checksum(character: string): string {
@@ -54,15 +55,24 @@ async function createVersion(fileId: string, marker: string) {
 
 beforeAll(async () => {
   const username = process.env.TEST_ADMIN_USERNAME?.toLowerCase();
+  const customerUsername =
+    process.env.TEST_CUSTOMER_USERNAME?.toLowerCase();
   expect(username).toBeTruthy();
+  expect(customerUsername).toBeTruthy();
 
   const admin = await prisma.user.findUnique({
     where: { username },
     select: { id: true },
   });
+  const customer = await prisma.user.findUnique({
+    where: { username: customerUsername },
+    select: { id: true },
+  });
 
   expect(admin).not.toBeNull();
+  expect(customer).not.toBeNull();
   adminUserId = admin!.id;
+  customerUserId = customer!.id;
 });
 
 afterAll(async () => {
@@ -286,6 +296,13 @@ describe.sequential("Phase 3.1 database constraints", () => {
         providerVersion: "1.0.0",
       },
     });
+    await prisma.fileExtraction.update({
+      where: { id: extraction.id },
+      data: {
+        status: "COMPLETED",
+        completedAt: new Date(),
+      },
+    });
     const professionalField = await prisma.extractionField.create({
       data: {
         extractionId: extraction.id,
@@ -296,6 +313,7 @@ describe.sequential("Phase 3.1 database constraints", () => {
         originalNormalizedValue: { value: 2200, unit: "mm" },
         unit: "mm",
         fieldClassification: "PROFESSIONAL",
+        initialStatus: "PENDING_VERIFICATION",
         customerConfirmable: false,
         requiresProfessionalReview: true,
       },
@@ -314,8 +332,12 @@ describe.sequential("Phase 3.1 database constraints", () => {
       originalValueSnapshot: { value: 2200 },
       correctedRawValue: { value: 2300 },
       correctedNormalizedValue: { value: 2300, unit: "mm" },
-      actorUserId: adminUserId,
-      actorRoleSnapshot: { code: "CUSTOMER" },
+      actorUserId: customerUserId,
+      actorRoleSnapshot: {
+        roleCodes: ["CUSTOMER"],
+        scope: "PROJECT",
+        projectId: TEST_FIXTURE_IDS.project,
+      },
     };
 
     await expect(
@@ -365,6 +387,13 @@ describe.sequential("Phase 3.1 database constraints", () => {
         providerVersion: "1.0.0",
       },
     });
+    await prisma.fileExtraction.update({
+      where: { id: extraction.id },
+      data: {
+        status: "COMPLETED",
+        completedAt: new Date(),
+      },
+    });
     const field = await prisma.extractionField.create({
       data: {
         extractionId: extraction.id,
@@ -381,8 +410,12 @@ describe.sequential("Phase 3.1 database constraints", () => {
     const reviewBase = {
       extractionFieldId: field.id,
       originalValueSnapshot: "原始标题",
-      actorUserId: adminUserId,
-      actorRoleSnapshot: { code: "CUSTOMER" },
+      actorUserId: customerUserId,
+      actorRoleSnapshot: {
+        roleCodes: ["CUSTOMER"],
+        scope: "PROJECT",
+        projectId: TEST_FIXTURE_IDS.project,
+      },
     };
 
     await prisma.extractionFieldReview.create({

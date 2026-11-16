@@ -14,6 +14,27 @@ import {
   deriveEffectiveFieldStatus,
 } from "./field-review-policy";
 
+const FIELD_REVIEW_TRANSACTION_ATTEMPTS = 3;
+const FIELD_REVIEW_RETRY_DELAY_MS = 10;
+
+function isRetryableReviewTransactionError(error: unknown): boolean {
+  if (
+    error instanceof Prisma.PrismaClientKnownRequestError &&
+    error.code === "P2034"
+  ) {
+    return true;
+  }
+
+  const message =
+    error instanceof Error ? error.message : "";
+
+  return (
+    /(?:^|[^0-9])(?:40001|40P01)(?:[^0-9]|$)/.test(message) &&
+    (error instanceof Prisma.PrismaClientKnownRequestError ||
+      error instanceof Prisma.PrismaClientUnknownRequestError)
+  );
+}
+
 interface LockedFieldRow {
   fieldId: string;
   extractionStatus: string;
@@ -88,195 +109,257 @@ export async function submitCustomerFieldReview(input: {
   review: FieldReviewInput;
   requestId: string;
   database?: PrismaClient;
+  transactionIsolationLevel?: Prisma.TransactionIsolationLevel;
 }) {
   const database = input.database ?? prisma;
+  const runTransaction = database.$transaction.bind(database) as <T>(
+    callback: (tx: Prisma.TransactionClient) => Promise<T>,
+    options?: {
+      isolationLevel?: Prisma.TransactionIsolationLevel;
+    },
+  ) => Promise<T>;
 
-  try {
-    return await database.$transaction(async (tx) => {
-      await requireProjectCustomerRole(tx, input.actor, input.projectId);
+  for (
+    let attempt = 1;
+    attempt <= FIELD_REVIEW_TRANSACTION_ATTEMPTS;
+    attempt += 1
+  ) {
+    try {
+      return await runTransaction(
+        async (tx) => {
+          await requireProjectCustomerRole(
+            tx,
+            input.actor,
+            input.projectId,
+          );
 
-      const lockedRows = await tx.$queryRaw<LockedFieldRow[]>`
-        SELECT
-          ef."id" AS "fieldId",
-          fe."status"::text AS "extractionStatus"
-        FROM "extraction_field" ef
-        INNER JOIN "file_extraction" fe
-          ON fe."id" = ef."extractionId"
-        INNER JOIN "file_version" fv
-          ON fv."id" = fe."fileVersionId"
-        INNER JOIN "file" f
-          ON f."id" = fv."fileId"
-        WHERE ef."id" = ${input.fieldId}
-          AND ef."extractionId" = ${input.extractionId}
-          AND fe."id" = ${input.extractionId}
-          AND fe."fileVersionId" = ${input.versionId}
-          AND fv."id" = ${input.versionId}
-          AND fv."fileId" = ${input.fileId}
-          AND f."id" = ${input.fileId}
-          AND f."projectId" = ${input.projectId}
-        FOR UPDATE OF ef
-      `;
-      const locked = lockedRows[0];
+          const lockedRows = await tx.$queryRaw<LockedFieldRow[]>`
+            SELECT
+              ef."id" AS "fieldId",
+              fe."status"::text AS "extractionStatus"
+            FROM "extraction_field" ef
+            INNER JOIN "file_extraction" fe
+              ON fe."id" = ef."extractionId"
+            INNER JOIN "file_version" fv
+              ON fv."id" = fe."fileVersionId"
+            INNER JOIN "file" f
+              ON f."id" = fv."fileId"
+            WHERE ef."id" = ${input.fieldId}
+              AND ef."extractionId" = ${input.extractionId}
+              AND fe."id" = ${input.extractionId}
+              AND fe."fileVersionId" = ${input.versionId}
+              AND fv."id" = ${input.versionId}
+              AND fv."fileId" = ${input.fileId}
+              AND f."id" = ${input.fileId}
+              AND f."projectId" = ${input.projectId}
+            FOR UPDATE OF ef
+          `;
+          const locked = lockedRows[0];
 
-      if (!locked) {
-        throw new AppError(
-          "EXTRACTION_FIELD_NOT_FOUND",
-          "识别字段不存在或不属于当前文件。",
-          404,
-        );
-      }
+          if (!locked) {
+            throw new AppError(
+              "EXTRACTION_FIELD_NOT_FOUND",
+              "识别字段不存在或不属于当前文件。",
+              404,
+            );
+          }
 
-      if (locked.extractionStatus !== "COMPLETED") {
-        throw new AppError(
-          "EXTRACTION_NOT_COMPLETED",
-          "识别任务尚未完成，当前不能确认字段。",
-          409,
-        );
-      }
+          if (locked.extractionStatus !== "COMPLETED") {
+            throw new AppError(
+              "EXTRACTION_NOT_COMPLETED",
+              "识别任务尚未完成，当前不能确认字段。",
+              409,
+            );
+          }
 
-      const field = await tx.extractionField.findUniqueOrThrow({
-        where: { id: input.fieldId },
-        select: {
-          id: true,
-          extractionId: true,
-          fieldKey: true,
-          fieldLabel: true,
-          valueType: true,
-          originalRawValue: true,
-          initialStatus: true,
-          fieldClassification: true,
-          customerConfirmable: true,
-          requiresProfessionalReview: true,
-          reviews: {
-            orderBy: { reviewSequence: "desc" },
-            take: 1,
+          const field = await tx.extractionField.findUniqueOrThrow({
+            where: { id: input.fieldId },
             select: {
-              reviewSequence: true,
-              statusAfterReview: true,
+              id: true,
+              extractionId: true,
+              fieldKey: true,
+              fieldLabel: true,
+              valueType: true,
+              originalRawValue: true,
+              initialStatus: true,
+              fieldClassification: true,
+              customerConfirmable: true,
+              requiresProfessionalReview: true,
+              reviews: {
+                orderBy: { reviewSequence: "desc" },
+                take: 1,
+                select: {
+                  reviewSequence: true,
+                  statusAfterReview: true,
+                },
+              },
             },
-          },
-        },
-      });
-      const latest = field.reviews[0] ?? null;
-      const latestSequence = latest?.reviewSequence ?? 0;
+          });
+          const latest = field.reviews[0] ?? null;
+          const latestSequence = latest?.reviewSequence ?? 0;
 
-      if (input.review.expectedReviewSequence !== latestSequence) {
+          if (
+            input.review.expectedReviewSequence !== latestSequence
+          ) {
+            throw new AppError(
+              "FIELD_REVIEW_STALE",
+              "字段状态已发生变化，请刷新页面后重新操作。",
+              409,
+            );
+          }
+
+          const previousEffectiveStatus =
+            deriveEffectiveFieldStatus({
+              fieldClassification: field.fieldClassification,
+              initialStatus: field.initialStatus,
+              latestReviewStatus: latest?.statusAfterReview,
+            });
+          const decision = decideFieldReview(
+            {
+              ...field,
+              currentStatus: previousEffectiveStatus,
+            },
+            input.review.action,
+          );
+          if (!decision.allowed) {
+            throw new AppError(
+              decision.code,
+              decision.message,
+              403,
+            );
+          }
+
+          const correctedRawValue =
+            input.review.action === "CORRECT"
+              ? (input.review.correctedRawValue as
+                  | Prisma.InputJsonValue
+                  | undefined)
+              : undefined;
+          if (
+            correctedRawValue !== undefined &&
+            input.review.action === "CORRECT"
+          ) {
+            validateCorrectionValue(
+              field.valueType,
+              correctedRawValue,
+            );
+          }
+          const correctedNormalizedValue =
+            correctedRawValue === undefined
+              ? undefined
+              : normalizedCorrection(correctedRawValue);
+          const reviewSequence = latestSequence + 1;
+          const review = await tx.extractionFieldReview.create({
+            data: {
+              extractionFieldId: field.id,
+              reviewSequence,
+              action: input.review.action,
+              originalValueSnapshot:
+                field.originalRawValue as Prisma.InputJsonValue,
+              ...(correctedRawValue === undefined
+                ? {}
+                : {
+                    correctedRawValue,
+                    correctedNormalizedValue,
+                  }),
+              statusAfterReview: decision.statusAfterReview,
+              note: input.review.note,
+              actorUserId: input.actor.userId,
+              actorRoleSnapshot: {
+                roleCodes: ["CUSTOMER"],
+                scope: "PROJECT",
+                projectId: input.projectId,
+              },
+            },
+            select: {
+              id: true,
+              reviewSequence: true,
+              action: true,
+              originalValueSnapshot: true,
+              correctedRawValue: true,
+              correctedNormalizedValue: true,
+              statusAfterReview: true,
+              note: true,
+              actorUserId: true,
+              actorRoleSnapshot: true,
+              createdAt: true,
+            },
+          });
+
+          await tx.auditLog.create({
+            data: {
+              actorUserId: input.actor.userId,
+              action: `file.extraction_field.${input.review.action.toLowerCase()}`,
+              objectType: "ExtractionField",
+              objectId: field.id,
+              requestId: input.requestId,
+              oldValue: {
+                effectiveStatus: previousEffectiveStatus,
+                latestReviewSequence: latestSequence,
+                originalRawValue: field.originalRawValue,
+              },
+              newValue: {
+                reviewId: review.id,
+                fieldKey: field.fieldKey,
+                action: input.review.action,
+                correctedRawValue: correctedRawValue ?? null,
+                statusAfterReview: decision.statusAfterReview,
+                reviewSequence,
+              },
+            },
+          });
+
+          return {
+            review,
+            effectiveStatus:
+              decision.statusAfterReview as ExtractionFieldStatus,
+            latestReviewSequence: reviewSequence,
+          };
+        },
+        input.transactionIsolationLevel
+          ? {
+              isolationLevel:
+                input.transactionIsolationLevel,
+            }
+          : undefined,
+      );
+    } catch (error) {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === "P2002"
+      ) {
         throw new AppError(
-          "FIELD_REVIEW_STALE",
-          "字段状态已发生变化，请刷新页面后重新操作。",
+          "FIELD_REVIEW_CONFLICT",
+          "字段状态已被其他操作更新，请刷新页面后重试。",
           409,
         );
       }
 
-      const decision = decideFieldReview(field, input.review.action);
-      if (!decision.allowed) {
+      if (isRetryableReviewTransactionError(error)) {
+        if (attempt < FIELD_REVIEW_TRANSACTION_ATTEMPTS) {
+          await new Promise((resolve) =>
+            setTimeout(
+              resolve,
+              FIELD_REVIEW_RETRY_DELAY_MS * attempt,
+            ),
+          );
+          continue;
+        }
+
         throw new AppError(
-          decision.code,
-          decision.message,
-          403,
+          "FIELD_REVIEW_CONFLICT",
+          "字段状态并发更新，请刷新页面后重试。",
+          409,
         );
       }
 
-      const correctedRawValue =
-        input.review.action === "CORRECT"
-          ? (input.review.correctedRawValue as
-              | Prisma.InputJsonValue
-              | undefined)
-          : undefined;
-      if (
-        correctedRawValue !== undefined &&
-        input.review.action === "CORRECT"
-      ) {
-        validateCorrectionValue(field.valueType, correctedRawValue);
-      }
-      const correctedNormalizedValue =
-        correctedRawValue === undefined
-          ? undefined
-          : normalizedCorrection(correctedRawValue);
-      const reviewSequence = latestSequence + 1;
-      const previousEffectiveStatus = deriveEffectiveFieldStatus({
-        fieldClassification: field.fieldClassification,
-        initialStatus: field.initialStatus,
-        latestReviewStatus: latest?.statusAfterReview,
-      });
-      const review = await tx.extractionFieldReview.create({
-        data: {
-          extractionFieldId: field.id,
-          reviewSequence,
-          action: input.review.action,
-          originalValueSnapshot:
-            field.originalRawValue as Prisma.InputJsonValue,
-          ...(correctedRawValue === undefined
-            ? {}
-            : {
-                correctedRawValue,
-                correctedNormalizedValue,
-              }),
-          statusAfterReview: decision.statusAfterReview,
-          note: input.review.note,
-          actorUserId: input.actor.userId,
-          actorRoleSnapshot: {
-            roleCodes: ["CUSTOMER"],
-            scope: "PROJECT",
-            projectId: input.projectId,
-          },
-        },
-        select: {
-          id: true,
-          reviewSequence: true,
-          action: true,
-          originalValueSnapshot: true,
-          correctedRawValue: true,
-          correctedNormalizedValue: true,
-          statusAfterReview: true,
-          note: true,
-          actorUserId: true,
-          actorRoleSnapshot: true,
-          createdAt: true,
-        },
-      });
-
-      await tx.auditLog.create({
-        data: {
-          actorUserId: input.actor.userId,
-          action: `file.extraction_field.${input.review.action.toLowerCase()}`,
-          objectType: "ExtractionField",
-          objectId: field.id,
-          requestId: input.requestId,
-          oldValue: {
-            effectiveStatus: previousEffectiveStatus,
-            latestReviewSequence: latestSequence,
-            originalRawValue: field.originalRawValue,
-          },
-          newValue: {
-            reviewId: review.id,
-            fieldKey: field.fieldKey,
-            action: input.review.action,
-            correctedRawValue: correctedRawValue ?? null,
-            statusAfterReview: decision.statusAfterReview,
-            reviewSequence,
-          },
-        },
-      });
-
-      return {
-        review,
-        effectiveStatus:
-          decision.statusAfterReview as ExtractionFieldStatus,
-        latestReviewSequence: reviewSequence,
-      };
-    });
-  } catch (error) {
-    if (
-      error instanceof Prisma.PrismaClientKnownRequestError &&
-      error.code === "P2002"
-    ) {
-      throw new AppError(
-        "FIELD_REVIEW_CONFLICT",
-        "字段状态已被其他操作更新，请刷新页面后重试。",
-        409,
-      );
+      throw error;
     }
-    throw error;
   }
+
+  throw new AppError(
+    "FIELD_REVIEW_CONFLICT",
+    "字段状态并发更新，请刷新页面后重试。",
+    409,
+  );
 }

@@ -11,6 +11,7 @@ import {
 const ordinary = {
   fieldClassification: "ORDINARY" as const,
   initialStatus: "EXTRACTED" as const,
+  currentStatus: "EXTRACTED" as const,
   customerConfirmable: true,
   requiresProfessionalReview: false,
 };
@@ -18,6 +19,7 @@ const ordinary = {
 const professional = {
   fieldClassification: "PROFESSIONAL" as const,
   initialStatus: "PENDING_VERIFICATION" as const,
+  currentStatus: "PENDING_VERIFICATION" as const,
   customerConfirmable: false,
   requiresProfessionalReview: true,
 };
@@ -138,12 +140,12 @@ describe("Phase 3.6 field review policy", () => {
     });
     expect(
       decideFieldReview(
-        { ...ordinary, initialStatus: "UNKNOWN" },
+        { ...ordinary, currentStatus: "UNKNOWN" },
         "CONFIRM",
       ),
     ).toMatchObject({
       allowed: false,
-      code: "FIELD_INITIAL_STATUS_INVALID",
+      code: "FIELD_CURRENT_STATUS_INVALID",
     });
     expect(
       decideFieldReview(
@@ -156,8 +158,8 @@ describe("Phase 3.6 field review policy", () => {
     });
   });
 
-  it("fails closed for abnormal ordinary initial states", () => {
-    for (const initialStatus of [
+  it("fails closed for abnormal ordinary current states", () => {
+    for (const currentStatus of [
       "PENDING_VERIFICATION",
       "INVALIDATED",
     ] as const) {
@@ -168,12 +170,12 @@ describe("Phase 3.6 field review policy", () => {
       ] as const) {
         expect(
           decideFieldReview(
-            { ...ordinary, initialStatus },
+            { ...ordinary, currentStatus },
             action,
           ),
         ).toMatchObject({
           allowed: false,
-          code: "FIELD_INITIAL_STATUS_INVALID",
+          code: "FIELD_CURRENT_STATUS_INVALID",
         });
       }
     }
@@ -202,12 +204,12 @@ describe("Phase 3.6 field review policy", () => {
   it("does not reactivate invalidated or config-conflicting professional fields", () => {
     expect(
       decideFieldReview(
-        { ...professional, initialStatus: "INVALIDATED" },
+        { ...professional, currentStatus: "INVALIDATED" },
         "CORRECT",
       ),
     ).toMatchObject({
       allowed: false,
-      code: "FIELD_INITIAL_STATUS_INVALID",
+      code: "FIELD_CURRENT_STATUS_INVALID",
     });
     expect(
       decideFieldReview(
@@ -255,5 +257,87 @@ describe("Phase 3.6 field review policy", () => {
         initialStatus: "EXTRACTED",
       }),
     ).toBe("PENDING_VERIFICATION");
+  });
+
+  it("applies ordinary transitions from the latest review state", () => {
+    const confirmed = {
+      ...ordinary,
+      initialStatus: "EXTRACTED" as const,
+      currentStatus: "CUSTOMER_CONFIRMED" as const,
+    };
+    expect(decideFieldReview(confirmed, "CONFIRM")).toMatchObject({
+      allowed: false,
+      code: "FIELD_REVIEW_NO_STATE_CHANGE",
+    });
+    expect(decideFieldReview(confirmed, "CORRECT")).toEqual({
+      allowed: true,
+      statusAfterReview: "CUSTOMER_CONFIRMED",
+    });
+    expect(decideFieldReview(confirmed, "REJECT")).toEqual({
+      allowed: true,
+      statusAfterReview: "CUSTOMER_REJECTED",
+    });
+
+    const rejected = {
+      ...ordinary,
+      initialStatus: "EXTRACTED" as const,
+      currentStatus: "CUSTOMER_REJECTED" as const,
+    };
+    expect(decideFieldReview(rejected, "CONFIRM")).toEqual({
+      allowed: true,
+      statusAfterReview: "CUSTOMER_CONFIRMED",
+    });
+    expect(decideFieldReview(rejected, "CORRECT")).toEqual({
+      allowed: true,
+      statusAfterReview: "CUSTOMER_CONFIRMED",
+    });
+    expect(decideFieldReview(rejected, "REJECT")).toMatchObject({
+      allowed: false,
+      code: "FIELD_REVIEW_NO_STATE_CHANGE",
+    });
+  });
+
+  it("allows repeated corrections for ordinary and professional fields", () => {
+    expect(
+      decideFieldReview(
+        {
+          ...ordinary,
+          currentStatus: "CUSTOMER_CONFIRMED",
+        },
+        "CORRECT",
+      ),
+    ).toEqual({
+      allowed: true,
+      statusAfterReview: "CUSTOMER_CONFIRMED",
+    });
+    expect(
+      decideFieldReview(professional, "CORRECT"),
+    ).toEqual({
+      allowed: true,
+      statusAfterReview: "PENDING_VERIFICATION",
+    });
+  });
+
+  it("keeps ordinary fields without customer confirmation inert", () => {
+    for (const field of [
+      {
+        ...ordinary,
+        customerConfirmable: false,
+        requiresProfessionalReview: false,
+      },
+      {
+        ...ordinary,
+        customerConfirmable: false,
+        requiresProfessionalReview: true,
+      },
+    ]) {
+      for (const action of [
+        "CONFIRM",
+        "CORRECT",
+        "REJECT",
+      ] as const) {
+        expect(decideFieldReview(field, action).allowed).toBe(false);
+      }
+    }
   });
 });

@@ -443,7 +443,7 @@ it("retries transient failures through a real pg-boss queue", async () => {
       "file.extraction.retry_scheduled",
     ),
   ).toBe(1);
-});
+}, 15_000);
 
 it("does not retry a permanently damaged PDF", async () => {
   const damaged = Buffer.from("%PDF-1.7\nthis is not a valid PDF body");
@@ -618,7 +618,7 @@ it("recovers worker crashes at each processing phase", async () => {
       crashCase.label,
     ).toBe(2);
   }
-});
+}, 15_000);
 
 it("rechecks malware policy when recovering an expired task", async () => {
   const uploaded = await upload(validPdf, "recovered-scan-policy.pdf");

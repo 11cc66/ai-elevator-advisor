@@ -8,6 +8,7 @@ import type { FieldReviewAction } from "@elevator/contracts";
 export interface FieldReviewPolicyField {
   fieldClassification: ExtractionFieldClassification | string;
   initialStatus: ExtractionFieldStatus | string;
+  currentStatus: ExtractionFieldStatus | string;
   customerConfirmable: boolean;
   requiresProfessionalReview: boolean;
 }
@@ -23,7 +24,8 @@ export type FieldReviewPolicyDecision =
         | "FIELD_CLASSIFICATION_UNKNOWN"
         | "FIELD_CONFIGURATION_INVALID"
         | "FIELD_REVIEW_ACTION_INVALID"
-        | "FIELD_INITIAL_STATUS_INVALID"
+        | "FIELD_CURRENT_STATUS_INVALID"
+        | "FIELD_REVIEW_NO_STATE_CHANGE"
         | "FIELD_NOT_CUSTOMER_CONFIRMABLE"
         | "PROFESSIONAL_FIELD_CONFIRM_FORBIDDEN"
         | "PROFESSIONAL_FIELD_REJECT_FORBIDDEN";
@@ -35,7 +37,7 @@ export function decideFieldReview(
   action: FieldReviewAction,
 ): FieldReviewPolicyDecision {
   const classification = field.fieldClassification as string;
-  const initialStatus = field.initialStatus as string;
+  const currentStatus = field.currentStatus as string;
 
   if (
     typeof field.customerConfirmable !== "boolean" ||
@@ -60,10 +62,10 @@ export function decideFieldReview(
     };
   }
 
-  if (initialStatus === "INVALIDATED") {
+  if (currentStatus === "INVALIDATED") {
     return {
       allowed: false,
-      code: "FIELD_INITIAL_STATUS_INVALID",
+      code: "FIELD_CURRENT_STATUS_INVALID",
       message: "已作废字段不能执行客户操作。",
     };
   }
@@ -80,11 +82,11 @@ export function decideFieldReview(
       };
     }
 
-    if (initialStatus !== "PENDING_VERIFICATION") {
+    if (currentStatus !== "PENDING_VERIFICATION") {
       return {
         allowed: false,
-        code: "FIELD_INITIAL_STATUS_INVALID",
-        message: "专业工程字段的初始状态异常。",
+        code: "FIELD_CURRENT_STATUS_INVALID",
+        message: "专业工程字段的当前状态不允许客户操作。",
       };
     }
 
@@ -133,14 +135,27 @@ export function decideFieldReview(
   }
 
   if (
-    initialStatus !== "EXTRACTED" &&
-    initialStatus !== "CUSTOMER_CONFIRMED" &&
-    initialStatus !== "CUSTOMER_REJECTED"
+    currentStatus !== "EXTRACTED" &&
+    currentStatus !== "CUSTOMER_CONFIRMED" &&
+    currentStatus !== "CUSTOMER_REJECTED"
   ) {
     return {
       allowed: false,
-      code: "FIELD_INITIAL_STATUS_INVALID",
-      message: "普通资料字段的初始状态异常。",
+      code: "FIELD_CURRENT_STATUS_INVALID",
+      message: "普通资料字段的当前状态不允许客户操作。",
+    };
+  }
+
+  if (
+    (currentStatus === "CUSTOMER_CONFIRMED" &&
+      action === "CONFIRM") ||
+    (currentStatus === "CUSTOMER_REJECTED" &&
+      action === "REJECT")
+  ) {
+    return {
+      allowed: false,
+      code: "FIELD_REVIEW_NO_STATE_CHANGE",
+      message: "该操作不会改变字段当前确认状态。",
     };
   }
 

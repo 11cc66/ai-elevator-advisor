@@ -312,7 +312,10 @@ export async function getExtractionDetails(
     });
     const policyActions =
       extraction.status === "COMPLETED"
-        ? customerFieldActions(field)
+        ? customerFieldActions({
+            ...field,
+            currentStatus: effectiveStatus,
+          })
         : {
             canConfirm: false,
             canCorrect: false,

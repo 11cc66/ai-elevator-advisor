@@ -15,17 +15,23 @@ import {
   type DatabaseGuardMode,
 } from "./guard.js";
 import { seedTestDatabase } from "./seed.js";
+import { preflightReviewInvariants } from "./review-preflight.js";
 import {
   resolveVerifiedTestStorageRoot,
   TestStorageRootError,
 } from "./storage-root.js";
 
-type Command = "init" | "reset" | "verify";
+type Command = "init" | "reset" | "verify" | "preflight-review";
 
 function readCommand(): Command {
   const command = process.argv[2];
 
-  if (command === "init" || command === "reset" || command === "verify") {
+  if (
+    command === "init" ||
+    command === "reset" ||
+    command === "verify" ||
+    command === "preflight-review"
+  ) {
     return command;
   }
 
@@ -128,6 +134,30 @@ async function main(): Promise<void> {
       "PRISMA_DEPLOY_FAILED",
     );
     await seedTestDatabase(env);
+  }
+
+  if (command === "preflight-review") {
+    const preflightPrisma = new PrismaClient({
+      datasources: {
+        db: { url: env.TEST_DATABASE_URL },
+      },
+    });
+
+    try {
+      const issues = await preflightReviewInvariants(
+        env,
+        preflightPrisma,
+      );
+      if (issues.length > 0) {
+        console.error(
+          `review_preflight_failed=${JSON.stringify(issues)}`,
+        );
+        process.exitCode = 1;
+        return;
+      }
+    } finally {
+      await preflightPrisma.$disconnect();
+    }
   }
 
   const result = await verifyTestDatabaseIdentity("verify", env);
