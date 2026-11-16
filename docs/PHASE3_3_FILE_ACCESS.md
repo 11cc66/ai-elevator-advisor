@@ -45,8 +45,13 @@ API 响应不包含 storageKey 或物理存储路径。
 ## 审计和完整性
 
 - 元数据详情访问记录 `file.viewed`。
-- 成功下载记录 `file.downloaded`。
+- 文件内容完成同句柄读取、大小校验和 SHA-256 校验后记录
+  `file.download_verified`。该事件只证明服务端校验通过，不证明客户端已收到或保存文件。
+- 可观测的响应取消、流异常或绝对超时记录
+  `file.download_interrupted`，其实际含义以 `reason` 为准。
 - 策略拒绝记录 `file.download_blocked`。
+- MIME 类型不允许时返回 HTTP 415，并在同一事务内写入
+  `file.download_blocked` 和 `VALIDATION_FAILED` 安全事件；不改变文件原有完整性状态。
 - 下载前哈希不一致会阻止下载、标记完整性失败并写入 `FileSecurityEvent`。
 
 ## 测试

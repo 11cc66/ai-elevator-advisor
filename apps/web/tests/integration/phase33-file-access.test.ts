@@ -8,6 +8,8 @@ import { PrismaClient } from "@prisma/client";
 import { afterAll, beforeAll, expect, it } from "vitest";
 
 import { loadActor, type Actor } from "../../src/modules/access/actor";
+import { downloadResourcePool } from "../../src/modules/files/download-resource-pool";
+import { createVerifiedDownloadStream } from "../../src/modules/files/download-response-stream";
 import { prepareFileDownload } from "../../src/modules/files/download-service";
 import {
   getProjectFileDetails,
@@ -29,6 +31,20 @@ const PDF_BYTES = Buffer.from(
 );
 
 let actor: Actor;
+
+async function waitFor(
+  predicate: () => Promise<boolean>,
+  timeoutMs = 2_000,
+): Promise<void> {
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    if (await predicate()) {
+      return;
+    }
+    await new Promise((resolve) => setTimeout(resolve, 25));
+  }
+  throw new Error("WAIT_FOR_TIMEOUT");
+}
 
 async function uploadFile(existingFileId?: string) {
   const intent = await createUploadIntent(
@@ -97,20 +113,18 @@ it("lists files, shows version history and downloads a verified object", async (
     env: readWebEnv(),
     storage,
   });
-  const chunks: Buffer[] = [];
-
-  for await (const chunk of download.stream) {
-    chunks.push(Buffer.from(chunk));
+  try {
+    expect(createHash("sha256").update(download.body).digest("hex")).toBe(
+      firstVersion.checksumSha256,
+    );
+    expect(download.fileName).not.toContain("..");
+  } finally {
+    download.release();
   }
-
-  expect(
-    createHash("sha256").update(Buffer.concat(chunks)).digest("hex"),
-  ).toBe(firstVersion.checksumSha256);
-  expect(download.fileName).not.toContain("..");
 
   const audit = await prisma.auditLog.findFirst({
     where: {
-      action: "file.downloaded",
+      action: "file.download_verified",
       objectType: "FileVersion",
       objectId: firstVersion.id,
     },
@@ -141,7 +155,10 @@ it("blocks corrupted objects and records an integrity event", async () => {
     process.env.PRIVATE_STORAGE_ROOT!,
     version.storageKey,
   );
-  await fs.writeFile(objectPath, Buffer.from("corrupted"));
+  await fs.writeFile(
+    objectPath,
+    Buffer.alloc(PDF_BYTES.byteLength, 0x78),
+  );
 
   await expect(
     prepareFileDownload({
@@ -167,4 +184,254 @@ it("blocks corrupted objects and records an integrity event", async () => {
 
   expect(updated.integrityStatus).toBe("FAILED");
   expect(securityEvent).not.toBeNull();
+});
+
+it("classifies missing objects without recording a successful download", async () => {
+  const version = await uploadFile();
+  const objectPath = path.join(
+    process.env.PRIVATE_STORAGE_ROOT!,
+    version.storageKey,
+  );
+  await fs.rm(objectPath);
+
+  await expect(
+    prepareFileDownload({
+      actor,
+      projectId: TEST_FIXTURE_IDS.project,
+      fileId: version.fileId,
+      versionId: version.id,
+      requestId: `missing-${randomUUID()}`,
+      env: readWebEnv(),
+      storage,
+    }),
+  ).rejects.toMatchObject({ code: "STORAGE_OBJECT_MISSING" });
+
+  expect(
+    await prisma.fileSecurityEvent.count({
+      where: {
+        fileVersionId: version.id,
+        eventType: "STORAGE_OBJECT_MISSING",
+      },
+    }),
+  ).toBe(1);
+  expect(
+    await prisma.auditLog.count({
+      where: {
+        action: "file.download_verified",
+        objectType: "FileVersion",
+        objectId: version.id,
+      },
+    }),
+  ).toBe(0);
+});
+
+it("rejects oversized metadata before allocating a download buffer", async () => {
+  const version = await uploadFile();
+  const oversized = await prisma.fileVersion.create({
+    data: {
+      fileId: version.fileId,
+      versionNumber: 3,
+      originalFilename: "oversized.pdf",
+      sanitizedFilename: "oversized.pdf",
+      declaredMimeType: "application/pdf",
+      detectedMimeType: "application/pdf",
+      sizeBytes: 20n * 1024n * 1024n + 1n,
+      checksumSha256: "a".repeat(64),
+      storageKey: `test/phase33/oversized-${randomUUID()}`,
+      uploadStatus: "UPLOADED",
+      validationStatus: "PASSED",
+      malwareScanStatus: "SCAN_UNAVAILABLE",
+      integrityStatus: "VERIFIED",
+      recognitionStatus: "COMPLETED",
+      uploadedById: actor.userId,
+      finalizedAt: new Date(),
+    },
+  });
+
+  await expect(
+    prepareFileDownload({
+      actor,
+      projectId: TEST_FIXTURE_IDS.project,
+      fileId: version.fileId,
+      versionId: oversized.id,
+      requestId: `oversized-${randomUUID()}`,
+      env: readWebEnv(),
+      storage,
+    }),
+  ).rejects.toMatchObject({ code: "FILE_TOO_LARGE", status: 413 });
+});
+
+it("records MIME rejection without changing integrity status", async () => {
+  const version = await uploadFile();
+  const written = await storage.writeToStaging(
+    `staging/mime-${randomUUID()}.part`,
+    Readable.from([PDF_BYTES]),
+    20n * 1024n * 1024n,
+  );
+  const storageKey = `objects/mime-${randomUUID()}.bin`;
+  await storage.finalize(written.stagingKey, storageKey);
+  const mimeRejected = await prisma.fileVersion.create({
+    data: {
+      fileId: version.fileId,
+      versionNumber: 2,
+      originalFilename: "mime-rejected.txt",
+      sanitizedFilename: "mime-rejected.txt",
+      declaredMimeType: "text/plain",
+      detectedMimeType: "text/plain",
+      sizeBytes: written.sizeBytes,
+      checksumSha256: written.checksumSha256,
+      storageKey,
+      uploadStatus: "UPLOADED",
+      validationStatus: "PASSED",
+      malwareScanStatus: "SCAN_UNAVAILABLE",
+      integrityStatus: "VERIFIED",
+      recognitionStatus: "COMPLETED",
+      uploadedById: actor.userId,
+      finalizedAt: new Date(),
+    },
+  });
+  const requestId = `mime-${randomUUID()}`;
+
+  await expect(
+    prepareFileDownload({
+      actor,
+      projectId: TEST_FIXTURE_IDS.project,
+      fileId: version.fileId,
+      versionId: mimeRejected.id,
+      requestId,
+      env: readWebEnv(),
+      storage,
+    }),
+  ).rejects.toMatchObject({
+    code: "FILE_TYPE_NOT_ALLOWED",
+    status: 415,
+  });
+
+  expect(
+    (
+      await prisma.fileVersion.findUniqueOrThrow({
+        where: { id: mimeRejected.id },
+        select: { integrityStatus: true },
+      })
+    ).integrityStatus,
+  ).toBe("VERIFIED");
+  const event = await prisma.fileSecurityEvent.findFirstOrThrow({
+    where: {
+      fileVersionId: mimeRejected.id,
+      policyCode: "DOWNLOAD_MIME_TYPE_NOT_ALLOWED",
+    },
+  });
+  expect(event.eventType).toBe("VALIDATION_FAILED");
+  expect(event.details).toMatchObject({
+    detectedMimeType: "text/plain",
+  });
+  expect(
+    await prisma.auditLog.count({
+      where: {
+        requestId,
+        action: "file.download_blocked",
+        reason: "FILE_TYPE_NOT_ALLOWED",
+      },
+    }),
+  ).toBe(1);
+  expect(
+    await prisma.auditLog.count({
+      where: {
+        requestId,
+        action: "file.download_verified",
+      },
+    }),
+  ).toBe(0);
+});
+
+it("records a Web Stream timeout without claiming client completion", async () => {
+  const version = await uploadFile();
+  const requestId = `interrupted-${randomUUID()}`;
+  const download = await prepareFileDownload({
+    actor,
+    projectId: TEST_FIXTURE_IDS.project,
+    fileId: version.fileId,
+    versionId: version.id,
+    requestId,
+    env: readWebEnv(),
+    storage,
+  });
+  const stream = createVerifiedDownloadStream(
+    download.body,
+    download.release,
+    {
+      timeoutMs: 20,
+      onInterrupted: download.reportInterruption,
+    },
+  );
+
+  await new Promise((resolve) => setTimeout(resolve, 40));
+  await expect(stream.getReader().read()).rejects.toThrow(
+    "DOWNLOAD_RESPONSE_TIMEOUT",
+  );
+  await waitFor(async () => {
+    return (
+      (await prisma.auditLog.count({
+        where: {
+          requestId,
+          action: "file.download_interrupted",
+          reason: "RESPONSE_TIMEOUT",
+        },
+      })) === 1
+    );
+  });
+
+  expect(
+    await prisma.auditLog.count({
+      where: {
+        requestId,
+        action: "file.download_verified",
+      },
+    }),
+  ).toBe(1);
+  expect(
+    await prisma.auditLog.count({
+      where: {
+        requestId,
+        action: "file.download_interrupted",
+        reason: "RESPONSE_TIMEOUT",
+      },
+    }),
+  ).toBe(1);
+});
+
+it("rejects downloads when bounded buffer resources are exhausted", async () => {
+  const version = await uploadFile();
+  const webEnv = readWebEnv();
+  const releases = Array.from(
+    { length: webEnv.FILE_DOWNLOAD_MAX_CONCURRENT },
+    () =>
+    downloadResourcePool.acquire({
+      bytes: 1,
+      maxConcurrent: webEnv.FILE_DOWNLOAD_MAX_CONCURRENT,
+      maxBytes: webEnv.FILE_DOWNLOAD_BUFFER_BUDGET_BYTES,
+    }),
+  );
+
+  try {
+    expect(releases.every(Boolean)).toBe(true);
+    await expect(
+      prepareFileDownload({
+        actor,
+        projectId: TEST_FIXTURE_IDS.project,
+        fileId: version.fileId,
+        versionId: version.id,
+        requestId: `busy-${randomUUID()}`,
+        env: readWebEnv(),
+        storage,
+      }),
+    ).rejects.toMatchObject({
+      code: "DOWNLOAD_RESOURCE_BUSY",
+      status: 503,
+    });
+  } finally {
+    for (const release of releases) {
+      release?.();
+    }
+  }
 });

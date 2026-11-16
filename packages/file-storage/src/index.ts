@@ -10,6 +10,9 @@ export { sanitizeDisplayFilename } from "./filename.js";
 export {
   LocalPrivateStorage,
   type IntegrityCheck,
+  type LocalPrivateStorageHooks,
   type PrivateStorageAdapter,
+  type ReadVerifiedObjectInput,
+  type VerifiedObjectRead,
   type WrittenUpload,
 } from "./local-private-storage.js";

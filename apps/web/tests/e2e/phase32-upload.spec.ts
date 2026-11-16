@@ -289,7 +289,7 @@ test("Phase 3.2 private streaming upload flow", async ({ request }) => {
     expect(
       downloadAuditBody.auditLogs.some(
         (entry) =>
-          entry.action === "file.downloaded" &&
+          entry.action === "file.download_verified" &&
           entry.objectId === storedVersion.id,
       ),
     ).toBe(true);

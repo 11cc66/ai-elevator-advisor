@@ -1,10 +1,10 @@
-import { Readable } from "node:stream";
-
 import { PERMISSIONS } from "@/modules/access/permissions";
 import { requireProjectPermission } from "@/modules/access/policy";
 import { requireApiActor } from "@/modules/auth/api-session";
 import { prepareFileDownload } from "@/modules/files/download-service";
-import { AppError, errorResponse } from "@/server/http/errors";
+import { downloadErrorResponse } from "@/modules/files/download-http";
+import { createVerifiedDownloadStream } from "@/modules/files/download-response-stream";
+import { AppError } from "@/server/http/errors";
 import { getRequestId } from "@/server/http/request-id";
 import { getPrivateStorage } from "@/server/files/storage";
 import { readWebEnv } from "@/server/env";
@@ -58,26 +58,43 @@ export async function GET(
       env: readWebEnv(),
       storage: getPrivateStorage(),
     });
-    const body = Readable.toWeb(download.stream);
+    let responseBody: ReadableStream<Uint8Array> | undefined;
 
-    return new Response(
-      body as unknown as ReadableStream<Uint8Array>,
-      {
-        status: 200,
-        headers: {
-          "Cache-Control": "private, no-store",
-          "Content-Disposition": encodeContentDisposition(
-            download.fileName,
-          ),
-          "Content-Length": download.sizeBytes.toString(),
-          "Content-Security-Policy": "sandbox",
-          "Content-Type": download.mimeType,
-          "X-Content-Type-Options": "nosniff",
-          "X-Request-Id": requestId,
+    try {
+      responseBody = createVerifiedDownloadStream(
+        download.body,
+        download.release,
+        {
+          timeoutMs: download.responseTimeoutMs,
+          signal: request.signal,
+          onInterrupted: download.reportInterruption,
         },
-      },
-    );
+      );
+
+      return new Response(
+        responseBody,
+        {
+          status: 200,
+          headers: {
+            "Cache-Control": "private, no-store",
+            "Content-Disposition": encodeContentDisposition(
+              download.fileName,
+            ),
+            "Content-Length": download.body.byteLength.toString(),
+            "Content-Security-Policy": "sandbox",
+            "Content-Type": download.mimeType,
+            "X-Content-Type-Options": "nosniff",
+            "X-Request-Id": requestId,
+          },
+        },
+      );
+    } catch (error) {
+      download.reportInterruption("RESPONSE_STREAM_ERROR");
+      download.release();
+      void responseBody?.cancel(error).catch(() => undefined);
+      throw error;
+    }
   } catch (error) {
-    return errorResponse(error, requestId);
+    return downloadErrorResponse(error, requestId);
   }
 }

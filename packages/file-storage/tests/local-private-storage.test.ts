@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -79,6 +80,302 @@ describe("private file storage", () => {
     await expect(
       storage.finalize("staging/demo.part", "objects/demo.bin"),
     ).rejects.toBeDefined();
+  });
+
+  it("reads one verified object buffer without reopening the path", async () => {
+    const written = await storage.writeToStaging(
+      "staging/verified.part",
+      Readable.from([PDF_BYTES]),
+      20n * 1024n * 1024n,
+    );
+    await storage.finalize("staging/verified.part", "objects/verified.bin");
+
+    const verified = await storage.readVerifiedObject({
+      objectKey: "objects/verified.bin",
+      expectedSizeBytes: written.sizeBytes,
+      expectedChecksumSha256: written.checksumSha256,
+      maxBytes: 20n * 1024n * 1024n,
+    });
+
+    expect(verified.bytes).toEqual(PDF_BYTES);
+    expect(verified.sizeBytes).toBe(BigInt(PDF_BYTES.byteLength));
+    expect(verified.checksumSha256).toBe(written.checksumSha256);
+
+    await fs.writeFile(
+      path.join(root, "objects/verified.bin"),
+      Buffer.from("replaced"),
+    );
+    expect(verified.bytes).toEqual(PDF_BYTES);
+  });
+
+  it("rejects size, checksum and non-regular-object mismatches", async () => {
+    const written = await storage.writeToStaging(
+      "staging/mismatch.part",
+      Readable.from([PDF_BYTES]),
+      20n * 1024n * 1024n,
+    );
+    await storage.finalize("staging/mismatch.part", "objects/mismatch.bin");
+
+    await expect(
+      storage.readVerifiedObject({
+        objectKey: "objects/mismatch.bin",
+        expectedSizeBytes: written.sizeBytes + 1n,
+        expectedChecksumSha256: written.checksumSha256,
+        maxBytes: 20n * 1024n * 1024n,
+      }),
+    ).rejects.toMatchObject({ code: "STORAGE_OBJECT_SIZE_MISMATCH" });
+
+    await expect(
+      storage.readVerifiedObject({
+        objectKey: "objects/mismatch.bin",
+        expectedSizeBytes: written.sizeBytes,
+        expectedChecksumSha256: "0".repeat(64),
+        maxBytes: 20n * 1024n * 1024n,
+      }),
+    ).rejects.toMatchObject({
+      code: "STORAGE_OBJECT_CHECKSUM_MISMATCH",
+    });
+
+    await fs.mkdir(path.join(root, "objects/not-a-file"), {
+      recursive: true,
+    });
+    await expect(
+      storage.readVerifiedObject({
+        objectKey: "objects/not-a-file",
+        expectedSizeBytes: 1n,
+        expectedChecksumSha256: "0".repeat(64),
+        maxBytes: 20n * 1024n * 1024n,
+      }),
+    ).rejects.toMatchObject({ code: "STORAGE_OBJECT_NOT_REGULAR" });
+  });
+
+  it("rejects a final file identity change between precheck and open", async () => {
+    const written = await storage.writeToStaging(
+      "staging/identity.part",
+      Readable.from([PDF_BYTES]),
+      20n * 1024n * 1024n,
+    );
+    await storage.finalize("staging/identity.part", "objects/identity.bin");
+    const objectPath = path.join(root, "objects/identity.bin");
+    const replacement = Buffer.alloc(PDF_BYTES.byteLength, 0x41);
+    const hookedStorage = new LocalPrivateStorage(root, {
+      afterPrecheck: async () => {
+        await fs.rename(objectPath, `${objectPath}.old`);
+        await fs.writeFile(objectPath, replacement);
+      },
+    });
+
+    await expect(
+      hookedStorage.readVerifiedObject({
+        objectKey: "objects/identity.bin",
+        expectedSizeBytes: written.sizeBytes,
+        expectedChecksumSha256: written.checksumSha256,
+        maxBytes: 20n * 1024n * 1024n,
+      }),
+    ).rejects.toMatchObject({
+      code: "STORAGE_OBJECT_IDENTITY_CHANGED",
+    });
+  });
+
+  it("rejects a parent directory identity change even when the file inode is unchanged", async () => {
+    const written = await storage.writeToStaging(
+      "staging/component.part",
+      Readable.from([PDF_BYTES]),
+      20n * 1024n * 1024n,
+    );
+    await fs.mkdir(path.join(root, "objects/component"), {
+      recursive: true,
+    });
+    await storage.finalize(
+      "staging/component.part",
+      "objects/component/file.bin",
+    );
+    const componentPath = path.join(root, "objects/component");
+    const movedPath = path.join(root, "objects/component-old");
+    const hookedStorage = new LocalPrivateStorage(root, {
+      afterPrecheck: async () => {
+        await fs.rename(componentPath, movedPath);
+        await fs.mkdir(componentPath);
+        await fs.link(
+          path.join(movedPath, "file.bin"),
+          path.join(componentPath, "file.bin"),
+        );
+      },
+    });
+
+    await expect(
+      hookedStorage.readVerifiedObject({
+        objectKey: "objects/component/file.bin",
+        expectedSizeBytes: written.sizeBytes,
+        expectedChecksumSha256: written.checksumSha256,
+        maxBytes: 20n * 1024n * 1024n,
+      }),
+    ).rejects.toMatchObject({
+      code: "STORAGE_OBJECT_IDENTITY_CHANGED",
+    });
+  });
+
+  it("rejects file truncation during the same-handle read", async () => {
+    const bytes = Buffer.concat([
+      PDF_BYTES,
+      Buffer.alloc(70 * 1024, 0x42),
+    ]);
+    const written = await storage.writeToStaging(
+      "staging/truncate.part",
+      Readable.from([bytes]),
+      20n * 1024n * 1024n,
+    );
+    await storage.finalize("staging/truncate.part", "objects/truncate.bin");
+    const objectPath = path.join(root, "objects/truncate.bin");
+    let truncated = false;
+    const hookedStorage = new LocalPrivateStorage(root, {
+      afterReadChunk: async () => {
+        if (!truncated) {
+          truncated = true;
+          await fs.truncate(objectPath, 16);
+        }
+      },
+    });
+
+    await expect(
+      hookedStorage.readVerifiedObject({
+        objectKey: "objects/truncate.bin",
+        expectedSizeBytes: written.sizeBytes,
+        expectedChecksumSha256: written.checksumSha256,
+        maxBytes: 20n * 1024n * 1024n,
+      }),
+    ).rejects.toMatchObject({
+      code: "STORAGE_OBJECT_SIZE_MISMATCH",
+    });
+  });
+
+  it("rejects file expansion during the same-handle read", async () => {
+    const bytes = Buffer.concat([
+      PDF_BYTES,
+      Buffer.alloc(70 * 1024, 0x42),
+    ]);
+    const written = await storage.writeToStaging(
+      "staging/expand.part",
+      Readable.from([bytes]),
+      20n * 1024n * 1024n,
+    );
+    await storage.finalize("staging/expand.part", "objects/expand.bin");
+    const objectPath = path.join(root, "objects/expand.bin");
+    let expanded = false;
+    const hookedStorage = new LocalPrivateStorage(root, {
+      afterReadChunk: async () => {
+        if (!expanded) {
+          expanded = true;
+          await fs.appendFile(objectPath, Buffer.from([0x43]));
+        }
+      },
+    });
+
+    await expect(
+      hookedStorage.readVerifiedObject({
+        objectKey: "objects/expand.bin",
+        expectedSizeBytes: written.sizeBytes,
+        expectedChecksumSha256: written.checksumSha256,
+        maxBytes: 20n * 1024n * 1024n,
+      }),
+    ).rejects.toMatchObject({
+      code: "STORAGE_OBJECT_SIZE_MISMATCH",
+    });
+  });
+
+  it("rejects equal-size content changes during the same-handle read", async () => {
+    const bytes = Buffer.concat([
+      PDF_BYTES,
+      Buffer.alloc(70 * 1024, 0x42),
+    ]);
+    const written = await storage.writeToStaging(
+      "staging/rewrite.part",
+      Readable.from([bytes]),
+      20n * 1024n * 1024n,
+    );
+    await storage.finalize("staging/rewrite.part", "objects/rewrite.bin");
+    const objectPath = path.join(root, "objects/rewrite.bin");
+    let rewritten = false;
+    const hookedStorage = new LocalPrivateStorage(root, {
+      afterReadChunk: async () => {
+        if (!rewritten) {
+          rewritten = true;
+          await fs.writeFile(
+            objectPath,
+            Buffer.alloc(bytes.byteLength, 0x43),
+          );
+        }
+      },
+    });
+
+    await expect(
+      hookedStorage.readVerifiedObject({
+        objectKey: "objects/rewrite.bin",
+        expectedSizeBytes: written.sizeBytes,
+        expectedChecksumSha256: written.checksumSha256,
+        maxBytes: 20n * 1024n * 1024n,
+      }),
+    ).rejects.toMatchObject({
+      code: "STORAGE_OBJECT_CHECKSUM_MISMATCH",
+    });
+  });
+
+  it("rejects directory links instead of following them (Windows Junction / POSIX symlink)", async () => {
+    const targetDirectory = path.join(root, "outside-target");
+    const linkPath = path.join(root, "objects/link-directory");
+    await fs.mkdir(targetDirectory, { recursive: true });
+    await fs.writeFile(path.join(targetDirectory, "target.bin"), PDF_BYTES);
+    await fs.mkdir(path.dirname(linkPath), { recursive: true });
+    await fs.symlink(
+      targetDirectory,
+      linkPath,
+      process.platform === "win32" ? "junction" : "dir",
+    );
+
+    await expect(
+      storage.readVerifiedObject({
+        objectKey: "objects/link-directory/target.bin",
+        expectedSizeBytes: BigInt(PDF_BYTES.byteLength),
+        expectedChecksumSha256: createHash("sha256")
+          .update(PDF_BYTES)
+          .digest("hex"),
+        maxBytes: 20n * 1024n * 1024n,
+      }),
+    ).rejects.toMatchObject({ code: "STORAGE_OBJECT_SYMLINK" });
+  });
+
+  it("classifies temporary access, resource and I/O errors without conflating them", async () => {
+    const written = await storage.writeToStaging(
+      "staging/errors.part",
+      Readable.from([PDF_BYTES]),
+      20n * 1024n * 1024n,
+    );
+    await storage.finalize("staging/errors.part", "objects/errors.bin");
+
+    for (const [nativeCode, expectedCode] of [
+      ["EACCES", "STORAGE_OBJECT_ACCESS_DENIED"],
+      ["EMFILE", "STORAGE_RESOURCE_EXHAUSTED"],
+      ["EIO", "STORAGE_IO_ERROR"],
+    ] as const) {
+      const hookedStorage = new LocalPrivateStorage(root, {
+        afterPrecheck: () => {
+          const error = new Error(nativeCode) as Error & {
+            code: string;
+          };
+          error.code = nativeCode;
+          throw error;
+        },
+      });
+
+      await expect(
+        hookedStorage.readVerifiedObject({
+          objectKey: "objects/errors.bin",
+          expectedSizeBytes: written.sizeBytes,
+          expectedChecksumSha256: written.checksumSha256,
+          maxBytes: 20n * 1024n * 1024n,
+        }),
+      ).rejects.toMatchObject({ code: expectedCode });
+    }
   });
 
   it("rejects path traversal and sizes over the configured limit", async () => {

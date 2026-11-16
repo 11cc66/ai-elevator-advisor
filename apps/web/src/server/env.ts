@@ -47,6 +47,24 @@ const webEnvSchema = z.object({
     .min(30)
     .max(3_600)
     .default(FILE_PROCESSING_RETRY_DEFAULTS.jobExpireSeconds),
+  FILE_DOWNLOAD_MAX_CONCURRENT: z.coerce
+    .number()
+    .int()
+    .min(1)
+    .max(32)
+    .default(4),
+  FILE_DOWNLOAD_BUFFER_BUDGET_BYTES: z.coerce
+    .number()
+    .int()
+    .min(20 * 1024 * 1024)
+    .max(1024 * 1024 * 1024)
+    .default(64 * 1024 * 1024),
+  FILE_DOWNLOAD_RESPONSE_TIMEOUT_MS: z.coerce
+    .number()
+    .int()
+    .min(1_000)
+    .max(300_000)
+    .default(30_000),
 });
 
 export type WebEnv = z.infer<typeof webEnvSchema>;
