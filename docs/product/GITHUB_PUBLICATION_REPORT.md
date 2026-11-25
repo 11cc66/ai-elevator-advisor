@@ -5,36 +5,33 @@ Date: 2026-11-25
 ## 1. 最终状态
 
 ```text
-BLOCKED — GITHUB IDENTITY / REMOTE TARGET NOT AVAILABLE
+Repository publication:
+PASS — PUBLIC REPOSITORY PUBLISHED
+
+Product production readiness:
+PARTIAL / NOT VERIFIED
 ```
 
-本轮完成了本地盘点、安全扫描、README 修订和发布候选文件清单，但未完成
-GitHub 公开仓库创建、staging、commit 或 push。
-
-阻断原因：
-
-1. 本地仓库没有 Git remote；
-2. 未安装 GitHub CLI `gh`；
-3. Git Credential Manager 未保存可用的 GitHub 凭据；
-4. 环境未提供 `GITHUB_TOKEN` 或 `GH_TOKEN`。
-
-根据授权中的停止条件，在无法证明 GitHub 身份和目标仓库时不得继续远端发布。
+本轮完成了 GitHub 认证恢复、Public 仓库确认、候选文件复核、显式白名单
+staging、暂存区安全扫描、发布 commit 和 push。公开发布本身通过；仓库级
+生产就绪度仍受下文技术限制约束。
 
 ## 2. 仓库与发布目标
 
 | 项目 | 值 |
 |---|---|
 | 本地仓库 | `D:\thinkbook\Desktop\jieya` |
-| 建议公开仓库名 | `ai-elevator-advisor` |
-| GitHub 公开地址 | `NOT CREATED / NOT VERIFIED` |
-| 可见性 | `NOT CREATED / NOT VERIFIED` |
-| 发布分支 | `NOT CREATED` |
-| 发布 commit | `NOT CREATED` |
+| GitHub 账号 | `11cc66` |
+| 仓库名 | `ai-elevator-advisor` |
+| GitHub 公开地址 | `https://github.com/11cc66/ai-elevator-advisor` |
+| 可见性 | `PUBLIC` |
+| 默认远端分支 | `main` |
+| 本地发布分支 | `codex/public-github-sync` |
+| 发布内容 commit | `e72297115701583fed6d1d2cf99b36ecf8a7b44a` |
 | 发布前 HEAD | `b224388bc6160eb4a66ad8db7cecd4d23aa75fb8` |
-| 发布后 HEAD | `b224388bc6160eb4a66ad8db7cecd4d23aa75fb8` |
 
-仓库名来自根 `package.json` 的 `ai-elevator-advisor`，但因为没有认证信息，
-尚未确认该名称在目标 GitHub 账号下是否可用。
+本报告更新会形成发布内容 commit 之后的纯文档收尾 commit；最终远端 HEAD 在
+push 后重新读取并记录于最终交付信息。
 
 ## 3. Git 初始状态
 
@@ -74,15 +71,17 @@ docs/product/GITHUB_PUBLICATION_CANDIDATE_FILES_SHA256.txt
 | `tools/` | 37 |
 | 合计 | 1,088 |
 
-添加本报告后：
+加入 `.gitattributes`、本报告和候选 Manifest 后：
 
 ```text
-Raw candidate files:                   1,089
+Raw non-ignored candidates:            1,090
 Explicit non-ignored exclusions:            2
-Publishable files excluding Manifest:   1,087
+Published tree files:                   1,089
+Manifest records excluding itself:      1,088
 ```
 
-最终精确字节数和逐文件 SHA-256 由伴生 Manifest 记录。
+最终逐文件 SHA-256 由伴生 Manifest 记录。发布内容 commit 的 tree 包含
+1,089 个文件。
 
 ## 5. 立即排除项
 
@@ -144,12 +143,13 @@ A2D8BC6862A4CAD5E37CE2D1149B312339079F04A52F040B1D89DF3FA34B2892
 
 ### 7.1 当前工作树
 
-扫描范围：
+最终 index 扫描范围：
 
 ```text
-All tracked + non-ignored untracked files
-Scanned text files: 1,086
-Skipped: 2
+Indexed files:             1,089
+Scanned:                   1,089
+Skipped:                       0
+Total indexed bytes:  13,641,962
 ```
 
 高置信度秘密规则：
@@ -247,54 +247,84 @@ exit 0
 
 ## 10. 原有未提交工作
 
-没有执行 Git 写操作：
+原始开发分支仍保留在：
 
 ```text
-git add:    NONE
-git commit: NONE
-git push:   NONE
-git reset/restore/clean/checkout/stash: NONE
+feature/p1-3-storage-lifecycle-schema
+b224388bc6160eb4a66ad8db7cecd4d23aa75fb8
 ```
 
-原有 41 个 tracked modified 文件、869 个 untracked 文件均保留。README 和本
-报告是本轮新增修改，尚未 stage 或 commit。
+原有 worktree 内容已通过显式白名单提交到独立发布分支，因此开发成果没有
+丢失；发布提交在受控白名单中包含了原 41 个 tracked modified 文件的修改和
+需公开的 untracked 文件。实际执行：
+
+```text
+git add --pathspec-from-file=<NUL whitelist>
+git commit -m "chore: publish AI elevator advisor project"
+git push -u origin codex/public-github-sync:main
+```
+
+没有执行 reset、restore、clean、checkout、stash 或 force push。
 
 ## 11. 发布后核验
 
 ```text
-GitHub Repository:          NOT VERIFIED — NOT CREATED
-Public Visibility:          NOT VERIFIED — NOT CREATED
-Target Branch:              NOT VERIFIED
-Remote HEAD:                NOT VERIFIED
-README on GitHub:           NOT VERIFIED
-Key Files on GitHub:        NOT VERIFIED
-Remote Credential Scan:     NOT VERIFIED
+GitHub Repository:          VERIFIED
+Public Visibility:          VERIFIED — PUBLIC
+Target Branch:              VERIFIED — main
+Remote HEAD at content push:e72297115701583fed6d1d2cf99b36ecf8a7b44a
+README on GitHub:           VERIFIED
+Key Files on GitHub:        VERIFIED
+Viewer Permission:          ADMIN / PUSH
+Remote Credential Scan:     VERIFIED — NO TOKEN IN REMOTE URL
 ```
 
-## 12. 恢复条件
+GitHub API 确认：
 
-在继续发布前，需要用户或受控环境完成至少一项：
+```text
+full_name:      11cc66/ai-elevator-advisor
+visibility:     public
+private:        false
+default_branch: main
+permissions:    admin=true, maintain=true, push=true, pull=true
+```
 
-1. 配置具备创建公开仓库权限的 GitHub Token，并仅通过 Credential Manager
-   或受控环境变量提供；
-2. 安装并认证 GitHub CLI；
-3. 提供明确的目标 GitHub 仓库 URL 和可用的 Git HTTPS 凭据。
+## 12. 发布门禁结果
 
-恢复后必须先重新执行 Manifest/报告哈希核验、敏感信息扫描、显式白名单
-staging、`git diff --cached --check`、Public 可见性核验，再 commit 和 push。
+```text
+R5 candidate Manifest coverage: PASS
+Explicit path whitelist:        PASS
+git diff --cached --check:      PASS
+Staged/index secret scan:       PASS — 0 high-confidence hits
+Forbidden path check:           PASS
+Remote URL credential check:    PASS
+Public visibility check:        PASS
+Push:                           PASS — no force
+```
+
+`.env.example` 和 `.env.test.example` 是已跟踪的纯占位模板，不是实际
+环境文件；实际 `.env`、`.env.test`、`.next`、`dist`、数据库数据和缓存均
+未进入发布树。
 
 ## 13. 当前结论
 
 ```text
-Local publication preparation:
-PARTIAL — README and candidate inventory complete
+Public Repository Publication:
+PASS
 
 Security scan:
-PASS WITH TEMPLATE FILE EXCEPTION
+PASS — placeholder templates only
 
-Repository publication:
-BLOCKED — GitHub authentication and remote target unavailable
+Remote consistency:
+PASS
 
 Production readiness:
-NOT VERIFIED
+PARTIAL / NOT VERIFIED
 ```
+
+技术限制：
+
+- Repository-wide `pnpm typecheck` 仍在旧 P1-3 upload/FileVersion chain 失败；
+- Playwright browser runtime 和完整 E2E 未在发布任务中重新执行；
+- 真实 AI、真实厂家数据、正式报价、合同、勘察和部署未实现；
+- PostgreSQL、ACL、Migration Lock 和 Runtime 并发仍有多项 NOT VERIFIED。
