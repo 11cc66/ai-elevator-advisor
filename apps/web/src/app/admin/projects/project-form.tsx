@@ -39,7 +39,7 @@ export function ProjectForm({
         customerId: String(form.get("customerId") ?? ""),
         name: String(form.get("name") ?? ""),
         address: String(form.get("address") ?? ""),
-        projectType: "OLD_BUILDING_ELEVATOR",
+        projectType: String(form.get("projectType") ?? "OLD_BUILDING_ADDITION"),
       });
       formElement.reset();
       router.refresh();
@@ -77,6 +77,14 @@ export function ProjectForm({
       <label className="space-y-2 text-sm font-medium md:col-span-2">
         <span>项目地址</span>
         <input className="admin-input" name="address" required />
+      </label>
+      <label className="space-y-2 text-sm font-medium md:col-span-2">
+        <span>安装场景</span>
+        <select className="admin-input" defaultValue="OLD_BUILDING_ADDITION" name="projectType">
+          <option value="OLD_BUILDING_ADDITION">旧楼加装</option>
+          <option value="EXISTING_ELEVATOR_RENOVATION">现有电梯改造</option>
+          <option value="NEW_BUILDING_INSTALLATION">新楼安装</option>
+        </select>
       </label>
       <div className="md:col-span-2">
         {error ? <p className="mb-3 text-sm text-red-700">{error}</p> : null}

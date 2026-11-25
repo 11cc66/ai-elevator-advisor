@@ -3,7 +3,6 @@ import {
   FILE_RECOGNITION_QUEUE,
   type FileRecognitionJob,
 } from "@elevator/contracts";
-import type { LocalPrivateStorage } from "@elevator/file-storage";
 import type { PrismaClient } from "@prisma/client";
 import type { PgBoss } from "pg-boss";
 
@@ -19,24 +18,19 @@ import {
 } from "./file-processing-state.js";
 import { logger } from "./logger.js";
 
-const STALE_UPLOADING_MS = 15 * 60 * 1000;
-
 export interface FileMaintenanceResult {
   skipped: boolean;
   leaseLost: boolean;
   requeued: number;
   recoveredProcessing: number;
   exhaustedProcessing: number;
-  expiredIntents: number;
-  removedOrphanObjects: number;
-  removedTempEntries: number;
-  cleanupFailures: number;
 }
+
+export type FileMaintenanceQueue = Pick<PgBoss, "send" | "sendAfter">;
 
 export async function runFileMaintenance(input: {
   prisma: PrismaClient;
-  boss: PgBoss;
-  storage: LocalPrivateStorage;
+  boss: FileMaintenanceQueue;
   env: WorkerEnv;
   testHooks?: {
     afterLease?: () => void | Promise<void>;
@@ -72,10 +66,6 @@ export async function runFileMaintenance(input: {
       requeued: 0,
       recoveredProcessing: 0,
       exhaustedProcessing: 0,
-      expiredIntents: 0,
-      removedOrphanObjects: 0,
-      removedTempEntries: 0,
-      cleanupFailures: 0,
     };
   }
 
@@ -106,10 +96,6 @@ export async function runFileMaintenance(input: {
         requeued: 0,
         recoveredProcessing: 0,
         exhaustedProcessing: 0,
-        expiredIntents: 0,
-        removedOrphanObjects: 0,
-        removedTempEntries: 0,
-        cleanupFailures: 0,
       };
     }
     throw error;
@@ -130,8 +116,7 @@ export async function runFileMaintenance(input: {
 
 async function runFileMaintenanceUnlocked(input: {
   prisma: PrismaClient;
-  boss: PgBoss;
-  storage: LocalPrivateStorage;
+  boss: FileMaintenanceQueue;
   env: WorkerEnv;
 }, lease: MaintenanceLeaseController): Promise<FileMaintenanceResult> {
   const now = new Date();
@@ -265,139 +250,12 @@ async function runFileMaintenanceUnlocked(input: {
     }
   }
 
-  const staleUploading = new Date(now.getTime() - STALE_UPLOADING_MS);
-  const expiredIntents = await input.prisma.fileUploadIntent.findMany({
-    where: {
-      OR: [
-        {
-          status: { in: ["PENDING", "FAILED"] },
-          expiresAt: { lt: now },
-        },
-        {
-          status: "UPLOADING",
-          claimedAt: { lt: staleUploading },
-        },
-      ],
-    },
-    take: 100,
-    select: {
-      id: true,
-      stagingKey: true,
-      objectStorageKey: true,
-      completedFileVersionId: true,
-      uploadedById: true,
-    },
-  });
-  let expiredCount = 0;
-  let cleanupFailures = 0;
-  const recordCleanupFailure = (
-    operation: string,
-    error: unknown,
-  ): void => {
-    cleanupFailures += 1;
-    logger.warn(
-      {
-        event: "file.cleanup.entry_failed",
-        operation,
-        errorCode:
-          typeof error === "object" &&
-          error !== null &&
-          "code" in error &&
-          typeof error.code === "string"
-            ? error.code
-            : error instanceof Error
-              ? error.name
-              : "UNKNOWN_ERROR",
-      },
-      "File cleanup entry failed",
-    );
-  };
-
-  for (const intent of expiredIntents) {
-    await lease.assertHeld();
-    await input.storage
-      .removeStaging(intent.stagingKey)
-      .catch((error) =>
-        recordCleanupFailure("expired_staging", error),
-      );
-    if (
-      !intent.completedFileVersionId &&
-      intent.objectStorageKey
-    ) {
-      await input.storage
-        .removeObject(intent.objectStorageKey)
-        .catch((error) =>
-          recordCleanupFailure("expired_object", error),
-        );
-    }
-    await lease.assertHeld();
-    const updated = await input.prisma.$transaction(async (tx) => {
-      const changed = await tx.fileUploadIntent.updateMany({
-        where: {
-          id: intent.id,
-          status: { in: ["PENDING", "UPLOADING", "FAILED"] },
-        },
-        data: {
-          status: "EXPIRED",
-          failureCode: "UPLOAD_INTENT_EXPIRED",
-        },
-      });
-      if (changed.count === 1) {
-        await tx.auditLog.create({
-          data: {
-            actorUserId: intent.uploadedById,
-            action: "file.upload_intent.expired",
-            objectType: "FileUploadIntent",
-            objectId: intent.id,
-            reason: "UPLOAD_INTENT_EXPIRED",
-          },
-        });
-      }
-      return changed.count;
-    });
-    expiredCount += updated;
-  }
-
-  const [versions, activeIntents] = await Promise.all([
-    input.prisma.fileVersion.findMany({
-      select: { storageKey: true },
-    }),
-    input.prisma.fileUploadIntent.findMany({
-      where: {
-        status: { not: "EXPIRED" },
-        objectStorageKey: { not: null },
-      },
-      select: { objectStorageKey: true },
-    }),
-  ]);
-  const referencedObjectKeys = [
-    ...versions.map((version) => version.storageKey),
-    ...activeIntents.flatMap((intent) =>
-      intent.objectStorageKey ? [intent.objectStorageKey] : [],
-    ),
-  ];
-  const removedOrphanObjects =
-    await input.storage.cleanupOrphanObjects(
-      referencedObjectKeys,
-      input.env.TEMP_RETENTION_MS,
-      (error) => recordCleanupFailure("orphan_object", error),
-      () => lease.assertHeld(),
-    );
-  const removedTempEntries = await input.storage.cleanupTemp(
-    input.env.TEMP_RETENTION_MS,
-    (error) => recordCleanupFailure("temp_entry", error),
-    () => lease.assertHeld(),
-  );
   const result = {
     skipped: false,
     leaseLost: false,
     requeued,
     recoveredProcessing,
     exhaustedProcessing,
-    expiredIntents: expiredCount,
-    removedOrphanObjects,
-    removedTempEntries,
-    cleanupFailures,
   };
 
   logger.info(

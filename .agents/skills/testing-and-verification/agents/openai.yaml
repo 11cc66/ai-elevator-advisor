@@ -1,0 +1,7 @@
+interface:
+  display_name: "Testing and Verification"
+  short_description: "Plan evidence-based regression verification"
+  default_prompt: "Use $testing-and-verification to validate this change and report reproducible evidence."
+
+policy:
+  allow_implicit_invocation: true

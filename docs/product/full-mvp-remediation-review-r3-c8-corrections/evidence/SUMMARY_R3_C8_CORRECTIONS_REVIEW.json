@@ -1,0 +1,201 @@
+{
+  "review": "FULL-MVP-REMEDIATION-REVIEW-R3-C8-CORRECTIONS",
+  "date": "2026-11-24",
+  "mode": "independent, read-only, adversarial",
+  "overall": "FAIL — DESIGN CORRECTIONS REQUIRED",
+  "counts": {
+    "p0": 0,
+    "p1": 3,
+    "p2": 3,
+    "p3": 2
+  },
+  "previous_r3_c8": {
+    "p1": {
+      "resolved": 1,
+      "partial": 3,
+      "not_resolved": 0,
+      "total": 4
+    },
+    "p2": {
+      "resolved": 2,
+      "partial": 1,
+      "not_resolved": 1,
+      "total": 4
+    },
+    "p3": {
+      "resolved": 2,
+      "partial": 1,
+      "not_resolved": 0,
+      "total": 3
+    }
+  },
+  "historical": {
+    "r3_c4": {
+      "resolved": 7,
+      "partial": 1,
+      "not_resolved": 3,
+      "total": 11
+    },
+    "r3_c5": {
+      "resolved": 1,
+      "partial": 4,
+      "not_resolved": 0,
+      "total": 5
+    },
+    "r3_c6_p1": {
+      "resolved": 3,
+      "partial": 0,
+      "not_resolved": 1,
+      "total": 4
+    },
+    "r3_c6_p2": {
+      "resolved": 6,
+      "partial": 0,
+      "not_resolved": 0,
+      "total": 6
+    },
+    "r3_c7": {
+      "resolved": 7,
+      "partial": 6,
+      "not_resolved": 0,
+      "total": 13
+    }
+  },
+  "input_manifests": {
+    "corrections": {
+      "sha256": "0ACBBB3A4CB5F0439302E7F7109F0ECFDCFDE50843D74941E232F830ECE552A2",
+      "bytes": 4391,
+      "lines": 24,
+      "records": 24,
+      "unique_paths": 24,
+      "actual_files_including_manifest": 25,
+      "mismatches": 0,
+      "coverage_differences": 0
+    },
+    "r3_c8_design": {
+      "sha256": "672D6206D06E4282F7C8684A3811654EEDDA72E52C55B6EDF2C324B5C131E853"
+    },
+    "r3_c8_review": {
+      "sha256": "2E895560FB3EDEEE938395E2626D0ECBE4939EA18D4A4A573FE159960E1BE611"
+    },
+    "r3_c7_design": {
+      "sha256": "160A2BB8F93F473063225A2DBE04C8F807E456E1B50C4DF0D82B861B84BF3094"
+    },
+    "r3_c7_review": {
+      "sha256": "5254758B8B47AEBB8E591CBB380F371398EE59035D48D239D02331E09FFCC118"
+    }
+  },
+  "independent_verification": {
+    "script": "evidence/independent_verify.py",
+    "result": "evidence/INDEPENDENT_REVIEW_EVIDENCE_R3_C8_CORRECTIONS.json",
+    "checks_passed": 32,
+    "checks_total": 37,
+    "failed_checks": [
+      "catalog_source_target_binding",
+      "database_owner_rejected",
+      "protected_owner_closure_rejected",
+      "bootstrap_root_principal_binding",
+      "bootstrap_recovery"
+    ],
+    "targeted_mutations_detected": 13,
+    "targeted_mutations_total": 13,
+    "foreign_key_arity_errors": 0,
+    "object_inventory": {
+      "tables": 58,
+      "foreign_keys": 87,
+      "functions": 118,
+      "triggers": 137,
+      "roles": 26
+    }
+  },
+  "offline_vectors": {
+    "c6_snap_01": {
+      "records": 15,
+      "bytes": 4036,
+      "sha256": "7D3CAC885F839594006650CC500FEF8A59D22AD151E6CB21567008D0D19519EB"
+    },
+    "r6_scalar_vectors": "23/23",
+    "r6_resource_vectors": "14/14"
+  },
+  "open_decisions": {
+    "original": 57,
+    "independently_reviewed": 57,
+    "approved_by_user": 0,
+    "still_open": 57,
+    "implementation_blockers": 57,
+    "cross_cutting_blockers": 8
+  },
+  "shell": {
+    "powershell_version": "7.6.9",
+    "edition": "Core",
+    "file_version": "7.6.9.500",
+    "executable_path": "C:\\Program Files\\WindowsApps\\OpenAI.CodexPrimaryRuntime.v26-1119-907-0_26.1119.907.0_x64__3k8sg7r9htsxt\\dependencies\\native\\powershell\\pwsh.exe",
+    "parent": "codex.exe",
+    "working_directory": "D:\\thinkbook\\Desktop\\jieya",
+    "routing_incidents_recorded": 7,
+    "command_construction_failures_recorded": 1
+  },
+  "review_start_git": {
+    "branch": "feature/p1-3-storage-lifecycle-schema",
+    "head": "b224388bc6160eb4a66ad8db7cecd4d23aa75fb8",
+    "tracked_modified": 41,
+    "untracked_entries": 71,
+    "untracked_files_uall": 673,
+    "staged": 0,
+    "deleted": 0,
+    "status_lines": 112
+  },
+  "git_before_summary_and_manifest": {
+    "tracked_modified": 41,
+    "untracked_entries": 71,
+    "untracked_files_uall": 674,
+    "staged": 0,
+    "deleted": 0,
+    "status_lines": 112,
+    "review_directory_files": 13
+  },
+  "expected_final_git_after_summary_and_manifest": {
+    "tracked_modified": 41,
+    "untracked_entries": 71,
+    "untracked_files_uall": 676,
+    "staged": 0,
+    "deleted": 0,
+    "status_lines": 112,
+    "review_directory_files": 15
+  },
+  "protected_paths": {
+    "null_exists": true,
+    "null_paren_exists": false,
+    "null_quote_exists": false,
+    "null_content_read": false,
+    "null_hash_computed": false
+  },
+  "verification_boundaries": {
+    "postgresql_grammar": "NOT VERIFIED — NO COMPATIBLE OFFLINE PARSER",
+    "postgresql_compilation": "NOT VERIFIED — DATABASE NOT AUTHORIZED",
+    "catalog_introspection": "NOT VERIFIED — DATABASE NOT AUTHORIZED",
+    "runtime_concurrency": "NOT VERIFIED — RUNTIME NOT AUTHORIZED",
+    "database": "NOT ACCESSED",
+    "storage": "NOT ACCESSED",
+    "runtime": "NOT EXECUTED",
+    "production": "NOT AUTHORIZED",
+    "git_writes": "NONE"
+  },
+  "review_directory_final_files": [
+    "DDL_PRIVILEGE_AND_OBJECT_AUDIT_R3_C8_CORRECTIONS.md",
+    "HISTORICAL_FINDING_CLOSURE_MATRIX_R3_C8_CORRECTIONS.md",
+    "INDEPENDENT_DESIGN_REVIEW_R3_C8_CORRECTIONS_REPORT.md",
+    "INDEPENDENT_REVIEW_R3_C8_CORRECTIONS_FINDINGS.md",
+    "OPEN_DECISIONS_REVIEW_R3_C8_CORRECTIONS.md",
+    "PRICE_AND_REVIEW_PROVENANCE_AUDIT_R3_C8_CORRECTIONS.md",
+    "REQUEST_LEDGER_AND_PRESEAL_AUDIT_R3_C8_CORRECTIONS.md",
+    "SESSION_ROLE_AND_BOOTSTRAP_AUDIT_R3_C8_CORRECTIONS.md",
+    "VALIDATOR_AND_MUTATION_AUDIT_R3_C8_CORRECTIONS.md",
+    "evidence/INDEPENDENT_REVIEW_EVIDENCE_R3_C8_CORRECTIONS.json",
+    "evidence/SHELL_AND_EXECUTION_EVIDENCE_R3_C8_CORRECTIONS_REVIEW.md",
+    "evidence/SUMMARY_R3_C8_CORRECTIONS_REVIEW.json",
+    "evidence/UNVERIFIED_ITEMS_R3_C8_CORRECTIONS_REVIEW.md",
+    "evidence/independent_verify.py",
+    "SHA256SUMS_R3_C8_CORRECTIONS_REVIEW.txt"
+  ]
+}

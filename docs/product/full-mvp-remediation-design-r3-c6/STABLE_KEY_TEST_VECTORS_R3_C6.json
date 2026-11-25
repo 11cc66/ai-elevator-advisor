@@ -1,0 +1,232 @@
+{
+  "encodingVersion": "SK-R2",
+  "registryVersion": "SNAPSHOT-R3",
+  "cases": [
+    {
+      "id": "SKV-COLON-01",
+      "tupleA": [
+        "PRICE",
+        "a:b",
+        "c"
+      ],
+      "tupleB": [
+        "PRICE",
+        "a",
+        "b:c"
+      ],
+      "bytesA": "534B523200020003000400020001010100000003613A62000201010000000163FFFF",
+      "bytesB": "534B523200020003000400020001010100000001610002010100000003623A63FFFF",
+      "expectedEquality": false,
+      "dbResult": "both rows may exist under distinct structured and stable-key UNIQUE values"
+    },
+    {
+      "id": "SKV-EMPTY-01",
+      "tupleA": [
+        "PRICE",
+        "",
+        "x"
+      ],
+      "tupleB": [
+        "PRICE",
+        "a",
+        "x"
+      ],
+      "bytesA": "534B523200020003000400020001010100000000000201010000000178FFFF",
+      "bytesB": "534B52320002000300040002000101010000000161000201010000000178FFFF",
+      "expectedEquality": false,
+      "dbResult": "Registry rejects empty required component"
+    },
+    {
+      "id": "SKV-NULL-EMPTY-01",
+      "tupleA": [
+        "PRICE",
+        null,
+        "x"
+      ],
+      "tupleB": [
+        "PRICE",
+        "",
+        "x"
+      ],
+      "bytesA": "534B523200020003000400020001000000000000000201010000000178FFFF",
+      "bytesB": "534B523200020003000400020001010100000000000201010000000178FFFF",
+      "expectedEquality": false,
+      "dbResult": "Registry rejects NULL and empty required components"
+    },
+    {
+      "id": "SKV-MISSING-01",
+      "tupleA": [
+        "PRICE",
+        "a"
+      ],
+      "tupleB": [
+        "PRICE",
+        "a",
+        "b"
+      ],
+      "bytesA": null,
+      "bytesB": "534B52320002000300040002000101010000000161000201010000000162FFFF",
+      "expectedEquality": false,
+      "dbResult": "missing component rejected before DB"
+    },
+    {
+      "id": "SKV-UNICODE-NFC",
+      "tupleA": [
+        "CAND",
+        "caf\u00e9"
+      ],
+      "bytesA": null,
+      "expectedEquality": null,
+      "dbResult": "reject: stable-key ID domain is ASCII"
+    },
+    {
+      "id": "SKV-UNICODE-NFD",
+      "tupleA": [
+        "CAND",
+        "cafe\u0301"
+      ],
+      "bytesA": null,
+      "expectedEquality": null,
+      "dbResult": "reject: stable-key ID domain is ASCII"
+    },
+    {
+      "id": "SKV-MULTIBYTE",
+      "tupleA": [
+        "CAND",
+        "\u7535\u68af\u5019\u9009"
+      ],
+      "bytesA": null,
+      "expectedEquality": null,
+      "dbResult": "reject: stable-key ID domain is ASCII"
+    },
+    {
+      "id": "SKV-TYPE-CONFUSION",
+      "tupleA": [
+        "WARN",
+        "candidate-1",
+        "1"
+      ],
+      "tupleB": [
+        "WARN",
+        "candidate-1",
+        1
+      ],
+      "bytesA": null,
+      "bytesB": "534B52320002000300080002000101010000000B63616E6469646174652D3100020301000000080000000000000001FFFF",
+      "expectedEquality": false,
+      "dbResult": "string rejected; INT64 1 accepted"
+    },
+    {
+      "id": "SKV-LEADING-ZERO",
+      "tupleA": [
+        "WARN",
+        "candidate-1",
+        "01"
+      ],
+      "tupleB": [
+        "WARN",
+        "candidate-1",
+        1
+      ],
+      "bytesA": null,
+      "bytesB": "534B52320002000300080002000101010000000B63616E6469646174652D3100020301000000080000000000000001FFFF",
+      "expectedEquality": false,
+      "dbResult": "textual leading-zero integer rejected"
+    },
+    {
+      "id": "SKV-DOMAIN-SEPARATION",
+      "tupleA": [
+        "PRICE",
+        "a",
+        "b"
+      ],
+      "tupleB": [
+        "PARAM",
+        "a",
+        "b"
+      ],
+      "bytesA": "534B52320002000300040002000101010000000161000201010000000162FFFF",
+      "bytesB": "534B52320002000300030002000101010000000161000202010000000162FFFF",
+      "expectedEquality": false,
+      "dbResult": "different tables may hold same component text"
+    },
+    {
+      "id": "SKV-REGISTRY-SEPARATION",
+      "tupleA": [
+        "SNAPSHOT-R3",
+        "PRICE",
+        "a",
+        "b"
+      ],
+      "tupleB": [
+        "SNAPSHOT-R4-SYNTHETIC",
+        "PRICE",
+        "a",
+        "b"
+      ],
+      "bytesA": "534B52320002000300040002000101010000000161000201010000000162FFFF",
+      "bytesB": "534B52320002000400040002000101010000000161000201010000000162FFFF",
+      "expectedEquality": false,
+      "dbResult": "synthetic framing-only vector; production SNAPSHOT-R3 parser rejects code 4"
+    },
+    {
+      "id": "SKV-PREFIX",
+      "tupleA": [
+        "PRICE",
+        "ab",
+        "c"
+      ],
+      "tupleB": [
+        "PRICE",
+        "a",
+        "bc"
+      ],
+      "bytesA": "534B5232000200030004000200010101000000026162000201010000000163FFFF",
+      "bytesB": "534B5232000200030004000200010101000000016100020101000000026263FFFF",
+      "expectedEquality": false,
+      "dbResult": "both rows distinct"
+    },
+    {
+      "id": "SKV-LENGTH-64",
+      "tupleA": [
+        "PRICE",
+        "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "c"
+      ],
+      "bytesA": "534B52320002000300040002000101010000004041414141414141414141414141414141414141414141414141414141414141414141414141414141414141414141414141414141414141414141414141414141000201010000000163FFFF",
+      "expectedEquality": null,
+      "dbResult": "accepted at 64-byte component boundary"
+    },
+    {
+      "id": "SKV-LENGTH-65",
+      "tupleA": [
+        "PRICE",
+        "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "c"
+      ],
+      "bytesA": null,
+      "expectedEquality": null,
+      "dbResult": "rejected at 65-byte component"
+    },
+    {
+      "id": "SKV-INVALID-UNICODE",
+      "tupleA": [
+        "CAND",
+        "\ud800"
+      ],
+      "bytesA": null,
+      "expectedEquality": null,
+      "dbResult": "reject: lone surrogate is not a valid Unicode scalar and is outside ASCII ID domain"
+    },
+    {
+      "id": "SKV-HISTORICAL-COLON-ID",
+      "tupleA": [
+        "CAND",
+        "legacy:project:building:1"
+      ],
+      "bytesA": "534B5232000200030002000100010101000000196C65676163793A70726F6A6563743A6275696C64696E673A31FFFF",
+      "expectedEquality": null,
+      "dbResult": "accepted exact ASCII ID"
+    }
+  ]
+}

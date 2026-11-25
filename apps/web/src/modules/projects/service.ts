@@ -4,6 +4,7 @@ import type {
   CreateInstallationUnitInput,
   CreateProjectInput,
 } from "@elevator/contracts";
+import { randomUUID } from "node:crypto";
 
 import { appendAuditLog } from "@/modules/audit/log";
 import type { Actor } from "@/modules/access/actor";
@@ -111,15 +112,20 @@ export async function createProject(
   }
 
   return prisma.$transaction(async (tx) => {
-    const project = await tx.project.create({
-      data: {
-        projectCode: createDemoCode("PROJECT"),
-        customerId: input.customerId,
-        name: input.name,
-        address: input.address,
-        projectType: input.projectType,
-        createdById: actorUserId,
-      },
+    const projectId = randomUUID();
+    const projectCode = createDemoCode("PROJECT");
+    await tx.$executeRaw`
+      INSERT INTO "project"
+        ("id", "projectCode", "customerId", "name", "address",
+         "projectType", "status", "dataClassification",
+         "createdById", "createdAt", "updatedAt")
+      VALUES
+        (${projectId}, ${projectCode}, ${input.customerId}, ${input.name},
+         ${input.address}, ${input.projectType}::"ProjectType", 'DRAFT',
+         'DEMO_MOCK', ${actorUserId}, NOW(), NOW())
+    `;
+    const project = await tx.project.findUniqueOrThrow({
+      where: { id: projectId },
     });
 
     await appendAuditLog(tx, {

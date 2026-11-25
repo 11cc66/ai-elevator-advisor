@@ -1,0 +1,683 @@
+{
+  "design": "FULL-MVP-REMEDIATION-DESIGN-R3-C7",
+  "source": "D:/thinkbook/Desktop/jieya/docs/product/full-mvp-remediation-design-r3-c7/DATABASE_COMPLETE_DDL_R3_C7.sql",
+  "scope": "STATIC DESIGN REGISTRY; NOT POSTGRESQL CATALOG INTROSPECTION",
+  "functions": [
+    {
+      "signature": "app.advance_principal_epoch(text, text)",
+      "schema": "app",
+      "name": "advance_principal_epoch",
+      "argument_types": [
+        "text",
+        "text"
+      ],
+      "returns": "bigint",
+      "security": "DEFINER",
+      "search_path": "pg_catalog,app,app_private",
+      "owner": "elevator_review_function_owner",
+      "execute_roles": [
+        "elevator_identity_broker"
+      ],
+      "public_execute": false
+    },
+    {
+      "signature": "app.build_snapshot_basis_r6(text)",
+      "schema": "app",
+      "name": "build_snapshot_basis_r6",
+      "argument_types": [
+        "text"
+      ],
+      "returns": "bytea",
+      "security": "DEFINER",
+      "search_path": "pg_catalog,app,app_private",
+      "owner": "elevator_review_function_owner",
+      "execute_roles": [],
+      "public_execute": false
+    },
+    {
+      "signature": "app.create_policy_revision(text, text, text, bigint, text, text, text, text, text)",
+      "schema": "app",
+      "name": "create_policy_revision",
+      "argument_types": [
+        "text",
+        "text",
+        "text",
+        "bigint",
+        "text",
+        "text",
+        "text",
+        "text",
+        "text"
+      ],
+      "returns": "text",
+      "security": "DEFINER",
+      "search_path": "pg_catalog,app,app_private",
+      "owner": "elevator_review_function_owner",
+      "execute_roles": [
+        "elevator_policy_author"
+      ],
+      "public_execute": false
+    },
+    {
+      "signature": "app.create_snapshot_r3(text, text, bigint)",
+      "schema": "app",
+      "name": "create_snapshot_r3",
+      "argument_types": [
+        "text",
+        "text",
+        "bigint"
+      ],
+      "returns": "bigint",
+      "security": "DEFINER",
+      "search_path": "pg_catalog,app,app_private",
+      "owner": "elevator_review_function_owner",
+      "execute_roles": [
+        "elevator_runtime_worker"
+      ],
+      "public_execute": false
+    },
+    {
+      "signature": "app.finalize_snapshot_r3(text, bigint)",
+      "schema": "app",
+      "name": "finalize_snapshot_r3",
+      "argument_types": [
+        "text",
+        "bigint"
+      ],
+      "returns": "bigint",
+      "security": "DEFINER",
+      "search_path": "pg_catalog,app,app_private",
+      "owner": "elevator_review_function_owner",
+      "execute_roles": [
+        "elevator_runtime_worker"
+      ],
+      "public_execute": false
+    },
+    {
+      "signature": "app.has_project_authority(text, text, text)",
+      "schema": "app",
+      "name": "has_project_authority",
+      "argument_types": [
+        "text",
+        "text",
+        "text"
+      ],
+      "returns": "boolean",
+      "security": "DEFINER",
+      "search_path": "pg_catalog,app,app_private",
+      "owner": "elevator_review_function_owner",
+      "execute_roles": [],
+      "public_execute": false
+    },
+    {
+      "signature": "app.open_trusted_session(text, text, bigint, text, text, text, text, text, timestamptz, timestamptz, timestamptz)",
+      "schema": "app",
+      "name": "open_trusted_session",
+      "argument_types": [
+        "text",
+        "text",
+        "bigint",
+        "text",
+        "text",
+        "text",
+        "text",
+        "text",
+        "timestamptz",
+        "timestamptz",
+        "timestamptz"
+      ],
+      "returns": "void",
+      "security": "DEFINER",
+      "search_path": "pg_catalog,app,app_private",
+      "owner": "elevator_review_function_owner",
+      "execute_roles": [
+        "elevator_identity_broker"
+      ],
+      "public_execute": false
+    },
+    {
+      "signature": "app.policy_digest(text)",
+      "schema": "app",
+      "name": "policy_digest",
+      "argument_types": [
+        "text"
+      ],
+      "returns": "text",
+      "security": "INVOKER",
+      "search_path": "pg_catalog,app,app_private",
+      "owner": "elevator_review_function_owner",
+      "execute_roles": [],
+      "public_execute": false
+    },
+    {
+      "signature": "app.policy_is_effective(text)",
+      "schema": "app",
+      "name": "policy_is_effective",
+      "argument_types": [
+        "text"
+      ],
+      "returns": "boolean",
+      "security": "DEFINER",
+      "search_path": "pg_catalog,app,app_private",
+      "owner": "elevator_review_function_owner",
+      "execute_roles": [],
+      "public_execute": false
+    },
+    {
+      "signature": "app.revoke_authority_grant(text, text)",
+      "schema": "app",
+      "name": "revoke_authority_grant",
+      "argument_types": [
+        "text",
+        "text"
+      ],
+      "returns": "void",
+      "security": "DEFINER",
+      "search_path": "pg_catalog,app,app_private",
+      "owner": "elevator_review_function_owner",
+      "execute_roles": [
+        "elevator_security_admin"
+      ],
+      "public_execute": false
+    },
+    {
+      "signature": "app.revoke_trusted_session(text, text)",
+      "schema": "app",
+      "name": "revoke_trusted_session",
+      "argument_types": [
+        "text",
+        "text"
+      ],
+      "returns": "void",
+      "security": "DEFINER",
+      "search_path": "pg_catalog,app,app_private",
+      "owner": "elevator_review_function_owner",
+      "execute_roles": [
+        "elevator_identity_broker"
+      ],
+      "public_execute": false
+    },
+    {
+      "signature": "app.seal_selection_run(text, bigint, text)",
+      "schema": "app",
+      "name": "seal_selection_run",
+      "argument_types": [
+        "text",
+        "bigint",
+        "text"
+      ],
+      "returns": "text",
+      "security": "DEFINER",
+      "search_path": "pg_catalog,app,app_private",
+      "owner": "elevator_review_function_owner",
+      "execute_roles": [
+        "elevator_runtime_worker"
+      ],
+      "public_execute": false
+    },
+    {
+      "signature": "app.selection_result_digest(text)",
+      "schema": "app",
+      "name": "selection_result_digest",
+      "argument_types": [
+        "text"
+      ],
+      "returns": "text",
+      "security": "INVOKER",
+      "search_path": null,
+      "owner": "elevator_review_function_owner",
+      "execute_roles": [],
+      "public_execute": false
+    },
+    {
+      "signature": "app.snapshot_record_count(text)",
+      "schema": "app",
+      "name": "snapshot_record_count",
+      "argument_types": [
+        "text"
+      ],
+      "returns": "integer",
+      "security": "DEFINER",
+      "search_path": "pg_catalog,app,app_private",
+      "owner": "elevator_review_function_owner",
+      "execute_roles": [],
+      "public_execute": false
+    },
+    {
+      "signature": "app.source_key_r3(text, text, text, boolean, text)",
+      "schema": "app",
+      "name": "source_key_r3",
+      "argument_types": [
+        "text",
+        "text",
+        "text",
+        "boolean",
+        "text"
+      ],
+      "returns": "bytea",
+      "security": "INVOKER",
+      "search_path": "pg_catalog,app,app_private",
+      "owner": "elevator_review_function_owner",
+      "execute_roles": [],
+      "public_execute": false
+    },
+    {
+      "signature": "app.transition_policy_review(text, bigint, app.policy_command, text, text, text)",
+      "schema": "app",
+      "name": "transition_policy_review",
+      "argument_types": [
+        "text",
+        "bigint",
+        "app.policy_command",
+        "text",
+        "text",
+        "text"
+      ],
+      "returns": "table ( event_id text, event_sequence bigint, resulting_state text, replay boolean )",
+      "security": "DEFINER",
+      "search_path": "pg_catalog,app,app_private",
+      "owner": "elevator_review_function_owner",
+      "execute_roles": [
+        "elevator_policy_author",
+        "elevator_policy_reviewer"
+      ],
+      "public_execute": false
+    },
+    {
+      "signature": "app.transition_professional_review(text, bigint, app.professional_review_command, text, text, text, text, text)",
+      "schema": "app",
+      "name": "transition_professional_review",
+      "argument_types": [
+        "text",
+        "bigint",
+        "app.professional_review_command",
+        "text",
+        "text",
+        "text",
+        "text",
+        "text"
+      ],
+      "returns": "table ( event_id text, event_sequence bigint, resulting_state text, replay boolean )",
+      "security": "DEFINER",
+      "search_path": "pg_catalog,app,app_private",
+      "owner": "elevator_review_function_owner",
+      "execute_roles": [
+        "elevator_professional_reviewer"
+      ],
+      "public_execute": false
+    },
+    {
+      "signature": "app.verify_snapshot_basis_r6(bytea, text)",
+      "schema": "app",
+      "name": "verify_snapshot_basis_r6",
+      "argument_types": [
+        "bytea",
+        "text"
+      ],
+      "returns": "boolean",
+      "security": "DEFINER",
+      "search_path": "pg_catalog,app,app_private",
+      "owner": "elevator_review_function_owner",
+      "execute_roles": [],
+      "public_execute": false
+    },
+    {
+      "signature": "app_private.assert_active_session(text, text, bigint)",
+      "schema": "app_private",
+      "name": "assert_active_session",
+      "argument_types": [
+        "text",
+        "text",
+        "bigint"
+      ],
+      "returns": "void",
+      "security": "DEFINER",
+      "search_path": "pg_catalog,app,app_private",
+      "owner": "elevator_review_function_owner",
+      "execute_roles": [],
+      "public_execute": false
+    },
+    {
+      "signature": "app_private.deny_snapshot_truncate_r3()",
+      "schema": "app_private",
+      "name": "deny_snapshot_truncate_r3",
+      "argument_types": [],
+      "returns": "trigger",
+      "security": "DEFINER",
+      "search_path": "pg_catalog,app,app_private",
+      "owner": "elevator_review_function_owner",
+      "execute_roles": [],
+      "public_execute": false
+    },
+    {
+      "signature": "app_private.deny_truncate_r3()",
+      "schema": "app_private",
+      "name": "deny_truncate_r3",
+      "argument_types": [],
+      "returns": "trigger",
+      "security": "DEFINER",
+      "search_path": "pg_catalog,app,app_private",
+      "owner": "elevator_review_function_owner",
+      "execute_roles": [],
+      "public_execute": false
+    },
+    {
+      "signature": "app_private.dispatch_snapshot_validation_r3()",
+      "schema": "app_private",
+      "name": "dispatch_snapshot_validation_r3",
+      "argument_types": [],
+      "returns": "trigger",
+      "security": "DEFINER",
+      "search_path": "pg_catalog,app,app_private",
+      "owner": "elevator_review_function_owner",
+      "execute_roles": [],
+      "public_execute": false
+    },
+    {
+      "signature": "app_private.guard_append_only_r3()",
+      "schema": "app_private",
+      "name": "guard_append_only_r3",
+      "argument_types": [],
+      "returns": "trigger",
+      "security": "DEFINER",
+      "search_path": "pg_catalog,app,app_private",
+      "owner": "elevator_review_function_owner",
+      "execute_roles": [],
+      "public_execute": false
+    },
+    {
+      "signature": "app_private.guard_policy_revision_r3()",
+      "schema": "app_private",
+      "name": "guard_policy_revision_r3",
+      "argument_types": [],
+      "returns": "trigger",
+      "security": "DEFINER",
+      "search_path": "pg_catalog,app,app_private",
+      "owner": "elevator_review_function_owner",
+      "execute_roles": [],
+      "public_execute": false
+    },
+    {
+      "signature": "app_private.guard_sealed_result_r3()",
+      "schema": "app_private",
+      "name": "guard_sealed_result_r3",
+      "argument_types": [],
+      "returns": "trigger",
+      "security": "DEFINER",
+      "search_path": "pg_catalog,app,app_private",
+      "owner": "elevator_review_function_owner",
+      "execute_roles": [],
+      "public_execute": false
+    },
+    {
+      "signature": "app_private.guard_selection_run_r3()",
+      "schema": "app_private",
+      "name": "guard_selection_run_r3",
+      "argument_types": [],
+      "returns": "trigger",
+      "security": "DEFINER",
+      "search_path": "pg_catalog,app,app_private",
+      "owner": "elevator_review_function_owner",
+      "execute_roles": [],
+      "public_execute": false
+    },
+    {
+      "signature": "app_private.guard_snapshot_child_r3()",
+      "schema": "app_private",
+      "name": "guard_snapshot_child_r3",
+      "argument_types": [],
+      "returns": "trigger",
+      "security": "DEFINER",
+      "search_path": "pg_catalog,app,app_private",
+      "owner": "elevator_review_function_owner",
+      "execute_roles": [],
+      "public_execute": false
+    },
+    {
+      "signature": "app_private.guard_snapshot_header_r3()",
+      "schema": "app_private",
+      "name": "guard_snapshot_header_r3",
+      "argument_types": [],
+      "returns": "trigger",
+      "security": "DEFINER",
+      "search_path": "pg_catalog,app,app_private",
+      "owner": "elevator_review_function_owner",
+      "execute_roles": [],
+      "public_execute": false
+    },
+    {
+      "signature": "app_private.i64be(bigint)",
+      "schema": "app_private",
+      "name": "i64be",
+      "argument_types": [
+        "bigint"
+      ],
+      "returns": "bytea",
+      "security": "INVOKER",
+      "search_path": null,
+      "owner": "elevator_review_function_owner",
+      "execute_roles": [],
+      "public_execute": false
+    },
+    {
+      "signature": "app_private.lock_active_session(text, text)",
+      "schema": "app_private",
+      "name": "lock_active_session",
+      "argument_types": [
+        "text",
+        "text"
+      ],
+      "returns": "table ( session_id text, principal_id text, login_epoch bigint, authority_grant_id text )",
+      "security": "DEFINER",
+      "search_path": "pg_catalog,app,app_private",
+      "owner": "elevator_review_function_owner",
+      "execute_roles": [],
+      "public_execute": false
+    },
+    {
+      "signature": "app_private.materialize_snapshot_r3(text)",
+      "schema": "app_private",
+      "name": "materialize_snapshot_r3",
+      "argument_types": [
+        "text"
+      ],
+      "returns": "void",
+      "security": "DEFINER",
+      "search_path": "pg_catalog,app,app_private",
+      "owner": "elevator_review_function_owner",
+      "execute_roles": [],
+      "public_execute": false
+    },
+    {
+      "signature": "app_private.r6_field(integer, integer, integer, bytea)",
+      "schema": "app_private",
+      "name": "r6_field",
+      "argument_types": [
+        "integer",
+        "integer",
+        "integer",
+        "bytea"
+      ],
+      "returns": "bytea",
+      "security": "INVOKER",
+      "search_path": null,
+      "owner": "elevator_review_function_owner",
+      "execute_roles": [],
+      "public_execute": false
+    },
+    {
+      "signature": "app_private.r6_field_allowed(smallint, integer, text)",
+      "schema": "app_private",
+      "name": "r6_field_allowed",
+      "argument_types": [
+        "smallint",
+        "integer",
+        "text"
+      ],
+      "returns": "boolean",
+      "security": "INVOKER",
+      "search_path": null,
+      "owner": "elevator_review_function_owner",
+      "execute_roles": [],
+      "public_execute": false
+    },
+    {
+      "signature": "app_private.r6_record(smallint, text, bytea, jsonb)",
+      "schema": "app_private",
+      "name": "r6_record",
+      "argument_types": [
+        "smallint",
+        "text",
+        "bytea",
+        "jsonb"
+      ],
+      "returns": "bytea",
+      "security": "INVOKER",
+      "search_path": "pg_catalog,app,app_private",
+      "owner": "elevator_review_function_owner",
+      "execute_roles": [],
+      "public_execute": false
+    },
+    {
+      "signature": "app_private.r6_request_hash(jsonb)",
+      "schema": "app_private",
+      "name": "r6_request_hash",
+      "argument_types": [
+        "jsonb"
+      ],
+      "returns": "text",
+      "security": "INVOKER",
+      "search_path": null,
+      "owner": "elevator_review_function_owner",
+      "execute_roles": [],
+      "public_execute": false
+    },
+    {
+      "signature": "app_private.refresh_snapshot_basis_records_r3(text)",
+      "schema": "app_private",
+      "name": "refresh_snapshot_basis_records_r3",
+      "argument_types": [
+        "text"
+      ],
+      "returns": "integer",
+      "security": "DEFINER",
+      "search_path": "pg_catalog,app,app_private",
+      "owner": "elevator_review_function_owner",
+      "execute_roles": [],
+      "public_execute": false
+    },
+    {
+      "signature": "app_private.require_no_active_snapshot_children_r3(text)",
+      "schema": "app_private",
+      "name": "require_no_active_snapshot_children_r3",
+      "argument_types": [
+        "text"
+      ],
+      "returns": "void",
+      "security": "DEFINER",
+      "search_path": "pg_catalog,app,app_private",
+      "owner": "elevator_review_function_owner",
+      "execute_roles": [],
+      "public_execute": false
+    },
+    {
+      "signature": "app_private.sha256_hex(bytea)",
+      "schema": "app_private",
+      "name": "sha256_hex",
+      "argument_types": [
+        "bytea"
+      ],
+      "returns": "text",
+      "security": "INVOKER",
+      "search_path": null,
+      "owner": "elevator_review_function_owner",
+      "execute_roles": [],
+      "public_execute": false
+    },
+    {
+      "signature": "app_private.snapshot_record_projection_r3(text)",
+      "schema": "app_private",
+      "name": "snapshot_record_projection_r3",
+      "argument_types": [
+        "text"
+      ],
+      "returns": "table ( record_type smallint, stable_key bytea, row_id text, fields_json jsonb )",
+      "security": "DEFINER",
+      "search_path": "pg_catalog,app,app_private",
+      "owner": "elevator_review_function_owner",
+      "execute_roles": [],
+      "public_execute": false
+    },
+    {
+      "signature": "app_private.stable_key_r3(smallint, jsonb)",
+      "schema": "app_private",
+      "name": "stable_key_r3",
+      "argument_types": [
+        "smallint",
+        "jsonb"
+      ],
+      "returns": "bytea",
+      "security": "INVOKER",
+      "search_path": "pg_catalog,app,app_private",
+      "owner": "elevator_review_function_owner",
+      "execute_roles": [],
+      "public_execute": false
+    },
+    {
+      "signature": "app_private.u16be(integer)",
+      "schema": "app_private",
+      "name": "u16be",
+      "argument_types": [
+        "integer"
+      ],
+      "returns": "bytea",
+      "security": "INVOKER",
+      "search_path": null,
+      "owner": "elevator_review_function_owner",
+      "execute_roles": [],
+      "public_execute": false
+    },
+    {
+      "signature": "app_private.u32be(bigint)",
+      "schema": "app_private",
+      "name": "u32be",
+      "argument_types": [
+        "bigint"
+      ],
+      "returns": "bytea",
+      "security": "INVOKER",
+      "search_path": null,
+      "owner": "elevator_review_function_owner",
+      "execute_roles": [],
+      "public_execute": false
+    },
+    {
+      "signature": "app_private.u64be(bigint)",
+      "schema": "app_private",
+      "name": "u64be",
+      "argument_types": [
+        "bigint"
+      ],
+      "returns": "bytea",
+      "security": "INVOKER",
+      "search_path": null,
+      "owner": "elevator_review_function_owner",
+      "execute_roles": [],
+      "public_execute": false
+    },
+    {
+      "signature": "app_private.validate_snapshot_r3(text)",
+      "schema": "app_private",
+      "name": "validate_snapshot_r3",
+      "argument_types": [
+        "text"
+      ],
+      "returns": "void",
+      "security": "DEFINER",
+      "search_path": "pg_catalog,app,app_private",
+      "owner": "elevator_review_function_owner",
+      "execute_roles": [],
+      "public_execute": false
+    }
+  ]
+}

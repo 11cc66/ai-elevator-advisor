@@ -1,0 +1,52 @@
+{
+  "design": "FULL-MVP-REMEDIATION-DESIGN-R3-C8-CORRECTIONS-R4",
+  "scope": "FROZEN INPUT HASH RECORD; NO INPUT MODIFICATION",
+  "manifests": {
+    "r3_design": {
+      "path": "docs/product/full-mvp-remediation-design-r3-c8-corrections-r3/SHA256SUMS_R3_C8_CORRECTIONS_R3.txt",
+      "sha256": "C5611B8807D50E3E02286A63B5C9E39F9F745684793C2FD5525DCA4537A71825",
+      "records": 28,
+      "status": "PASS"
+    },
+    "r3_review": {
+      "path": "docs/product/full-mvp-remediation-review-r3-c8-corrections-r3/SHA256SUMS_R3_C8_CORRECTIONS_R3_REVIEW.txt",
+      "sha256": "1500C72F8059AAD1D15F4829818D1BA688CD57B95DD606CDFEB26A3D58285EC2",
+      "records": 18,
+      "status": "PASS"
+    },
+    "r2_design": {
+      "path": "docs/product/full-mvp-remediation-design-r3-c8-corrections-r2/SHA256SUMS_R3_C8_CORRECTIONS_R2.txt",
+      "sha256": "45331850C8DB01CC4AE1DC58825AFFB9E5187259CD28F0B68D6BE32F9F6422E8",
+      "status": "PASS"
+    },
+    "r2_review": {
+      "path": "docs/product/full-mvp-remediation-review-r3-c8-corrections-r2/SHA256SUMS_R3_C8_CORRECTIONS_R2_REVIEW.txt",
+      "sha256": "5865AAE961DDCFF7A546D6435729455D091810FF3BF8D4A155CA0EDB36082FF1",
+      "status": "PASS"
+    }
+  },
+  "key_inputs": {
+    "P1_PRODUCT_REMEDIATION_DESIGN_R3_C8_CORRECTIONS_R3.md": "D7D96DEEDDB4AC3BE7E25ED72ADBC00DA878A7F3685F8B2E6CD4B267C60C4F0F",
+    "DATABASE_COMPLETE_DDL_DESIGN_R3_C8_CORRECTIONS_R3.sql": "C899D5F7C433F6936617033E76161FB0D33ACED85B6CFF004073FB0B012C67ED",
+    "DATABASE_FINAL_STATE_OVERLAY_R3_C8_CORRECTIONS_R3.sql": "8EC1CE0F6174225629F1A8EDD88CF7CDB77C0D296F6E3002C9418D5D655E4CEB",
+    "DATABASE_FUNCTION_SIGNATURE_REGISTRY_R3_C8_CORRECTIONS_R3.json": "CC08248DABE2B4301D05A3D14F93374F0E6913F572F6A0FB24A1EC584874A56E",
+    "INDEPENDENT_REVIEW_R3_C8_CORRECTIONS_R3.md": "B02540947A7EB883D638FC6D389DC2B542F52BDBCEF715CF8E2799D034D20259"
+  },
+  "skills": [
+    ".agents/skills/project-architecture/SKILL.md",
+    ".agents/skills/project-architecture/references/architecture-review.md",
+    ".agents/skills/prisma-db-safety/SKILL.md",
+    ".agents/skills/prisma-db-safety/references/database-change-review.md",
+    ".agents/skills/security-audit/SKILL.md",
+    ".agents/skills/security-audit/references/adversarial-review.md",
+    ".agents/skills/testing-and-verification/SKILL.md",
+    ".agents/skills/testing-and-verification/references/verification-matrix.md",
+    ".agents/skills/file-lifecycle/SKILL.md",
+    ".agents/skills/file-lifecycle/references/lifecycle-review.md"
+  ],
+  "database_accessed": false,
+  "sql_executed": false,
+  "runtime_executed": false,
+  "storage_accessed": false,
+  "git_writes": 0
+}

@@ -1,0 +1,33 @@
+{
+  "scalar": {
+    "total": 23,
+    "nodeFailed": 0,
+    "pythonFailed": 0,
+    "parity": "PASS"
+  },
+  "sourceKey": {
+    "total": 19,
+    "accepted": 10,
+    "rejected": 9,
+    "parity": "PASS"
+  },
+  "basisLimits": {
+    "total": 14,
+    "nodeFailed": 0,
+    "pythonFailed": 0,
+    "parity": "PASS"
+  },
+  "c6Compatibility": {
+    "bytes": 4036,
+    "sha256": "7D3CAC885F839594006650CC500FEF8A59D22AD151E6CB21567008D0D19519EB",
+    "parity": "PASS"
+  },
+  "ddlStatic": {
+    "functions": 44,
+    "tables": 46,
+    "views": 8,
+    "roles": 15,
+    "result": "PASS"
+  },
+  "result": "PASS"
+}

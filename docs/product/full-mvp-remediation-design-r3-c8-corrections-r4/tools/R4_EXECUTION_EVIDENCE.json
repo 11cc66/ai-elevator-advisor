@@ -1,0 +1,27 @@
+{
+  "token": "57d26f2ec2264667b160e79eb1bdc517",
+  "ps_version": "7.6.9",
+  "ps_edition": "Core",
+  "pid": 19204,
+  "path": "C:\\Program Files\\WindowsApps\\OpenAI.CodexPrimaryRuntime.v26-1119-907-0_26.1119.907.0_x64__3k8sg7r9htsxt\\dependencies\\native\\powershell\\pwsh.exe",
+  "file_version": "7.6.9.500",
+  "creation_100ns": 134400243405949209,
+  "parent_pid": 23872,
+  "parent_name": "codex",
+  "parent_path": "C:\\Program Files\\WindowsApps\\OpenAI.Codex_26.1117.4957.0_x64__2p2nqsd0c76g0\\app\\resources\\codex.exe",
+  "working_directory": "D:\\thinkbook\\Desktop\\jieya",
+  "python_candidates": [
+    "C:\\Users\\thinkbook\\AppData\\Local\\Microsoft\\WindowsApps\\python.exe",
+    "D:\\python\\python.exe"
+  ],
+  "verified_python": [
+    {
+      "path": "D:\\python\\python.exe",
+      "version": "Python 3.15.1"
+    }
+  ],
+  "started_at": "2026-11-24T20:05:41.9467805Z",
+  "tool": "D:\\thinkbook\\Desktop\\jieya\\docs\\product\\full-mvp-remediation-design-r3-c8-corrections-r4\\tools\\validate_r4.py",
+  "tool_exit_code": 0,
+  "finished_at": "2026-11-24T20:05:45.3949679Z"
+}

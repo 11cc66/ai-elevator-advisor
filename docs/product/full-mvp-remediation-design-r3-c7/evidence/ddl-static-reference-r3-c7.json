@@ -1,0 +1,196 @@
+{
+  "file": "D:\\thinkbook\\Desktop\\jieya\\docs\\product\\full-mvp-remediation-design-r3-c7\\DATABASE_COMPLETE_DDL_R3_C7.sql",
+  "functions_defined": 44,
+  "views_defined": 8,
+  "tables_defined": 46,
+  "roles_defined": 15,
+  "function_grants_or_revokes": 10,
+  "security_definer_functions": 31,
+  "fk_column_pairs_checked": 45,
+  "key_columns_checked": 24,
+  "view_qualified_columns_checked": 250,
+  "function_qualified_columns_checked": 272,
+  "defined_function_names": [
+    "app.advance_principal_epoch",
+    "app.build_snapshot_basis_r6",
+    "app.create_policy_revision",
+    "app.create_snapshot_r3",
+    "app.finalize_snapshot_r3",
+    "app.has_project_authority",
+    "app.open_trusted_session",
+    "app.policy_digest",
+    "app.policy_is_effective",
+    "app.revoke_authority_grant",
+    "app.revoke_trusted_session",
+    "app.seal_selection_run",
+    "app.selection_result_digest",
+    "app.snapshot_record_count",
+    "app.source_key_r3",
+    "app.transition_policy_review",
+    "app.transition_professional_review",
+    "app.verify_snapshot_basis_r6",
+    "app_private.assert_active_session",
+    "app_private.deny_snapshot_truncate_r3",
+    "app_private.deny_truncate_r3",
+    "app_private.dispatch_snapshot_validation_r3",
+    "app_private.guard_append_only_r3",
+    "app_private.guard_policy_revision_r3",
+    "app_private.guard_sealed_result_r3",
+    "app_private.guard_selection_run_r3",
+    "app_private.guard_snapshot_child_r3",
+    "app_private.guard_snapshot_header_r3",
+    "app_private.i64be",
+    "app_private.lock_active_session",
+    "app_private.materialize_snapshot_r3",
+    "app_private.r6_field",
+    "app_private.r6_field_allowed",
+    "app_private.r6_record",
+    "app_private.r6_request_hash",
+    "app_private.refresh_snapshot_basis_records_r3",
+    "app_private.require_no_active_snapshot_children_r3",
+    "app_private.sha256_hex",
+    "app_private.snapshot_record_projection_r3",
+    "app_private.stable_key_r3",
+    "app_private.u16be",
+    "app_private.u32be",
+    "app_private.u64be",
+    "app_private.validate_snapshot_r3"
+  ],
+  "call_graph": {
+    "app_private.u16be(integer)": [],
+    "app_private.u32be(bigint)": [],
+    "app_private.u64be(bigint)": [],
+    "app_private.i64be(bigint)": [],
+    "app_private.sha256_hex(bytea)": [],
+    "app_private.r6_request_hash(jsonb)": [
+      "app_private.sha256_hex"
+    ],
+    "app_private.r6_field(integer, integer, integer, bytea)": [
+      "app_private.u16be",
+      "app_private.u32be"
+    ],
+    "app.source_key_r3(text, text, text, boolean, text)": [
+      "app_private.r6_field",
+      "app_private.u16be"
+    ],
+    "app_private.stable_key_r3(smallint, jsonb)": [
+      "app_private.i64be",
+      "app_private.u16be",
+      "app_private.u32be"
+    ],
+    "app_private.r6_field_allowed(smallint, integer, text)": [],
+    "app_private.r6_record(smallint, text, bytea, jsonb)": [
+      "app_private.i64be",
+      "app_private.r6_field",
+      "app_private.r6_field_allowed",
+      "app_private.u16be",
+      "app_private.u32be"
+    ],
+    "app_private.lock_active_session(text, text)": [],
+    "app_private.assert_active_session(text, text, bigint)": [],
+    "app.open_trusted_session(text, text, bigint, text, text, text, text, text, timestamptz, timestamptz, timestamptz)": [],
+    "app.revoke_trusted_session(text, text)": [],
+    "app.advance_principal_epoch(text, text)": [],
+    "app.revoke_authority_grant(text, text)": [
+      "app_private.assert_active_session",
+      "app_private.lock_active_session"
+    ],
+    "app.has_project_authority(text, text, text)": [],
+    "app.policy_digest(text)": [
+      "app_private.sha256_hex"
+    ],
+    "app.create_policy_revision(text, text, text, bigint, text, text, text, text, text)": [
+      "app.has_project_authority",
+      "app.policy_digest",
+      "app_private.assert_active_session",
+      "app_private.lock_active_session",
+      "app_private.r6_request_hash"
+    ],
+    "app.transition_policy_review(text, bigint, app.policy_command, text, text, text)": [
+      "app_private.assert_active_session",
+      "app_private.lock_active_session",
+      "app_private.r6_request_hash"
+    ],
+    "app.policy_is_effective(text)": [],
+    "app.transition_professional_review(text, bigint, app.professional_review_command, text, text, text, text, text)": [
+      "app.policy_is_effective",
+      "app_private.assert_active_session",
+      "app_private.lock_active_session",
+      "app_private.r6_request_hash"
+    ],
+    "app.selection_result_digest(text)": [
+      "app_private.sha256_hex"
+    ],
+    "app.seal_selection_run(text, bigint, text)": [
+      "app.selection_result_digest",
+      "app_private.assert_active_session",
+      "app_private.lock_active_session"
+    ],
+    "app_private.snapshot_record_projection_r3(text)": [
+      "app.source_key_r3",
+      "app_private.stable_key_r3"
+    ],
+    "app_private.materialize_snapshot_r3(text)": [
+      "app_private.stable_key_r3"
+    ],
+    "app_private.refresh_snapshot_basis_records_r3(text)": [
+      "app_private.r6_record",
+      "app_private.snapshot_record_projection_r3"
+    ],
+    "app.snapshot_record_count(text)": [],
+    "app.build_snapshot_basis_r6(text)": [
+      "app_private.u16be",
+      "app_private.u32be",
+      "app_private.u64be"
+    ],
+    "app.verify_snapshot_basis_r6(bytea, text)": [
+      "app_private.r6_record",
+      "app_private.snapshot_record_projection_r3",
+      "app_private.u16be",
+      "app_private.u32be",
+      "app_private.u64be"
+    ],
+    "app_private.require_no_active_snapshot_children_r3(text)": [],
+    "app_private.validate_snapshot_r3(text)": [
+      "app.build_snapshot_basis_r6",
+      "app.snapshot_record_count",
+      "app.source_key_r3",
+      "app.verify_snapshot_basis_r6",
+      "app_private.require_no_active_snapshot_children_r3",
+      "app_private.sha256_hex"
+    ],
+    "app.create_snapshot_r3(text, text, bigint)": [
+      "app.build_snapshot_basis_r6",
+      "app_private.assert_active_session",
+      "app_private.lock_active_session",
+      "app_private.materialize_snapshot_r3",
+      "app_private.refresh_snapshot_basis_records_r3",
+      "app_private.sha256_hex",
+      "app_private.validate_snapshot_r3"
+    ],
+    "app.finalize_snapshot_r3(text, bigint)": [
+      "app.build_snapshot_basis_r6",
+      "app_private.assert_active_session",
+      "app_private.lock_active_session",
+      "app_private.refresh_snapshot_basis_records_r3",
+      "app_private.sha256_hex",
+      "app_private.validate_snapshot_r3"
+    ],
+    "app_private.guard_snapshot_header_r3()": [],
+    "app_private.guard_snapshot_child_r3()": [],
+    "app_private.deny_snapshot_truncate_r3()": [],
+    "app_private.dispatch_snapshot_validation_r3()": [
+      "app_private.validate_snapshot_r3"
+    ],
+    "app_private.guard_policy_revision_r3()": [
+      "app.policy_digest"
+    ],
+    "app_private.guard_append_only_r3()": [],
+    "app_private.deny_truncate_r3()": [],
+    "app_private.guard_selection_run_r3()": [],
+    "app_private.guard_sealed_result_r3()": []
+  },
+  "findings": [],
+  "result": "PASS",
+  "scope": "STATIC LEXICAL DESIGN CHECK ONLY; NO POSTGRESQL EXECUTION OR CATALOG INTROSPECTION"
+}

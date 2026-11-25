@@ -1,0 +1,7 @@
+generated/
+obj/
+bin/
+logs/
+evidence/hashes/
+/*.obj
+

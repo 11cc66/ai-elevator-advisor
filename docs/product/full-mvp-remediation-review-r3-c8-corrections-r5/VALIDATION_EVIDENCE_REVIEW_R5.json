@@ -1,0 +1,2216 @@
+{
+  "review": "R5 INDEPENDENT DESIGN REVIEW",
+  "guard": {
+    "verified": true,
+    "parent_pid": 25196,
+    "parent_path": "C:\\Program Files\\WindowsApps\\OpenAI.CodexPrimaryRuntime.v26-1119-907-0_26.1119.907.0_x64__3k8sg7r9htsxt\\dependencies\\native\\powershell\\pwsh.exe",
+    "parent_creation_100ns": "134400275489658078",
+    "output_root": "D:\\thinkbook\\Desktop\\jieya\\docs\\product\\full-mvp-remediation-review-r3-c8-corrections-r5"
+  },
+  "input_integrity": {
+    "r5_manifest": {
+      "path": "D:\\thinkbook\\Desktop\\jieya\\docs\\product\\full-mvp-remediation-design-r3-c8-corrections-r5\\SHA256SUMS_R5.txt",
+      "sha256": "513F3CEAE561FD8FEB3A680B2853410BA6022675D24A4246C8C732833DA2239F",
+      "expected_sha256": "513F3CEAE561FD8FEB3A680B2853410BA6022675D24A4246C8C732833DA2239F",
+      "records": 25,
+      "unique_paths": 25,
+      "actual_files_excluding_manifest": 25,
+      "covered_bytes": 1062901,
+      "covered_lines": 26618,
+      "errors": [],
+      "pass": true
+    },
+    "r4_review_manifest": {
+      "path": "D:\\thinkbook\\Desktop\\jieya\\docs\\product\\full-mvp-remediation-review-r3-c8-corrections-r4\\SHA256SUMS_R4_REVIEW.txt",
+      "sha256": "9B6084121907475A29D5C1FC7C9B53FDBD52D908F547741FD2C6730A3428F62C",
+      "expected_sha256": "9B6084121907475A29D5C1FC7C9B53FDBD52D908F547741FD2C6730A3428F62C",
+      "records": 16,
+      "unique_paths": 16,
+      "actual_files_excluding_manifest": 16,
+      "covered_bytes": 130156,
+      "covered_lines": 3455,
+      "errors": [],
+      "pass": true
+    },
+    "historical_manifests": [
+      {
+        "path": "D:\\thinkbook\\Desktop\\jieya\\docs\\product\\full-mvp-remediation-design-r3-c8-corrections-r3\\SHA256SUMS_R3_C8_CORRECTIONS_R3.txt",
+        "sha256": "C5611B8807D50E3E02286A63B5C9E39F9F745684793C2FD5525DCA4537A71825",
+        "expected_sha256": "C5611B8807D50E3E02286A63B5C9E39F9F745684793C2FD5525DCA4537A71825",
+        "records": 28,
+        "unique_paths": 28,
+        "actual_files_excluding_manifest": 28,
+        "covered_bytes": 858584,
+        "covered_lines": 21073,
+        "errors": [],
+        "pass": true
+      },
+      {
+        "path": "D:\\thinkbook\\Desktop\\jieya\\docs\\product\\full-mvp-remediation-design-r3-c8-corrections-r2\\SHA256SUMS_R3_C8_CORRECTIONS_R2.txt",
+        "sha256": "45331850C8DB01CC4AE1DC58825AFFB9E5187259CD28F0B68D6BE32F9F6422E8",
+        "expected_sha256": "45331850C8DB01CC4AE1DC58825AFFB9E5187259CD28F0B68D6BE32F9F6422E8",
+        "records": 33,
+        "unique_paths": 33,
+        "actual_files_excluding_manifest": 33,
+        "covered_bytes": 935143,
+        "covered_lines": 22906,
+        "errors": [],
+        "pass": true
+      }
+    ],
+    "key_hashes": {
+      "P1_PRODUCT_REMEDIATION_DESIGN_R5.md": {
+        "expected": "766C9D706FCA869351C182606E944411DC1D58A36DB6D9269FE7A7B67FC0E7D9",
+        "actual": "766C9D706FCA869351C182606E944411DC1D58A36DB6D9269FE7A7B67FC0E7D9",
+        "match": true
+      },
+      "DATABASE_COMPLETE_DDL_DESIGN_R5.sql": {
+        "expected": "0B4ACA1AC260980741675D3FE87F62E520240263BDA78F20879E84A11C391D2A",
+        "actual": "0B4ACA1AC260980741675D3FE87F62E520240263BDA78F20879E84A11C391D2A",
+        "match": true
+      },
+      "DATABASE_FINAL_STATE_OVERLAY_R5.sql": {
+        "expected": "9276ABE584F83E7016D57C4DB40887C5C5AC99ECFEFE9A7D9F941D2A03B5B81C",
+        "actual": "9276ABE584F83E7016D57C4DB40887C5C5AC99ECFEFE9A7D9F941D2A03B5B81C",
+        "match": true
+      },
+      "DATABASE_FUNCTION_SIGNATURE_REGISTRY_R5.json": {
+        "expected": "B523227232D869122D9E346D874755B477C5462954813B3D5D9D6CF33E555B6E",
+        "actual": "B523227232D869122D9E346D874755B477C5462954813B3D5D9D6CF33E555B6E",
+        "match": true
+      },
+      "VALIDATION_EVIDENCE_R5.json": {
+        "expected": "553992905A1A3BBF8465C9BF8D95A5D96790BFCDA3595F139E0966D14D40A97D",
+        "actual": "553992905A1A3BBF8465C9BF8D95A5D96790BFCDA3595F139E0966D14D40A97D",
+        "match": true
+      }
+    },
+    "r4_review_main_sha256": "0BB94BED7CC0C1EB55ECF7D856B1B34DF0BE06FE1AEFA900EC8E9823154E147B",
+    "r4_review_evidence_sha256": "5C7B393CBCCC90B70B8508F296DAF7ACA0F56C85D5CDBB1BADB4CBB2FFC88D6D",
+    "historical_transcription_note": {
+      "authorization_value": "5C7B393CBCCC90B70B8508F296DAF7ACA0F56C85D5CDBB1ADDB4CBB2FFC88D6D",
+      "actual_and_manifest_value": "5C7B393CBCCC90B70B8508F296DAF7ACA0F56C85D5CDBB1BADB4CBB2FFC88D6D",
+      "handling": "Use the verified actual file and Manifest; no historical file changed."
+    }
+  },
+  "object_inventory": {
+    "tables": 76,
+    "functions": 168,
+    "triggers": 188,
+    "roles": 26,
+    "views": 17,
+    "foreign_key_declarations": 127,
+    "missing_function_owners": 0,
+    "unresolved_app_calls": [],
+    "trigger_target_errors": 0,
+    "fk_structural_errors": 0
+  },
+  "registry_comparison": {
+    "registry_signatures": 168,
+    "ddl_signatures": 168,
+    "signature_sets_equal": true,
+    "security_mismatch_count": 128,
+    "search_path_mismatch_count": 157,
+    "return_mismatch_count": 0,
+    "owner_mismatch_count": 0,
+    "effective_grants_match": true,
+    "security_mismatches": [
+      {
+        "signature": "app_private.lock_active_session(text, text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.assert_active_session(text, text, bigint)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app.open_trusted_session(text, text, bigint, text, text, text, text, text, timestamptz, timestamptz, timestamptz)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app.revoke_trusted_session(text, text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app.advance_principal_epoch(text, text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app.revoke_authority_grant(text, text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app.has_project_authority(text, text, text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app.create_policy_revision(text, text, text, bigint, text, text, text, text, text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app.transition_policy_review(text, bigint, app.policy_command, text, text, text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app.policy_is_effective(text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app.transition_professional_review(text, bigint, app.professional_review_command, text, text, text, text, text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app.seal_selection_run(text, bigint, text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.snapshot_record_projection_r3(text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.materialize_snapshot_r3(text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.refresh_snapshot_basis_records_r3(text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app.snapshot_record_count(text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app.build_snapshot_basis_r6(text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app.verify_snapshot_basis_r6(bytea, text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.require_no_active_snapshot_children_r3(text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.validate_snapshot_r3(text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app.create_snapshot_r3(text, text, bigint)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app.finalize_snapshot_r3(text, bigint)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.guard_snapshot_header_r3()",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.guard_snapshot_child_r3()",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.deny_snapshot_truncate_r3()",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.dispatch_snapshot_validation_r3()",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.guard_policy_revision_r3()",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.guard_append_only_r3()",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.deny_truncate_r3()",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.guard_selection_run_r3()",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.guard_sealed_result_r3()",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.compute_selection_row_digest_r3()",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.verify_snapshot_row_digest_r3()",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.validate_session_role_r3(text, text, text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app.register_session_role(text, text, text, text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app.activate_trusted_session(text, text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.lock_current_session()",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.current_session_context()",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.lock_authority_grant(text, text, text, text, text, text, text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.has_current_authority(text, text, text, text, text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.claim_command_request(text, text, text, text, text, text, text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.complete_command_request(text, text, text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app.issue_authority_grant(text, text, text, text, text, text, text, timestamptz)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app.create_selection_run(text, text, text, bigint, text, text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app.add_selection_candidate(text, text, text, text, text, text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app.set_selection_candidate_price(text, text, text, text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app.set_selection_candidate_parameter(text, text, text, text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.append_selection_run_event(text, text, text, text, text, text, text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app.complete_selection_candidate_result(text, text, text, text, text, text, text, text, text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app.record_selection_requirement_field(text, text, text, jsonb, text, text, text, text, text, text, boolean, text, text, text, text, text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app.record_selection_source_result(text, text, text, text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app.record_selection_catalog_review_result(text, text, text, text, text, text, timestamptz, text, text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app.record_selection_professional_review_result(text, text, text, bigint, text, text, text, text, timestamptz, text, text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app.record_selection_warning_result(text, text, bigint, text, text, text, text, text, text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app.record_selection_missing_field_result(text, text, text, text, text, text, text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app.create_professional_review(text, text, text, text, text, text, text, text, text, text, text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.guard_policy_event_link_r3()",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.guard_policy_current_r3()",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.deny_delete_r3()",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.guard_command_request_r3()",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.guard_session_role_registry_r3()",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.guard_authority_grant_r3()",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.a_compute_price_revision_fact_digest_r3()",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.a_fill_selection_price_fact_r3()",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.a_compute_selection_price_row_digest_r3()",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.a_fill_snapshot_price_fact_r3()",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.a_verify_snapshot_price_fact_r3()",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.a_compute_requirement_source_digest_r3()",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app.create_requirement_field_fact_r3(text, text, text, text, jsonb, text, text, text, text, text, boolean, text, text, text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.a_bind_selection_requirement_source_r3()",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.a_bind_snapshot_requirement_source_r3()",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.a_verify_snapshot_requirement_source_r3()",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.a_compute_catalog_review_event_digest_r3()",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app.create_catalog_review_event_r3(text, text, text, text, text, text, text, text, text, text, text, text, text, text, text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app.create_price_revision_r3(text, text, text, text, text, text, text, bigint, text, text, text, text, timestamptz, timestamptz, timestamptz, text, numeric, numeric, text, text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.a_bind_selection_catalog_review_r3()",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.a_compute_selection_catalog_review_row_digest_r3()",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.a_bind_snapshot_catalog_review_r3()",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.a_verify_snapshot_catalog_review_row_r3()",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.a_fill_professional_event_review_r3()",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.a_verify_professional_event_digest_r3()",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.a_bind_selection_professional_review_r3()",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.a_bind_snapshot_professional_review_r3()",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.a_verify_snapshot_professional_review_r3()",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app.bootstrap_prepare_r3(text, text, text, text, text, text, text, text, text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app.bootstrap_record_approval_r3(boolean, text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app.bootstrap_complete_root_r3(boolean, text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.guard_professional_review_state_r3()",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.validate_selection_source_aux_r3(text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.owner_closure_digest_r2(text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.assert_protected_owner_closure_r2(text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.a_compute_bootstrap_event_digest_r2()",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.claim_bootstrap_request_r2(text, text, text, boolean, bigint, text, text, text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.complete_bootstrap_request_r2(text, text, text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.append_bootstrap_event_r2(text, boolean, bigint, text, text, text, text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app.bootstrap_complete_root_r3(boolean, text, text, text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app.bootstrap_begin_root_change_r2(text, boolean, text, text, text, text, text, text, text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app.bootstrap_approve_root_change_r2(text, text, text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app.bootstrap_execute_root_change_r2(text, text, text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.a_compute_catalog_source_target_digest_r2()",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app.create_catalog_source_target_binding_r2(text, text, text, text, text, text, text, text, text, text, text, text, text, text, text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app.terminate_trusted_session_r2(text, text, text, text, text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app.request_command_result_recovery_r2(text, text, text, text, text, text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app.approve_command_result_recovery_r2(text, text, text, text, text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app.execute_command_result_recovery_r2(text, text, text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.a_validate_requirement_field_domain_r2()",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.a_create_bootstrap_issuance_attempt_r3()",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.a_bind_catalog_source_evidence_r3()",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.a_bind_catalog_event_binding_r3()",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.lock_owner_catalog_r3()",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.assert_protected_owner_closure_r3(text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app.bootstrap_deny_root_change_r3(text, text, text, text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app.bootstrap_mark_issuance_failed_r3(boolean, text, text, text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.a_bind_professional_candidate_r3()",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.a_bind_snapshot_professional_candidate_r3()",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.next_bootstrap_recovery_sequence_r4(boolean, bigint)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.lock_expired_root_change_r4(text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app.bootstrap_approve_root_change_r4(text, text, text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app.bootstrap_begin_root_change_r4(text, boolean, text, text, text, text, text, text, text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app.bootstrap_execute_root_change_r4(text, text, text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app.bootstrap_deny_root_change_r4(text, text, text, text)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.lock_bootstrap_identity_r5()",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.enforce_bootstrap_identity_mutex_r5()",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.assert_current_root_authority_r5(boolean, bigint, text, text, text, text, timestamptz, boolean)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.enforce_rotation_generation_revalidation_r5()",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.terminalize_expired_root_change_r5(text, text, timestamptz)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.execute_candidate_backfill_r5(text, text, text, text, text, text, text, text, bigint)",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      },
+      {
+        "signature": "app_private.guard_candidate_backfill_batch_r5()",
+        "registry": "INVOKER",
+        "ddl": "DEFINER"
+      }
+    ],
+    "search_path_mismatches": [
+      {
+        "signature": "app.source_key_r3(text, text, text, boolean, text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.stable_key_r3(smallint, jsonb)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.r6_record(smallint, text, bytea, jsonb)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.lock_active_session(text, text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.assert_active_session(text, text, bigint)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app.open_trusted_session(text, text, bigint, text, text, text, text, text, timestamptz, timestamptz, timestamptz)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app.revoke_trusted_session(text, text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app.advance_principal_epoch(text, text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app.revoke_authority_grant(text, text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app.has_project_authority(text, text, text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private return exists ( select 1 from app.authority_grant g where g.principal_id=p_principal_id and (g.project_id is null or g.project_id=p_project_id) and g.authority_code=p_capability and g.revoked_at is null and clock_timestamp() >= g.valid_from and (g.valid_until is null or clock_timestamp() < g.valid_until) );"
+      },
+      {
+        "signature": "app.policy_digest(text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app.create_policy_revision(text, text, text, bigint, text, text, text, text, text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app.transition_policy_review(text, bigint, app.policy_command, text, text, text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app.policy_is_effective(text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private return exists ( select 1 from app.policy_current pc join app.policy_revision pr on pr.id=pc.revision_id join app.policy_review_event pe on pe.id=pc.effective_event_id where pr.id=p_policy_revision_id and pc.state='approved' and pe.policy_revision_id=pr.id and pe.next_state='approved' and not exists ( select 1 from app.policy_review_event later where later.policy_revision_id=pr.id and later.event_sequence>pe.event_sequence and later.next_state in ('invalidated','expired','superseded') ) );"
+      },
+      {
+        "signature": "app.transition_professional_review(text, bigint, app.professional_review_command, text, text, text, text, text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app.seal_selection_run(text, bigint, text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.snapshot_record_projection_r3(text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.materialize_snapshot_r3(text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.refresh_snapshot_basis_records_r3(text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app.snapshot_record_count(text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private return ( select count(*)::integer from app.sales_snapshot_basis_record_r3 where snapshot_id=p_snapshot_id );"
+      },
+      {
+        "signature": "app.build_snapshot_basis_r6(text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app.verify_snapshot_basis_r6(bytea, text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.require_no_active_snapshot_children_r3(text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.validate_snapshot_r3(text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app.create_snapshot_r3(text, text, bigint)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app.finalize_snapshot_r3(text, bigint)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.guard_snapshot_header_r3()",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.guard_snapshot_child_r3()",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.deny_snapshot_truncate_r3()",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.dispatch_snapshot_validation_r3()",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.guard_policy_revision_r3()",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.guard_append_only_r3()",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.deny_truncate_r3()",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.guard_selection_run_r3()",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.guard_sealed_result_r3()",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.row_digest_r3(text, text, jsonb)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.compute_selection_row_digest_r3()",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.verify_snapshot_row_digest_r3()",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.validate_session_role_r3(text, text, text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app.register_session_role(text, text, text, text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app.activate_trusted_session(text, text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.lock_current_session()",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.current_session_context()",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.lock_authority_grant(text, text, text, text, text, text, text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.has_current_authority(text, text, text, text, text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private return exists ( select 1 from app.trusted_session ts join app.session_role_registry reg on reg.role_name=ts.db_auth_role and reg.session_id=ts.session_id join app.principal_epoch pe on pe.principal_id=ts.principal_id join app.authority_grant g on g.session_id=ts.session_id where ts.db_auth_role=session_user and ts.state='active' and ts.binding_state='active' and ts.backend_pid=pg_catalog.pg_backend_pid() and ts.backend_started_at=( select a.backend_start from pg_catalog.pg_stat_activity a where a.pid=pg_catalog.pg_backend_pid() and a.usename=session_user ) and pg_catalog.current_setting('aiea.session_binding',true)=ts.session_id and ts.login_epoch=pe.current_epoch and clock_timestamp()>=ts.not_before and clock_timestamp()<ts.expires_at and reg.state='active' and g.principal_id=ts.principal_id and g.authority_code=p_capability and ( g.object_scope='global' or (g.object_scope='project' and p_project_id is not null and g.project_id=p_project_id) or (g.object_scope='policy' and p_policy_id is not null and g.policy_id=p_policy_id and (p_project_id is null or g.project_id is not distinct from p_project_id) and (p_policy_revision_id is null or g.policy_revision_id is null or g.policy_revision_id=p_policy_revision_id)) or (g.object_scope='principal' and p_subject_principal_id is not null and g.subject_principal_id=p_subject_principal_id and (p_project_id is null or g.project_id is not distinct from p_project_id)) ) and (g.project_id is null or p_project_id is not distinct from g.project_id) and (g.policy_id is null or p_policy_id is not distinct from g.policy_id) and (g.policy_revision_id is null or p_policy_revision_id is not distinct from g.policy_revision_id) and (g.subject_principal_id is null or p_subject_principal_id is not distinct from g.subject_principal_id) and g.revoked_at is null and clock_timestamp()>=g.valid_from and (g.valid_until is null or clock_timestamp()<g.valid_until) );"
+      },
+      {
+        "signature": "app_private.claim_command_request(text, text, text, text, text, text, text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.complete_command_request(text, text, text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app.issue_authority_grant(text, text, text, text, text, text, text, timestamptz)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app.create_selection_run(text, text, text, bigint, text, text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app.add_selection_candidate(text, text, text, text, text, text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app.set_selection_candidate_price(text, text, text, text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app.set_selection_candidate_parameter(text, text, text, text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.append_selection_run_event(text, text, text, text, text, text, text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app.complete_selection_candidate_result(text, text, text, text, text, text, text, text, text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app.record_selection_requirement_field(text, text, text, jsonb, text, text, text, text, text, text, boolean, text, text, text, text, text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app.record_selection_source_result(text, text, text, text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app.record_selection_catalog_review_result(text, text, text, text, text, text, timestamptz, text, text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app.record_selection_professional_review_result(text, text, text, bigint, text, text, text, text, timestamptz, text, text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app.record_selection_warning_result(text, text, bigint, text, text, text, text, text, text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app.record_selection_missing_field_result(text, text, text, text, text, text, text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app.create_professional_review(text, text, text, text, text, text, text, text, text, text, text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.guard_policy_event_link_r3()",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.guard_policy_current_r3()",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.deny_delete_r3()",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.guard_command_request_r3()",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.guard_session_role_registry_r3()",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.guard_authority_grant_r3()",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.price_fact_canonical_v1(text, text, text, text, text, text, text, bigint, text, text, text, text, timestamptz, timestamptz, timestamptz, text, numeric, numeric)",
+        "registry": null,
+        "ddl": "pg_catalog return jsonb_build_object( 'schema','aiea-price-fact-v1', 'pricerevisionid',p_price_revision_id, 'sourcerevisionid',p_source_revision_id, 'productid',p_product_id, 'productrevisionid',p_product_revision_id, 'productrevisiondigest',p_product_revision_digest, 'specificationrevisionid',p_specification_revision_id, 'specificationrevisiondigest',p_specification_revision_digest, 'amountminor',p_amount_minor::text, 'currency',upper(p_currency), 'pricebasis',p_price_basis, 'taxbasis',p_tax_basis, 'applicability',p_applicability, 'validfromutc',to_char(p_valid_from at time zone 'utc','yyyy-mm-dd\"t\"hh24:mi:ss.us\"z\"'), 'validuntilutc',case when p_valid_until is null then null else to_char(p_valid_until at time zone 'utc','yyyy-mm-dd\"t\"hh24:mi:ss.us\"z\"') end, 'quotedatutc',to_char(p_quoted_at at time zone 'utc','yyyy-mm-dd\"t\"hh24:mi:ss.us\"z\"'), 'priceunitcode',p_price_unit_code, 'quantitymin',case when p_quantity_min is null then null else p_quantity_min::text end, 'quantitymax',case when p_quantity_max is null then null else p_quantity_max::text end );"
+      },
+      {
+        "signature": "app_private.price_fact_digest_v1(text, text, text, text, text, text, text, bigint, text, text, text, text, timestamptz, timestamptz, timestamptz, text, numeric, numeric)",
+        "registry": null,
+        "ddl": "pg_catalog,app_private return app_private.sha256_hex( decode('414945412d50524943452d4641435400763100','hex') || convert_to(app_private.price_fact_canonical_v1( p_price_revision_id,p_source_revision_id,p_product_id, p_product_revision_id,p_product_revision_digest, p_specification_revision_id,p_specification_revision_digest, p_amount_minor,p_currency,p_price_basis,p_tax_basis,p_applicability, p_valid_from,p_valid_until,p_quoted_at,p_price_unit_code, p_quantity_min,p_quantity_max )::text,'utf8') );"
+      },
+      {
+        "signature": "app_private.a_compute_price_revision_fact_digest_r3()",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.a_fill_selection_price_fact_r3()",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.price_row_payload_v1(text, jsonb)",
+        "registry": null,
+        "ddl": "pg_catalog return jsonb_build_object( 'candidateid',p_row->>'candidate_id', 'selectionrunid',p_row->>'selection_run_id', 'pricerevisionid',p_row->>'price_revision_id', 'sourcerevisionid',p_row->>'source_revision_id', 'productid',p_row->>'product_id', 'productrevisionid',p_row->>'product_revision_id', 'productrevisiondigest',p_row->>'product_revision_digest', 'specificationrevisionid',p_row->>'specification_revision_id', 'specificationrevisiondigest',p_row->>'specification_revision_digest', 'pricefactdigest',p_row->>'price_fact_digest', 'amountminor',p_row->>'amount_minor', 'currency',p_row->>'currency', 'pricebasis',p_row->>'price_basis', 'taxbasis',p_row->>'tax_basis', 'applicability',p_row->>'applicability', 'validfrom',p_row->>'valid_from', 'validuntil',p_row->'valid_until', 'quotedat',p_row->>'quoted_at', 'priceunitcode',p_row->'price_unit_code', 'quantitymin',p_row->'quantity_min', 'quantitymax',p_row->'quantity_max' );"
+      },
+      {
+        "signature": "app_private.price_row_digest_v1(text, jsonb)",
+        "registry": null,
+        "ddl": "pg_catalog,app_private return app_private.sha256_hex( decode('414945412d50524943452d524f5700763100','hex') || convert_to(p_table||e'\\x1f'||app_private.price_row_payload_v1(p_table,p_row)::text,'utf8') );"
+      },
+      {
+        "signature": "app_private.a_compute_selection_price_row_digest_r3()",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.a_fill_snapshot_price_fact_r3()",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.a_verify_snapshot_price_fact_r3()",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.requirement_source_digest_r3(text, jsonb)",
+        "registry": null,
+        "ddl": "pg_catalog,app_private return app_private.sha256_hex( decode('414945412d524551554952454d454e5400763100','hex') || convert_to( p_table||e'\\x1f'||jsonb_build_object( 'id',p_row->>'id', 'requirementversionid',p_row->>'requirement_version_id', 'requirementid',p_row->>'requirement_id', 'projectid',p_row->>'project_id', 'conversationid',p_row->>'conversation_id', 'installationscenario',p_row->>'installation_scenario', 'fieldkey',p_row->>'field_key', 'value',p_row->'value_json', 'valuetype',p_row->>'value_type', 'unit',p_row->'unit', 'fieldstatus',p_row->>'field_status', 'sourcekind',p_row->>'source_kind', 'sourceentitytype',p_row->>'source_entity_type', 'sourceentityid',case when p_table='requirement_field_value_r3' then p_row->>'assertion_id' else p_row->>'source_entity_id' end, 'sourceauxisnull',p_row->'source_aux_is_null', 'sourceauxtext',p_row->'source_aux_text', 'actorprincipalid',p_row->>'actor_principal_id', 'actorsessionid',p_row->>'actor_session_id', 'actorauthoritygrantid',p_row->>'actor_authority_grant_id', 'occurredat',p_row->>'occurred_at' )::text, 'utf8' ) );"
+      },
+      {
+        "signature": "app_private.validate_source_aux_r3(text)",
+        "registry": null,
+        "ddl": "pg_catalog"
+      },
+      {
+        "signature": "app_private.a_compute_requirement_source_digest_r3()",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app.create_requirement_field_fact_r3(text, text, text, text, jsonb, text, text, text, text, text, boolean, text, text, text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.a_bind_selection_requirement_source_r3()",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.a_bind_snapshot_requirement_source_r3()",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.a_verify_snapshot_requirement_source_r3()",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.catalog_review_event_payload_v1(jsonb)",
+        "registry": null,
+        "ddl": "pg_catalog return jsonb_build_object( 'schema','aiea-catalog-review-event-v1', 'id',p_row->>'id','projectid',p_row->'project_id', 'targetkind',p_row->>'target_kind','productid',p_row->>'product_id', 'productrevisionid',p_row->'product_revision_id', 'productrevisiondigest',p_row->'product_revision_digest', 'specificationrevisionid',p_row->'specification_revision_id', 'specificationrevisiondigest',p_row->'specification_revision_digest', 'pricerevisionid',p_row->'price_revision_id', 'pricefactdigest',p_row->'price_fact_digest', 'sourcerevisionid',p_row->>'source_revision_id', 'policyrevisionid',p_row->>'policy_revision_id', 'decision',p_row->>'decision', 'actorprincipalid',p_row->>'actor_principal_id', 'actorsessionid',p_row->>'actor_session_id', 'actorauthoritygrantid',p_row->>'actor_authority_grant_id', 'reviewedatutc',to_char((p_row->>'reviewed_at')::timestamptz at time zone 'utc','yyyy-mm-dd\"t\"hh24:mi:ss.us\"z\"') );"
+      },
+      {
+        "signature": "app_private.catalog_review_event_digest_v1(jsonb)",
+        "registry": null,
+        "ddl": "pg_catalog,app_private return app_private.sha256_hex( decode('414945412d434154414c4f472d52455649455700763100','hex') || convert_to(app_private.catalog_review_event_payload_v1(p_row)::text,'utf8') );"
+      },
+      {
+        "signature": "app_private.a_compute_catalog_review_event_digest_r3()",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app.create_catalog_review_event_r3(text, text, text, text, text, text, text, text, text, text, text, text, text, text, text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app.create_price_revision_r3(text, text, text, text, text, text, text, bigint, text, text, text, text, timestamptz, timestamptz, timestamptz, text, numeric, numeric, text, text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.a_bind_selection_catalog_review_r3()",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.catalog_review_row_payload_v1(text, jsonb)",
+        "registry": null,
+        "ddl": "pg_catalog return jsonb_build_object( 'schema','aiea-catalog-review-row-v2', 'selectionrunid',p_row->>'selection_run_id', 'catalogreviewid',p_row->>'catalog_review_id', 'eventdigest',p_row->>'catalog_review_event_digest', 'sourcetargetbindingid',p_row->>'source_target_binding_id', 'sourcetargetbindingdigest',p_row->>'source_target_binding_digest', 'targetkind',p_row->>'target_kind', 'targetrevisionid',p_row->>'target_revision_id', 'targetrevisiondigest',p_row->>'target_revision_digest', 'productrevisionid',p_row->'product_revision_id', 'productrevisiondigest',p_row->'product_revision_digest', 'specificationrevisionid',p_row->'specification_revision_id', 'pricerevisionid',p_row->'price_revision_id', 'sourcerevisionid',p_row->>'source_revision_id', 'policyrevisionid',p_row->>'policy_revision_id', 'decision',p_row->>'decision', 'reviewedatutc',to_char( (p_row->>'reviewed_at')::timestamptz at time zone 'utc', 'yyyy-mm-dd\"t\"hh24:mi:ss.us\"z\"' ) ); alter table app.sales_snapshot_catalog_review_r3 add column source_target_binding_id text, add column source_target_binding_digest text;"
+      },
+      {
+        "signature": "app_private.catalog_review_row_digest_v1(text, jsonb)",
+        "registry": null,
+        "ddl": "pg_catalog,app_private return app_private.sha256_hex( decode('414945412d434154414c4f472d524f5700763100','hex') || convert_to(p_table||e'\\x1f'||app_private.catalog_review_row_payload_v1(p_table,p_row)::text,'utf8') );"
+      },
+      {
+        "signature": "app_private.a_compute_selection_catalog_review_row_digest_r3()",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.a_bind_snapshot_catalog_review_r3()",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.a_verify_snapshot_catalog_review_row_r3()",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.professional_basis_digest_v1(jsonb)",
+        "registry": null,
+        "ddl": "pg_catalog,app_private return app_private.sha256_hex( decode('414945412d50524f46455353494f4e414c2d424153495300763100','hex') || convert_to(p_payload::text,'utf8') );"
+      },
+      {
+        "signature": "app_private.professional_event_digest_v1(jsonb)",
+        "registry": null,
+        "ddl": "pg_catalog,app_private return app_private.sha256_hex( decode('414945412d50524f46455353494f4e414c2d4556454e5400763100','hex') || convert_to(jsonb_build_object( 'schema','aiea-professional-review-event-v1', 'id',p_row->>'id','reviewid',p_row->>'review_id', 'selectionresultid',p_row->>'selection_candidate_result_id', 'resultrowdigest',p_row->>'result_row_digest', 'targetrevisionid',p_row->>'target_revision_id', 'targetrevisiondigest',p_row->>'target_revision_digest', 'eventsequence',p_row->>'event_sequence', 'stateversion',p_row->>'state_version', 'previousstate',p_row->'previous_state', 'command',p_row->>'command','nextstate',p_row->>'next_state', 'basispayload',p_row->'basis_payload','basisdigest',p_row->'basis_digest', 'actorprincipalid',p_row->>'actor_principal_id', 'actorsessionid',p_row->>'actor_session_id', 'actorauthoritygrantid',p_row->>'actor_authority_grant_id', 'occurredatutc',to_char((p_row->>'occurred_at')::timestamptz at time zone 'utc','yyyy-mm-dd\"t\"hh24:mi:ss.us\"z\"') )::text,'utf8') );"
+      },
+      {
+        "signature": "app_private.a_fill_professional_event_review_r3()",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.a_verify_professional_event_digest_r3()",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app.professional_event_decision_r3(text)",
+        "registry": null,
+        "ddl": "pg_catalog return case p_next_state when 'approved' then 'approved' when 'rejected' then 'rejected' when 'returned_for_information' then 'returned_for_information' when 'invalidated' then 'invalidated' when 'expired' then 'expired' else null end;"
+      },
+      {
+        "signature": "app_private.a_bind_selection_professional_review_r3()",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.a_bind_snapshot_professional_review_r3()",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.a_verify_snapshot_professional_review_r3()",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app.bootstrap_prepare_r3(text, text, text, text, text, text, text, text, text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app.bootstrap_record_approval_r3(boolean, text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app.bootstrap_complete_root_r3(boolean, text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.guard_professional_review_state_r3()",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.validate_selection_source_aux_r3(text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.owner_closure_digest_r2(text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.assert_protected_owner_closure_r2(text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.bootstrap_request_payload_v2(jsonb)",
+        "registry": null,
+        "ddl": "pg_catalog return jsonb_build_object( 'schema','aiea-bootstrap-event-v2', 'id',p_row->>'id', 'bootstrapid',p_row->>'bootstrap_id', 'generation',p_row->>'bootstrap_generation', 'sequence',p_row->>'event_sequence', 'action',p_row->>'action', 'actorrole',p_row->>'actor_role', 'actorprincipalid',p_row->>'actor_principal_id', 'rootsessionid',p_row->'root_session_id', 'rootgrantid',p_row->'root_grant_id', 'occurredatutc',to_char( (p_row->>'occurred_at')::timestamptz at time zone 'utc', 'yyyy-mm-dd\"t\"hh24:mi:ss.us\"z\"' ) );"
+      },
+      {
+        "signature": "app_private.bootstrap_request_digest_v2(jsonb)",
+        "registry": null,
+        "ddl": "pg_catalog,app_private return app_private.sha256_hex( decode('414945412d424f4f5453545241502d4556454e5400763200','hex') || convert_to(app_private.bootstrap_request_payload_v2(p_row)::text,'utf8') );"
+      },
+      {
+        "signature": "app_private.a_compute_bootstrap_event_digest_r2()",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.claim_bootstrap_request_r2(text, text, text, boolean, bigint, text, text, text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.complete_bootstrap_request_r2(text, text, text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.append_bootstrap_event_r2(text, boolean, bigint, text, text, text, text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.bootstrap_root_grant_digest_r2(boolean, bigint, text, text, text, text, bigint)",
+        "registry": null,
+        "ddl": "pg_catalog,app_private return app_private.sha256_hex( convert_to( jsonb_build_object( 'schema','aiea-root-grant-v2', 'bootstrapid',p_bootstrap_id::text, 'generation',p_generation::text, 'grantid',p_grant_id, 'sessionid',p_session_id, 'principalid',p_principal_id, 'rolename',p_role_name, 'grantversion',p_grant_version::text )::text, 'utf8' ) );"
+      },
+      {
+        "signature": "app_private.bootstrap_generation_digest_r2(boolean, bigint, text, text, text)",
+        "registry": null,
+        "ddl": "pg_catalog,app_private return app_private.sha256_hex( convert_to( jsonb_build_object( 'schema','aiea-bootstrap-generation-v2', 'bootstrapid',p_bootstrap_id::text, 'generation',p_generation::text, 'rootprincipalid',p_root_principal_id, 'rootrolename',p_root_role_name, 'roottokendigest',p_root_token_digest )::text, 'utf8' ) );"
+      },
+      {
+        "signature": "app.bootstrap_complete_root_r3(boolean, text, text, text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.bootstrap_recovery_digest_r2(jsonb)",
+        "registry": null,
+        "ddl": "pg_catalog,app_private return app_private.sha256_hex( convert_to( jsonb_build_object( 'schema','aiea-bootstrap-recovery-v2', 'id',p_row->>'id', 'bootstrapid',p_row->>'bootstrap_id', 'fromgeneration',p_row->>'from_generation', 'kind',p_row->>'kind', 'reasonclass',p_row->>'reason_class', 'currentrootprincipalid',p_row->>'current_root_principal_id', 'targetrootprincipalid',p_row->>'target_root_principal_id', 'targetrootrolename',p_row->>'target_root_role_name', 'targettokendigest',p_row->>'target_token_digest', 'requestedbyrole',p_row->>'requested_by_role', 'requestedbyprincipalid',p_row->>'requested_by_principal_id' )::text, 'utf8' ) );"
+      },
+      {
+        "signature": "app.bootstrap_begin_root_change_r2(text, boolean, text, text, text, text, text, text, text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app.bootstrap_approve_root_change_r2(text, text, text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app.bootstrap_execute_root_change_r2(text, text, text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.catalog_source_target_payload_v2(jsonb)",
+        "registry": null,
+        "ddl": "pg_catalog return jsonb_build_object( 'schema','aiea-catalog-source-target-v1', 'id',p_row->>'id', 'projectid',p_row->'project_id', 'targetkind',p_row->>'target_kind', 'productid',p_row->>'product_id', 'productrevisionid',p_row->>'product_revision_id', 'productrevisiondigest',p_row->>'product_revision_digest', 'specificationrevisionid',p_row->'specification_revision_id', 'specificationrevisiondigest',p_row->'specification_revision_digest', 'pricerevisionid',p_row->'price_revision_id', 'pricefactdigest',p_row->'price_fact_digest', 'sourcerevisionid',p_row->>'source_revision_id', 'sourceevidenceobjectid',p_row->>'source_evidence_object_id', 'sourcecontentdigest',p_row->>'source_content_digest' );"
+      },
+      {
+        "signature": "app_private.catalog_source_target_digest_v2(jsonb)",
+        "registry": null,
+        "ddl": "pg_catalog,app_private return app_private.sha256_hex( decode('414945412d434154414c4f472d534f555243452d54415247455400763100','hex') || convert_to(app_private.catalog_source_target_payload_v2(p_row)::text,'utf8') );"
+      },
+      {
+        "signature": "app_private.a_compute_catalog_source_target_digest_r2()",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app.create_catalog_source_target_binding_r2(text, text, text, text, text, text, text, text, text, text, text, text, text, text, text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.catalog_review_event_payload_v2(jsonb)",
+        "registry": null,
+        "ddl": "pg_catalog return jsonb_build_object( 'schema','aiea-catalog-review-event-v2', 'id',p_row->>'id', 'projectid',p_row->'project_id', 'sourcetargetbindingid',p_row->>'source_target_binding_id', 'sourcetargetbindingdigest',p_row->>'source_target_binding_digest', 'targetkind',p_row->>'target_kind', 'productid',p_row->>'product_id', 'productrevisionid',p_row->'product_revision_id', 'productrevisiondigest',p_row->'product_revision_digest', 'specificationrevisionid',p_row->'specification_revision_id', 'specificationrevisiondigest',p_row->'specification_revision_digest', 'pricerevisionid',p_row->'price_revision_id', 'pricefactdigest',p_row->'price_fact_digest', 'sourcerevisionid',p_row->>'source_revision_id', 'policyrevisionid',p_row->>'policy_revision_id', 'decision',p_row->>'decision', 'actorprincipalid',p_row->>'actor_principal_id', 'actorsessionid',p_row->>'actor_session_id', 'actorauthoritygrantid',p_row->>'actor_authority_grant_id', 'reviewedatutc',to_char( (p_row->>'reviewed_at')::timestamptz at time zone 'utc', 'yyyy-mm-dd\"t\"hh24:mi:ss.us\"z\"' ) );"
+      },
+      {
+        "signature": "app_private.catalog_review_event_digest_v2(jsonb)",
+        "registry": null,
+        "ddl": "pg_catalog,app_private return app_private.sha256_hex( decode('414945412d434154414c4f472d52455649455700763200','hex') || convert_to(app_private.catalog_review_event_payload_v2(p_row)::text,'utf8') );"
+      },
+      {
+        "signature": "app.terminate_trusted_session_r2(text, text, text, text, text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app.request_command_result_recovery_r2(text, text, text, text, text, text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app.approve_command_result_recovery_r2(text, text, text, text, text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app.execute_command_result_recovery_r2(text, text, text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.requirement_field_domain_valid_r2(jsonb, text, text, text)",
+        "registry": null,
+        "ddl": "pg_catalog"
+      },
+      {
+        "signature": "app_private.a_validate_requirement_field_domain_r2()",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.a_create_bootstrap_issuance_attempt_r3()",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.a_bind_catalog_source_evidence_r3()",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.a_bind_catalog_event_binding_r3()",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.lock_owner_catalog_r3()",
+        "registry": null,
+        "ddl": "pg_catalog"
+      },
+      {
+        "signature": "app_private.assert_protected_owner_closure_r3(text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app.bootstrap_deny_root_change_r3(text, text, text, text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app.bootstrap_mark_issuance_failed_r3(boolean, text, text, text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.a_bind_professional_candidate_r3()",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.a_bind_snapshot_professional_candidate_r3()",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.r4_candidate_backfill_row_allowed(jsonb, jsonb)",
+        "registry": null,
+        "ddl": "pg_catalog return ( p_old->>'candidate_id' is null and p_new->>'candidate_id' is not null and (p_new-'candidate_id')=(p_old-'candidate_id') ); alter function app_private.r4_candidate_backfill_row_allowed(jsonb,jsonb) owner to elevator_review_function_owner; revoke execute on function app_private.r4_candidate_backfill_row_allowed(jsonb,jsonb) from public;"
+      },
+      {
+        "signature": "app_private.next_bootstrap_recovery_sequence_r4(boolean, bigint)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.lock_expired_root_change_r4(text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app.bootstrap_approve_root_change_r4(text, text, text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app.bootstrap_begin_root_change_r4(text, boolean, text, text, text, text, text, text, text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app.bootstrap_execute_root_change_r4(text, text, text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app.bootstrap_deny_root_change_r4(text, text, text, text)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.lock_bootstrap_identity_r5()",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.enforce_bootstrap_identity_mutex_r5()",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.assert_current_root_authority_r5(boolean, bigint, text, text, text, text, timestamptz, boolean)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.enforce_rotation_generation_revalidation_r5()",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.terminalize_expired_root_change_r5(text, text, timestamptz)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.execute_candidate_backfill_r5(text, text, text, text, text, text, text, text, bigint)",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      },
+      {
+        "signature": "app_private.guard_candidate_backfill_batch_r5()",
+        "registry": null,
+        "ddl": "pg_catalog,app,app_private"
+      }
+    ]
+  },
+  "fk_errors": [],
+  "trigger_errors": [],
+  "core_checks": {
+    "rotation_execute_gate": true,
+    "identity_mutex_statement_triggers": true,
+    "generation_insert_trigger": true,
+    "expired_attempt_sweep": true,
+    "begin_time_after_active_lock": false,
+    "candidate_durable_audit": true,
+    "candidate_audit_before_update": true,
+    "candidate_actor_bound_to_executor": false,
+    "response_loss_vector_non_hardcoded": false,
+    "independent_negative_rows_are_mutation_traceable": false,
+    "open_decisions_validator_exact": false,
+    "documented_vector_ids_resolve": false,
+    "open_decisions_57_unique_open": true
+  },
+  "documented_state_vectors": [
+    "R5-STATE-EXPIRED-REPLACED",
+    "R5-STATE-RESPONSE-LOSS",
+    "R5-STATE-REVOKED-APPROVAL",
+    "R5-STATE-REVOKED-ROOT",
+    "R5-STATE-SINGLE-ACTIVE"
+  ],
+  "evidence_state_vectors": [
+    "expired_active_attempt_replaced",
+    "response_loss_replay_non_vacuous",
+    "revoked_approval_cannot_execute",
+    "revoked_root_cannot_execute",
+    "single_active_attempt"
+  ],
+  "mutation_replay": {
+    "r3_formal_total": 29,
+    "r3_target_effective": 29,
+    "r3_details": [
+      {
+        "id": "root1_operator_principal",
+        "target_present": true,
+        "document_changed": true
+      },
+      {
+        "id": "root2_operator_role",
+        "target_present": true,
+        "document_changed": true
+      },
+      {
+        "id": "root3_session_principal",
+        "target_present": true,
+        "document_changed": true
+      },
+      {
+        "id": "root4_grant_recipient",
+        "target_present": true,
+        "document_changed": true
+      },
+      {
+        "id": "root5_grant_session",
+        "target_present": true,
+        "document_changed": true
+      },
+      {
+        "id": "root6_nonroot_approvals",
+        "target_present": true,
+        "document_changed": true
+      },
+      {
+        "id": "root7_generation",
+        "target_present": true,
+        "document_changed": true
+      },
+      {
+        "id": "root8_single_root_grant",
+        "target_present": true,
+        "document_changed": true
+      },
+      {
+        "id": "owner1_database_self",
+        "target_present": true,
+        "document_changed": true
+      },
+      {
+        "id": "owner2_database_member",
+        "target_present": true,
+        "document_changed": true
+      },
+      {
+        "id": "owner3_pg_database_owner",
+        "target_present": true,
+        "document_changed": true
+      },
+      {
+        "id": "owner4_schema_owner",
+        "target_present": true,
+        "document_changed": true
+      },
+      {
+        "id": "owner5_schema_indirect",
+        "target_present": true,
+        "document_changed": true
+      },
+      {
+        "id": "owner6_table_owner",
+        "target_present": true,
+        "document_changed": true
+      },
+      {
+        "id": "owner7_sequence_owner",
+        "target_present": true,
+        "document_changed": true
+      },
+      {
+        "id": "owner8_view_owner",
+        "target_present": true,
+        "document_changed": true
+      },
+      {
+        "id": "owner9_function_owner",
+        "target_present": true,
+        "document_changed": true
+      },
+      {
+        "id": "owner10_set",
+        "target_present": true,
+        "document_changed": true
+      },
+      {
+        "id": "owner11_inherit",
+        "target_present": true,
+        "document_changed": true
+      },
+      {
+        "id": "owner12_admin",
+        "target_present": true,
+        "document_changed": true
+      },
+      {
+        "id": "cat1_binding_table",
+        "target_present": true,
+        "document_changed": true
+      },
+      {
+        "id": "cat2_product_source",
+        "target_present": true,
+        "document_changed": true
+      },
+      {
+        "id": "cat3_spec_source",
+        "target_present": true,
+        "document_changed": true
+      },
+      {
+        "id": "cat4_price_source",
+        "target_present": true,
+        "document_changed": true
+      },
+      {
+        "id": "cat5_source_fk",
+        "target_present": true,
+        "document_changed": true
+      },
+      {
+        "id": "cat6_target_key",
+        "target_present": true,
+        "document_changed": true
+      },
+      {
+        "id": "cat7_event_binding_fk",
+        "target_present": true,
+        "document_changed": true
+      },
+      {
+        "id": "cat8_event_digest",
+        "target_present": true,
+        "document_changed": true
+      },
+      {
+        "id": "cat9_snapshot_binding",
+        "target_present": true,
+        "document_changed": true
+      }
+    ],
+    "r2_historical_total": 12,
+    "r2_target_effective": 12,
+    "r2_details": [
+      {
+        "id": "root_principal",
+        "target_check": "root_principal",
+        "targets_present": true,
+        "document_changed": true
+      },
+      {
+        "id": "root_grant",
+        "target_check": "root_grant",
+        "targets_present": true,
+        "document_changed": true
+      },
+      {
+        "id": "recovery_functions",
+        "target_check": "recovery_functions",
+        "targets_present": true,
+        "document_changed": true
+      },
+      {
+        "id": "database_owner",
+        "target_check": "database_owner",
+        "targets_present": true,
+        "document_changed": true
+      },
+      {
+        "id": "schema_owner",
+        "target_check": "schema_owner",
+        "targets_present": true,
+        "document_changed": true
+      },
+      {
+        "id": "relation_owner",
+        "target_check": "relation_owner",
+        "targets_present": true,
+        "document_changed": true
+      },
+      {
+        "id": "function_owner",
+        "target_check": "function_owner",
+        "targets_present": true,
+        "document_changed": true
+      },
+      {
+        "id": "catalog_table",
+        "target_check": "catalog_table",
+        "targets_present": true,
+        "document_changed": true
+      },
+      {
+        "id": "catalog_event_binding",
+        "target_check": "catalog_event_binding",
+        "targets_present": true,
+        "document_changed": true
+      },
+      {
+        "id": "original_session",
+        "target_check": "original_session",
+        "targets_present": true,
+        "document_changed": true
+      },
+      {
+        "id": "field_trigger",
+        "target_check": "field_trigger",
+        "targets_present": true,
+        "document_changed": true
+      },
+      {
+        "id": "bootstrap_guard",
+        "target_check": "bootstrap_guard",
+        "targets_present": true,
+        "document_changed": true
+      }
+    ],
+    "r4_semantic_total": 46,
+    "r4_target_effective": 46,
+    "r4_details": [
+      {
+        "id": "R4-TX-01",
+        "target_effective": true,
+        "target_function": "app_private.terminalize_expired_root_change_r5(text, text, timestamptz)"
+      },
+      {
+        "id": "R4-TX-02",
+        "target_effective": true,
+        "target_function": "app_private.terminalize_expired_root_change_r5(text, text, timestamptz)"
+      },
+      {
+        "id": "R4-TX-03",
+        "target_effective": true,
+        "target_function": "app.bootstrap_approve_root_change_r4(text, text, text)"
+      },
+      {
+        "id": "R4-TX-04",
+        "target_effective": true,
+        "target_function": "app_private.terminalize_expired_root_change_r5(text, text, timestamptz)"
+      },
+      {
+        "id": "R4-TX-09",
+        "target_effective": true,
+        "target_function": "app_private.terminalize_expired_root_change_r5(text, text, timestamptz)"
+      },
+      {
+        "id": "R4-TX-05",
+        "target_effective": true,
+        "target_function": "app_private.terminalize_expired_root_change_r5(text, text, timestamptz)"
+      },
+      {
+        "id": "R4-TX-06",
+        "target_effective": true,
+        "target_function": "app.bootstrap_execute_root_change_r4(text, text, text)"
+      },
+      {
+        "id": "R4-TX-07",
+        "target_effective": true,
+        "target_function": "app_private.terminalize_expired_root_change_r5(text, text, timestamptz)"
+      },
+      {
+        "id": "R4-TX-08",
+        "target_effective": true,
+        "target_function": "app_private.terminalize_expired_root_change_r5(text, text, timestamptz)"
+      },
+      {
+        "id": "R4-ATT-01",
+        "target_effective": true,
+        "target_function": null
+      },
+      {
+        "id": "R4-ATT-02",
+        "target_effective": true,
+        "target_function": null
+      },
+      {
+        "id": "R4-ATT-03",
+        "target_effective": true,
+        "target_function": "app.bootstrap_begin_root_change_r4(text, boolean, text, text, text, text, text, text, text)"
+      },
+      {
+        "id": "R4-ATT-04",
+        "target_effective": true,
+        "target_function": "app.bootstrap_begin_root_change_r4(text, boolean, text, text, text, text, text, text, text)"
+      },
+      {
+        "id": "R4-ATT-05",
+        "target_effective": true,
+        "target_function": "app.bootstrap_begin_root_change_r4(text, boolean, text, text, text, text, text, text, text)"
+      },
+      {
+        "id": "R4-ATT-06",
+        "target_effective": true,
+        "target_function": "app.bootstrap_begin_root_change_r4(text, boolean, text, text, text, text, text, text, text)"
+      },
+      {
+        "id": "R4-ATT-07",
+        "target_effective": true,
+        "target_function": null
+      },
+      {
+        "id": "R4-ATT-08",
+        "target_effective": true,
+        "target_function": "app.bootstrap_execute_root_change_r4(text, text, text)"
+      },
+      {
+        "id": "R4-ATT-09",
+        "target_effective": true,
+        "target_function": "app.bootstrap_execute_root_change_r4(text, text, text)"
+      },
+      {
+        "id": "R4-ATT-10",
+        "target_effective": true,
+        "target_function": "app.bootstrap_begin_root_change_r4(text, boolean, text, text, text, text, text, text, text)"
+      },
+      {
+        "id": "R4-REC-01",
+        "target_effective": true,
+        "target_function": "app.bootstrap_begin_root_change_r4(text, boolean, text, text, text, text, text, text, text)"
+      },
+      {
+        "id": "R4-REC-02",
+        "target_effective": true,
+        "target_function": "app.bootstrap_begin_root_change_r4(text, boolean, text, text, text, text, text, text, text)"
+      },
+      {
+        "id": "R4-REC-03",
+        "target_effective": true,
+        "target_function": "app.bootstrap_begin_root_change_r4(text, boolean, text, text, text, text, text, text, text)"
+      },
+      {
+        "id": "R4-REC-04",
+        "target_effective": true,
+        "target_function": "app.bootstrap_begin_root_change_r4(text, boolean, text, text, text, text, text, text, text)"
+      },
+      {
+        "id": "R4-REC-05",
+        "target_effective": true,
+        "target_function": "app.bootstrap_deny_root_change_r4(text, text, text, text)"
+      },
+      {
+        "id": "R4-REC-06",
+        "target_effective": true,
+        "target_function": "app.bootstrap_execute_root_change_r4(text, text, text)"
+      },
+      {
+        "id": "R4-REC-07",
+        "target_effective": true,
+        "target_function": "app.bootstrap_begin_root_change_r4(text, boolean, text, text, text, text, text, text, text)"
+      },
+      {
+        "id": "R4-REC-08",
+        "target_effective": true,
+        "target_function": "app.bootstrap_begin_root_change_r4(text, boolean, text, text, text, text, text, text, text)"
+      },
+      {
+        "id": "R4-REC-09",
+        "target_effective": true,
+        "target_function": "app.bootstrap_approve_root_change_r4(text, text, text)"
+      },
+      {
+        "id": "R4-REC-10",
+        "target_effective": true,
+        "target_function": "app.bootstrap_execute_root_change_r4(text, text, text)"
+      },
+      {
+        "id": "R4-REC-11",
+        "target_effective": true,
+        "target_function": "app.bootstrap_execute_root_change_r4(text, text, text)"
+      },
+      {
+        "id": "R4-REC-12",
+        "target_effective": true,
+        "target_function": "app.bootstrap_execute_root_change_r4(text, text, text)"
+      },
+      {
+        "id": "R4-CAND-01",
+        "target_effective": true,
+        "target_function": null
+      },
+      {
+        "id": "R4-CAND-02",
+        "target_effective": true,
+        "target_function": null
+      },
+      {
+        "id": "R4-CAND-03",
+        "target_effective": true,
+        "target_function": null
+      },
+      {
+        "id": "R4-CAND-04",
+        "target_effective": true,
+        "target_function": null
+      },
+      {
+        "id": "R4-CAND-05",
+        "target_effective": true,
+        "target_function": "app_private.execute_candidate_backfill_r5(text, text, text, text, text, text, text, text, bigint)"
+      },
+      {
+        "id": "R4-CAND-06",
+        "target_effective": true,
+        "target_function": null
+      },
+      {
+        "id": "R4-CAND-07",
+        "target_effective": true,
+        "target_function": "app_private.guard_sealed_result_r3()"
+      },
+      {
+        "id": "R4-CAND-08",
+        "target_effective": true,
+        "target_function": "app_private.guard_snapshot_child_r3()"
+      },
+      {
+        "id": "R4-CAND-09",
+        "target_effective": true,
+        "target_function": "app_private.r4_candidate_backfill_row_allowed(jsonb, jsonb)"
+      },
+      {
+        "id": "R4-CAND-10",
+        "target_effective": true,
+        "target_function": null
+      },
+      {
+        "id": "R4-CAND-11",
+        "target_effective": true,
+        "target_function": "app_private.execute_candidate_backfill_r5(text, text, text, text, text, text, text, text, bigint)"
+      },
+      {
+        "id": "R4-ACL-01",
+        "target_effective": true,
+        "target_function": null
+      },
+      {
+        "id": "R4-ACL-02",
+        "target_effective": true,
+        "target_function": null
+      },
+      {
+        "id": "R4-ACL-03",
+        "target_effective": true,
+        "target_function": null
+      },
+      {
+        "id": "R4-ACL-04",
+        "target_effective": true,
+        "target_function": null
+      }
+    ],
+    "scope_note": "Literal mutation target replay only. Independent semantic detection is reported separately below."
+  },
+  "independent_negative_rules": [
+    {
+      "id": "IND-MUT-01",
+      "basis": "terminal helper has no update-then-raise",
+      "pass": true
+    },
+    {
+      "id": "IND-MUT-02",
+      "basis": "terminal helper completes no caller ledger",
+      "pass": true
+    },
+    {
+      "id": "IND-MUT-03",
+      "basis": "denied history can be followed by new attempt",
+      "pass": true
+    },
+    {
+      "id": "IND-MUT-04",
+      "basis": "locked history can be followed by new attempt",
+      "pass": true
+    },
+    {
+      "id": "IND-MUT-05",
+      "basis": "sequence allocator is atomic upsert",
+      "pass": true
+    },
+    {
+      "id": "IND-MUT-06",
+      "basis": "one active attempt partial unique",
+      "pass": true
+    },
+    {
+      "id": "IND-MUT-07",
+      "basis": "approval scoped to exact attempt",
+      "pass": true
+    },
+    {
+      "id": "IND-MUT-08",
+      "basis": "execute requires approved state",
+      "pass": true
+    },
+    {
+      "id": "IND-MUT-09",
+      "basis": "sequence owner DML",
+      "pass": true
+    },
+    {
+      "id": "IND-MUT-10",
+      "basis": "rotation execute and generation trigger recheck root",
+      "pass": true
+    },
+    {
+      "id": "IND-MUT-11",
+      "basis": "begin initiator is active",
+      "pass": true
+    },
+    {
+      "id": "IND-MUT-12",
+      "basis": "approver principal is active",
+      "pass": true
+    },
+    {
+      "id": "IND-MUT-13",
+      "basis": "execute creates no principal",
+      "pass": true
+    },
+    {
+      "id": "IND-MUT-14",
+      "basis": "execute creates no principal epoch",
+      "pass": true
+    },
+    {
+      "id": "IND-MUT-15",
+      "basis": "candidate columns not null",
+      "pass": true
+    },
+    {
+      "id": "IND-MUT-16",
+      "basis": "candidate guard permits only candidate change",
+      "pass": true
+    },
+    {
+      "id": "IND-MUT-17",
+      "basis": "candidate sources exact",
+      "pass": true
+    },
+    {
+      "id": "IND-MUT-18",
+      "basis": "candidate sources frozen",
+      "pass": true
+    },
+    {
+      "id": "IND-MUT-19",
+      "basis": "sealed/correction digest proof",
+      "pass": true
+    },
+    {
+      "id": "IND-MUT-20",
+      "basis": "expired attempt swept and replaced",
+      "pass": true
+    },
+    {
+      "id": "IND-MUT-21",
+      "basis": "candidate audit row precedes update",
+      "pass": true
+    },
+    {
+      "id": "IND-MUT-22",
+      "basis": "response-loss replay is non-hardcoded",
+      "pass": false
+    }
+  ],
+  "findings": [
+    {
+      "id": "REV-R5-IND-P2-01",
+      "severity": "P2",
+      "title": "Function Registry records incorrect security/search_path metadata",
+      "detail": "128 security mismatches and 157 search_path mismatches. Registry parser uses an absolute match offset against a sliced function segment, so attributes are not parsed.",
+      "status": "NOT RESOLVED"
+    },
+    {
+      "id": "REV-R5-IND-P2-02",
+      "severity": "P2",
+      "title": "Response-loss replay vector remains hardcoded",
+      "detail": "validate_r5.py assigns 'GENERATION:2' directly and compares the same stored string. It does not derive a first-execution result from the final SQL state transition or Ledger contract.",
+      "status": "PARTIALLY RESOLVED",
+      "original_finding": "REV-R3-R3-P2-03"
+    },
+    {
+      "id": "REV-R5-IND-P2-03",
+      "severity": "P2",
+      "title": "Candidate backfill actor fields are not bound to the executing session",
+      "detail": "The SECURITY DEFINER function accepts arbitrary Principal, Session and Authority Grant IDs and only checks that those rows are active. It does not compare them with session_user, a locked current session, or backend identity. PUBLIC EXECUTE is revoked, so the current state is fail-closed, but any future maintenance grant could attribute immutable-row changes to another valid actor.",
+      "status": "PARTIALLY RESOLVED",
+      "original_finding": "REV-R4-IND-P2-03"
+    },
+    {
+      "id": "REV-R5-IND-P2-04",
+      "severity": "P2",
+      "title": "R5 Validator contains non-mutational negative checks and a non-exact Open Decision check",
+      "detail": "Most IND-MUT rows in VALIDATION_EVIDENCE_R5 contain only a boolean predicate and basis text, without a target mutation, expected mutation effect, or observed flipped result. The Open Decisions check accepts at least 57 regex matches and does not itself require exactly 57 unique OPEN IDs with zero approvals.",
+      "status": "PARTIALLY RESOLVED",
+      "original_finding": "REV-R3-R3-P2-03"
+    },
+    {
+      "id": "REV-R5-IND-P3-01",
+      "severity": "P3",
+      "title": "Documented R5 state-vector IDs do not resolve to evidence IDs",
+      "detail": "Traceability IDs=['R5-STATE-EXPIRED-REPLACED', 'R5-STATE-RESPONSE-LOSS', 'R5-STATE-REVOKED-APPROVAL', 'R5-STATE-REVOKED-ROOT', 'R5-STATE-SINGLE-ACTIVE']; evidence IDs=['expired_active_attempt_replaced', 'response_loss_replay_non_vacuous', 'revoked_approval_cannot_execute', 'revoked_root_cannot_execute', 'single_active_attempt'].",
+      "status": "NOT RESOLVED",
+      "original_finding": "REV-R4-IND-P3-01"
+    },
+    {
+      "id": "REV-R5-IND-P3-02",
+      "severity": "P3",
+      "title": "Begin samples authoritative time before the final active-Attempt lock",
+      "detail": "The R5 design document says locking precedes time evaluation. The final SQL samples clock_timestamp() before SELECT ... FOR UPDATE on the active Attempt. The shared identity mutex currently serializes public writers, so no confirmed exploitation path was found, but the claimed lock/time order is false and owner DML or a future lock-order change could preserve a stale time decision.",
+      "status": "PARTIALLY RESOLVED",
+      "original_finding": "REV-R4-IND-P2-02"
+    }
+  ],
+  "end_hashes": {
+    "manifest": "513F3CEAE561FD8FEB3A680B2853410BA6022675D24A4246C8C732833DA2239F",
+    "P1_PRODUCT_REMEDIATION_DESIGN_R5.md": "766C9D706FCA869351C182606E944411DC1D58A36DB6D9269FE7A7B67FC0E7D9",
+    "DATABASE_COMPLETE_DDL_DESIGN_R5.sql": "0B4ACA1AC260980741675D3FE87F62E520240263BDA78F20879E84A11C391D2A",
+    "DATABASE_FINAL_STATE_OVERLAY_R5.sql": "9276ABE584F83E7016D57C4DB40887C5C5AC99ECFEFE9A7D9F941D2A03B5B81C",
+    "DATABASE_FUNCTION_SIGNATURE_REGISTRY_R5.json": "B523227232D869122D9E346D874755B477C5462954813B3D5D9D6CF33E555B6E",
+    "VALIDATION_EVIDENCE_R5.json": "553992905A1A3BBF8465C9BF8D95A5D96790BFCDA3595F139E0966D14D40A97D"
+  },
+  "boundaries": {
+    "postgresql_grammar": "NOT VERIFIED — NO COMPATIBLE OFFLINE PARSER",
+    "postgresql_compilation": "NOT VERIFIED — DATABASE NOT AUTHORIZED",
+    "catalog_introspection": "NOT VERIFIED — DATABASE NOT AUTHORIZED",
+    "migration_lock_behavior": "NOT VERIFIED — DATABASE NOT AUTHORIZED",
+    "runtime_concurrency": "NOT VERIFIED — RUNTIME NOT AUTHORIZED"
+  }
+}

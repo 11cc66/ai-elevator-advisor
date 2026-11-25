@@ -66,7 +66,12 @@ export const createProjectSchema = z.object({
     .trim()
     .min(1, "请输入项目地址")
     .max(300, "项目地址不能超过 300 个字符"),
-  projectType: z.literal("OLD_BUILDING_ELEVATOR"),
+  projectType: z.enum([
+    "OLD_BUILDING_ELEVATOR",
+    "OLD_BUILDING_ADDITION",
+    "EXISTING_ELEVATOR_RENOVATION",
+    "NEW_BUILDING_INSTALLATION",
+  ]),
 });
 
 export const createBuildingSchema = z.object({
@@ -288,3 +293,246 @@ export const fileRecognitionJobSchema = z.object({
 export type FileRecognitionJob = z.infer<
   typeof fileRecognitionJobSchema
 >;
+
+export const installationScenarioSchema = z.enum([
+  "OLD_BUILDING_ADDITION",
+  "EXISTING_ELEVATOR_RENOVATION",
+  "NEW_BUILDING_INSTALLATION",
+]);
+
+export const advisorProviderKindSchema = z.enum([
+  "MOCK",
+  "REAL_PROVIDER",
+]);
+
+export const advisorMessageRoleSchema = z.enum([
+  "USER",
+  "ASSISTANT",
+  "SYSTEM",
+]);
+
+export const requirementFieldKeys = [
+  "buildingUse",
+  "buildingType",
+  "installationScenario",
+  "floorCount",
+  "floorHeight",
+  "buildingHeight",
+  "budgetMin",
+  "budgetMax",
+  "externalInstallationAllowed",
+  "buildingDescription",
+  "siteConditions",
+  "drawingStatus",
+  "existingElevatorDescription",
+  "renovationGoal",
+] as const;
+
+export const requirementFieldKeySchema = z.enum(requirementFieldKeys);
+
+export const requirementMissingFieldKeys = [
+  ...requirementFieldKeys,
+  "buildingHeightOrFloorHeight",
+] as const;
+
+export const requirementMissingFieldKeySchema = z.enum(
+  requirementMissingFieldKeys,
+);
+
+export const requirementDraftSchema = z.object({
+  installationScenario: installationScenarioSchema,
+  buildingUse: z.string().trim().max(80).optional(),
+  buildingType: z.string().trim().max(80).optional(),
+  floorCount: z.number().int().min(1).max(200).optional(),
+  floorHeight: z.number().positive().max(20).optional(),
+  buildingHeight: z.number().positive().max(1000).optional(),
+  budgetMin: z.number().int().nonnegative().max(1_000_000_000).optional(),
+  budgetMax: z.number().int().nonnegative().max(1_000_000_000).optional(),
+  externalInstallationAllowed: z.boolean().optional(),
+  buildingDescription: z.string().trim().max(4_000).optional(),
+  siteConditions: z.string().trim().max(4_000).optional(),
+  drawingStatus: z.enum([
+    "NONE",
+    "AVAILABLE_NOT_ANALYZED",
+    "ANALYSIS_UNAVAILABLE",
+  ]).optional(),
+  existingElevatorDescription: z.string().trim().max(4_000).optional(),
+  renovationGoal: z.string().trim().max(2_000).optional(),
+  fieldSources: z.record(z.string(), z.string()).optional(),
+  missingFields: z.array(requirementMissingFieldKeySchema).default([]),
+  professionalReviewRequired: z.boolean().default(true),
+});
+
+export const advisorCreateSchema = z.object({
+  installationScenario: installationScenarioSchema,
+});
+
+export const advisorMessageRequestSchema = z.object({
+  content: z.string().trim().min(1).max(4_000),
+});
+
+export const requirementUpdateSchema = requirementDraftSchema
+  .omit({ missingFields: true, professionalReviewRequired: true })
+  .partial()
+  .extend({
+    installationScenario: installationScenarioSchema.optional(),
+  });
+
+export const requirementConfirmSchema = z.object({
+  expectedVersion: z.number().int().positive(),
+});
+
+export const mvpProjectCreateSchema = z.object({
+  name: z.string().trim().min(1).max(160),
+  address: z.string().trim().min(1).max(300),
+  installationScenario: installationScenarioSchema,
+});
+
+export const productSpecSchema = z.object({
+  capacityKg: z.number().int().positive().max(100_000).optional(),
+  speedMps: z.number().positive().max(20).optional(),
+  maxFloors: z.number().int().positive().max(200).optional(),
+  maxTravelM: z.number().positive().max(1_000).optional(),
+  shaftWidthMm: z.number().int().positive().max(20_000).optional(),
+  shaftDepthMm: z.number().int().positive().max(20_000).optional(),
+  pitDepthMm: z.number().int().positive().max(20_000).optional(),
+  overheadMm: z.number().int().positive().max(20_000).optional(),
+  doorConfiguration: z.string().trim().max(100).optional(),
+  machineRoomType: z.enum(["MRL", "MR", "UNKNOWN"]).default("UNKNOWN"),
+});
+
+export const productPriceSchema = z
+  .object({
+    minimumAmount: z.number().int().nonnegative().max(1_000_000_000).optional(),
+    maximumAmount: z.number().int().nonnegative().max(1_000_000_000).optional(),
+    currency: z.string().trim().min(3).max(8).default("CNY"),
+    region: z.string().trim().min(1).max(80).default("DEMO"),
+    validityStatus: z.enum(["DEMO_MOCK", "VALID", "EXPIRED"]),
+    sourceReference: z.string().trim().max(500).optional(),
+  })
+  .superRefine((value, context) => {
+    if (
+      value.minimumAmount !== undefined &&
+      value.maximumAmount !== undefined &&
+      value.minimumAmount > value.maximumAmount
+    ) {
+      context.addIssue({
+        code: "custom",
+        path: ["maximumAmount"],
+        message: "最高价格不能低于最低价格。",
+      });
+    }
+  });
+
+function validateCatalogProvenance(
+  value: {
+    verificationStatus: "DEMO_MOCK" | "UNVERIFIED" | "VERIFIED" | "EXPIRED";
+    sourceReference?: string;
+    price?: {
+      validityStatus: "DEMO_MOCK" | "VALID" | "EXPIRED";
+      sourceReference?: string;
+    };
+  },
+  context: z.RefinementCtx,
+): void {
+  if (value.verificationStatus === "VERIFIED" && !value.sourceReference) {
+    context.addIssue({
+      code: "custom",
+      path: ["sourceReference"],
+      message: "已审核产品必须提供来源。",
+    });
+  }
+  if (
+    value.price?.validityStatus === "VALID" &&
+    !value.price.sourceReference
+  ) {
+    context.addIssue({
+      code: "custom",
+      path: ["price", "sourceReference"],
+      message: "有效价格必须提供来源。",
+    });
+  }
+}
+
+export const productCreateSchema = z
+  .object({
+    manufacturerName: z.string().trim().min(1).max(160),
+    brandName: z.string().trim().min(1).max(120),
+    modelCode: z.string().trim().min(1).max(100),
+    name: z.string().trim().min(1).max(160),
+    description: z.string().trim().max(4_000).optional(),
+    applicableScenarios: z
+      .array(installationScenarioSchema)
+      .min(1)
+      .max(3),
+    verificationStatus: z.enum([
+      "DEMO_MOCK",
+      "UNVERIFIED",
+      "VERIFIED",
+      "EXPIRED",
+    ]),
+    sourceReference: z.string().trim().max(500).optional(),
+    specification: productSpecSchema,
+    price: productPriceSchema.optional(),
+  })
+  .superRefine(validateCatalogProvenance);
+
+export const productUpdateSchema = z
+  .object({
+    name: z.string().trim().min(1).max(160),
+    description: z.string().trim().max(4_000).optional(),
+    applicableScenarios: z.array(installationScenarioSchema).min(1).max(3),
+    verificationStatus: z.enum([
+      "DEMO_MOCK",
+      "UNVERIFIED",
+      "VERIFIED",
+      "EXPIRED",
+    ]),
+    sourceReference: z.string().trim().max(500).optional(),
+    specification: productSpecSchema,
+    price: productPriceSchema.optional(),
+  })
+  .superRefine(validateCatalogProvenance);
+
+export const selectionRequestSchema = z.object({
+  requirementVersion: z.number().int().positive(),
+});
+
+export const salesHandoffCreateSchema = z.object({
+  summary: z.string().trim().min(1).max(4_000),
+  budgetConcern: z.string().trim().max(2_000).optional(),
+});
+
+export const salesFollowUpSchema = z.object({
+  status: z.enum([
+    "PENDING_FOLLOW_UP",
+    "IN_FOLLOW_UP",
+    "CUSTOMER_RESPONDED",
+    "CLOSED",
+  ]),
+  contactStatus: z.string().trim().min(1).max(80),
+  note: z.string().trim().min(1).max(4_000),
+});
+
+export type InstallationScenario = z.infer<
+  typeof installationScenarioSchema
+>;
+export type RequirementDraft = z.infer<typeof requirementDraftSchema>;
+export type RequirementMissingFieldKey = z.infer<
+  typeof requirementMissingFieldKeySchema
+>;
+export type AdvisorMessageRequest = z.infer<
+  typeof advisorMessageRequestSchema
+>;
+export type RequirementUpdate = z.infer<typeof requirementUpdateSchema>;
+export type MvpProjectCreateInput = z.infer<
+  typeof mvpProjectCreateSchema
+>;
+export type ProductCreateInput = z.infer<typeof productCreateSchema>;
+export type ProductUpdateInput = z.infer<typeof productUpdateSchema>;
+export type ProductSpecInput = z.infer<typeof productSpecSchema>;
+export type ProductPriceInput = z.infer<typeof productPriceSchema>;
+export type SalesHandoffCreateInput = z.infer<
+  typeof salesHandoffCreateSchema
+>;
+export type SalesFollowUpInput = z.infer<typeof salesFollowUpSchema>;

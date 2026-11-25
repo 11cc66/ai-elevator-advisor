@@ -5,41 +5,14 @@ import type { BigIntStats } from "node:fs";
 import path from "node:path";
 import type { Readable } from "node:stream";
 
+import type {
+  IntegrityCheck,
+  ReadVerifiedObjectInput,
+  StorageRuntimeCapability,
+  VerifiedObjectRead,
+  WrittenUpload,
+} from "./capabilities.js";
 import { PrivateStorageError } from "./errors.js";
-
-function isNotFoundError(error: unknown): boolean {
-  return (
-    typeof error === "object" &&
-    error !== null &&
-    "code" in error &&
-    error.code === "ENOENT"
-  );
-}
-
-export interface WrittenUpload {
-  stagingKey: string;
-  sizeBytes: bigint;
-  checksumSha256: string;
-  headerBytes: Uint8Array;
-}
-
-export interface IntegrityCheck {
-  valid: boolean;
-  actualChecksumSha256: string;
-}
-
-export interface VerifiedObjectRead {
-  bytes: Buffer;
-  sizeBytes: bigint;
-  checksumSha256: string;
-}
-
-export interface ReadVerifiedObjectInput {
-  objectKey: string;
-  expectedSizeBytes: bigint;
-  expectedChecksumSha256: string;
-  maxBytes: bigint;
-}
 
 export interface LocalPrivateStorageHooks {
   afterPrecheck?: () => void | Promise<void>;
@@ -47,36 +20,6 @@ export interface LocalPrivateStorageHooks {
     bytesRead: number,
     totalBytesRead: number,
   ) => void | Promise<void>;
-}
-
-export interface PrivateStorageAdapter {
-  writeToStaging(
-    stagingKey: string,
-    source: Readable,
-    maxBytes: bigint,
-  ): Promise<WrittenUpload>;
-  finalize(stagingKey: string, objectKey: string): Promise<void>;
-  removeStaging(stagingKey: string): Promise<void>;
-  removeObject(objectKey: string): Promise<void>;
-  verifyObjectChecksum(
-    objectKey: string,
-    expectedChecksumSha256: string,
-  ): Promise<IntegrityCheck>;
-  readVerifiedObject(
-    input: ReadVerifiedObjectInput,
-  ): Promise<VerifiedObjectRead>;
-  cleanupOrphanObjects(
-    referencedObjectKeys: readonly string[],
-    olderThanMs: number,
-    onError?: (error: unknown) => void,
-    beforeDelete?: (objectKey: string) => void | Promise<void>,
-  ): Promise<number>;
-  cleanupTemp(
-    olderThanMs: number,
-    onError?: (error: unknown) => void,
-    beforeDelete?: (storageKey: string) => void | Promise<void>,
-  ): Promise<number>;
-  openReadStream(objectKey: string): Readable;
 }
 
 function isPathInside(root: string, candidate: string): boolean {
@@ -153,7 +96,7 @@ function normalizeStorageReadError(error: unknown): PrivateStorageError {
   );
 }
 
-export class LocalPrivateStorage implements PrivateStorageAdapter {
+export class LocalPrivateStorage implements StorageRuntimeCapability {
   readonly #root: string;
   readonly #hooks: LocalPrivateStorageHooks;
 
@@ -209,7 +152,6 @@ export class LocalPrivateStorage implements PrivateStorageAdapter {
       }
     } catch (error) {
       await handle.close().catch(() => undefined);
-      await fs.rm(filePath, { force: true }).catch(() => undefined);
       throw error;
     }
 
@@ -247,14 +189,6 @@ export class LocalPrivateStorage implements PrivateStorageAdapter {
     }
 
     await fs.rename(stagingPath, objectPath);
-  }
-
-  async removeStaging(stagingKey: string): Promise<void> {
-    await fs.rm(this.#resolveKey(stagingKey), { force: true });
-  }
-
-  async removeObject(objectKey: string): Promise<void> {
-    await fs.rm(this.#resolveKey(objectKey), { force: true });
   }
 
   async verifyObjectChecksum(
@@ -542,110 +476,6 @@ export class LocalPrivateStorage implements PrivateStorageAdapter {
       );
     }
     return result;
-  }
-
-  async cleanupOrphanObjects(
-    referencedObjectKeys: readonly string[],
-    olderThanMs: number,
-    onError?: (error: unknown) => void,
-    beforeDelete?: (objectKey: string) => void | Promise<void>,
-  ): Promise<number> {
-    const objectsDirectory = this.#resolveKey("objects");
-    let entries;
-    try {
-      entries = await fs.readdir(objectsDirectory, {
-        withFileTypes: true,
-      });
-    } catch (error) {
-      if (isNotFoundError(error)) {
-        return 0;
-      }
-      onError?.(error);
-      return 0;
-    }
-    const referenced = new Set(referencedObjectKeys);
-    const cutoff = Date.now() - olderThanMs;
-    let removed = 0;
-
-    for (const entry of entries) {
-      if (!entry.isFile()) {
-        continue;
-      }
-
-      const objectKey = `objects/${entry.name}`;
-      if (referenced.has(objectKey)) {
-        continue;
-      }
-
-      const objectPath = path.join(objectsDirectory, entry.name);
-      let stats;
-      try {
-        stats = await fs.stat(objectPath);
-      } catch (error) {
-        onError?.(error);
-        continue;
-      }
-      if (!stats || stats.mtimeMs >= cutoff) {
-        continue;
-      }
-
-      await beforeDelete?.(objectKey);
-      try {
-        await fs.rm(objectPath, { force: true });
-      } catch (error) {
-        onError?.(error);
-        continue;
-      }
-      removed += 1;
-    }
-
-    return removed;
-  }
-
-  async cleanupTemp(
-    olderThanMs: number,
-    onError?: (error: unknown) => void,
-    beforeDelete?: (storageKey: string) => void | Promise<void>,
-  ): Promise<number> {
-    const tempDirectory = this.#resolveKey("temp");
-    let entries;
-    try {
-      entries = await fs.readdir(tempDirectory, {
-        withFileTypes: true,
-      });
-    } catch (error) {
-      if (isNotFoundError(error)) {
-        return 0;
-      }
-      onError?.(error);
-      return 0;
-    }
-    const cutoff = Date.now() - olderThanMs;
-    let removed = 0;
-
-    for (const entry of entries) {
-      const entryPath = path.join(tempDirectory, entry.name);
-      let stats;
-      try {
-        stats = await fs.stat(entryPath);
-      } catch (error) {
-        onError?.(error);
-        continue;
-      }
-      if (!stats || stats.mtimeMs >= cutoff) {
-        continue;
-      }
-      await beforeDelete?.(`temp/${entry.name}`);
-      try {
-        await fs.rm(entryPath, { recursive: true, force: true });
-      } catch (error) {
-        onError?.(error);
-        continue;
-      }
-      removed += 1;
-    }
-
-    return removed;
   }
 
   openReadStream(objectKey: string): Readable {

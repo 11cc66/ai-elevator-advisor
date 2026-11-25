@@ -1,0 +1,7 @@
+interface:
+  display_name: "File Lifecycle"
+  short_description: "Protect private file lifecycle and recovery invariants"
+  default_prompt: "Use $file-lifecycle to assess this private file lifecycle change."
+
+policy:
+  allow_implicit_invocation: true

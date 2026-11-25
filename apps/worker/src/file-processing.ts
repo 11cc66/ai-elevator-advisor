@@ -6,8 +6,8 @@ import {
 } from "@elevator/contracts";
 import {
   detectAllowedFileType,
-  LocalPrivateStorage,
   PrivateStorageError,
+  type StorageReadCapability,
 } from "@elevator/file-storage";
 import { Prisma, PrismaClient } from "@prisma/client";
 
@@ -56,10 +56,10 @@ export type ProcessingCheckpoint =
 
 export interface FileProcessingDependencies {
   prisma?: PrismaClient;
-  storage?: LocalPrivateStorage;
+  storage?: StorageReadCapability;
   parsePdf?: typeof parsePdfInWorker;
   readObject?: (
-    storage: LocalPrivateStorage,
+    storage: StorageReadCapability,
     storageKey: string,
   ) => Promise<Buffer>;
   now?: () => Date;
@@ -74,12 +74,12 @@ export interface FileProcessingDependencies {
 interface WorkerRuntime {
   env: WorkerEnv;
   prisma: PrismaClient;
-  storage: LocalPrivateStorage;
+  storage: StorageReadCapability;
 }
 
 function createRuntime(
   prisma: PrismaClient,
-  storage?: LocalPrivateStorage,
+  storage?: StorageReadCapability,
 ): WorkerRuntime {
   const env = readWorkerEnv();
   return {
@@ -171,7 +171,7 @@ async function verifyTestIdentity(runtime: WorkerRuntime): Promise<boolean> {
 }
 
 async function readObjectBytes(
-  storage: LocalPrivateStorage,
+  storage: StorageReadCapability,
   storageKey: string,
 ): Promise<Buffer> {
   const chunks: Buffer[] = [];

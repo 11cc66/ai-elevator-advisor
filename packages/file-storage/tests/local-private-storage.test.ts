@@ -9,7 +9,9 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
   detectAllowedFileType,
   filenameMatchesMimeType,
+  LegacyStorageCleanupDisabledError,
   LocalPrivateStorage,
+  QuarantinedLegacyStorageCleanup,
   sanitizeDisplayFilename,
 } from "../src/index.js";
 
@@ -27,10 +29,12 @@ const PNG_BYTES = Buffer.from(
 describe("private file storage", () => {
   let root = "";
   let storage: LocalPrivateStorage;
+  let legacyCleanup: QuarantinedLegacyStorageCleanup;
 
   beforeEach(async () => {
     root = await fs.mkdtemp(path.join(os.tmpdir(), "elevator-files-"));
     storage = new LocalPrivateStorage(root);
+    legacyCleanup = new QuarantinedLegacyStorageCleanup();
   });
 
   afterEach(async () => {
@@ -378,7 +382,7 @@ describe("private file storage", () => {
     }
   });
 
-  it("rejects path traversal and sizes over the configured limit", async () => {
+  it("rejects path traversal and preserves a failed staging write for recovery", async () => {
     await expect(
       storage.writeToStaging(
         "../outside.part",
@@ -397,6 +401,63 @@ describe("private file storage", () => {
 
     await expect(
       fs.stat(path.join(root, "staging", "too-large.part")),
-    ).rejects.toBeDefined();
+    ).resolves.toBeDefined();
+  });
+
+  it("fails closed for every legacy business-object deletion method", async () => {
+    const written = await storage.writeToStaging(
+      "staging/legacy-cleanup.part",
+      Readable.from([PDF_BYTES]),
+      20n * 1024n * 1024n,
+    );
+    const stagingPath = path.join(root, written.stagingKey);
+    await expect(
+      legacyCleanup.removeStaging(written.stagingKey),
+    ).rejects.toBeInstanceOf(
+      LegacyStorageCleanupDisabledError,
+    );
+    await expect(fs.access(stagingPath)).resolves.toBeUndefined();
+
+    await storage.finalize(
+      written.stagingKey,
+      "objects/legacy-cleanup.bin",
+    );
+    const objectPath = path.join(root, "objects/legacy-cleanup.bin");
+    await expect(
+      legacyCleanup.removeObject("objects/legacy-cleanup.bin"),
+    ).rejects.toBeInstanceOf(LegacyStorageCleanupDisabledError);
+    await expect(fs.access(objectPath)).resolves.toBeUndefined();
+
+    const old = new Date(Date.now() - 2 * 60 * 60_000);
+    await fs.utimes(objectPath, old, old);
+    await expect(
+      legacyCleanup.cleanupOrphanObjects([], 60_000),
+    ).rejects.toBeInstanceOf(LegacyStorageCleanupDisabledError);
+    await expect(fs.access(objectPath)).resolves.toBeUndefined();
+
+    const tempDirectory = path.join(root, "temp/legacy-entry");
+    await fs.mkdir(tempDirectory, { recursive: true });
+    await fs.writeFile(path.join(tempDirectory, "partial"), "temp");
+    await fs.utimes(tempDirectory, old, old);
+    await expect(
+      legacyCleanup.cleanupTemp(60_000),
+    ).rejects.toBeInstanceOf(LegacyStorageCleanupDisabledError);
+    await expect(fs.access(tempDirectory)).resolves.toBeUndefined();
+  });
+
+  it("does not validate or resolve a legacy delete key before rejecting it", async () => {
+    await expect(
+      legacyCleanup.removeObject("../outside.bin"),
+    ).rejects.toBeInstanceOf(LegacyStorageCleanupDisabledError);
+    await expect(
+      legacyCleanup.removeStaging("objects/not-staging.bin"),
+    ).rejects.toBeInstanceOf(LegacyStorageCleanupDisabledError);
+  });
+
+  it("does not expose cleanup capability on ordinary storage", () => {
+    expect("removeStaging" in storage).toBe(false);
+    expect("removeObject" in storage).toBe(false);
+    expect("cleanupOrphanObjects" in storage).toBe(false);
+    expect("cleanupTemp" in storage).toBe(false);
   });
 });

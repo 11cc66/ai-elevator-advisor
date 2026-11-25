@@ -1,7 +1,7 @@
 import {
   ALLOWED_FILE_MIME_TYPES,
   PrivateStorageError,
-  type PrivateStorageAdapter,
+  type StorageReadCapability,
 } from "@elevator/file-storage";
 import {
   isVerifiedTestRuntime,
@@ -237,7 +237,7 @@ export async function prepareFileDownload(input: {
   versionId: string;
   requestId: string;
   env: WebEnv;
-  storage: PrivateStorageAdapter;
+  storage: StorageReadCapability;
 }): Promise<PreparedDownload> {
   const file = await prisma.file.findFirst({
     where: {

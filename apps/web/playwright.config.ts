@@ -21,6 +21,8 @@ process.env.PRIVATE_STORAGE_ROOT = testStorageRoot;
 process.env.TEST_CUSTOMER_2_USERNAME =
   testEnv.TEST_CUSTOMER_2_USERNAME;
 process.env.TEST_CUSTOMER_2_NAME = testEnv.TEST_CUSTOMER_2_NAME;
+process.env.TEST_SALES_USERNAME = testEnv.TEST_SALES_USERNAME;
+process.env.TEST_SALES_NAME = testEnv.TEST_SALES_NAME;
 
 export default defineConfig({
   testDir: "./tests/e2e",

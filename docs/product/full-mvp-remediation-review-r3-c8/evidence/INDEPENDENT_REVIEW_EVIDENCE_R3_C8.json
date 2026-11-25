@@ -1,0 +1,554 @@
+{
+  "review": "FULL-MVP-REMEDIATION-REVIEW-R3-C8",
+  "scope": "INDEPENDENT STATIC DESIGN EVIDENCE; NO POSTGRESQL GRAMMAR/EXECUTION",
+  "manifest": {
+    "path": "docs/product/full-mvp-remediation-design-r3-c8/SHA256SUMS_R3_C8.txt",
+    "sha256": "672D6206D06E4282F7C8684A3811654EEDDA72E52C55B6EDF2C324B5C131E853",
+    "bytes": 3530,
+    "lines": 22,
+    "records": 22,
+    "unique_paths": 22,
+    "mismatches": 0,
+    "coverage_differences": [],
+    "result": "PASS"
+  },
+  "object_inventory": {
+    "tables": 50,
+    "views": 9,
+    "view_definitions": 17,
+    "foreign_keys": 64,
+    "functions_unique": 78,
+    "function_owner_assignments": 78,
+    "call_edges": 171,
+    "call_targets": 32,
+    "unresolved_call_targets": [],
+    "triggers": 103,
+    "deferred_constraint_triggers": 12
+  },
+  "overlay_compatibility": {
+    "final_state_markers_present": true,
+    "auto_owner_placeholder_resolved": true,
+    "return_type_conflicts": [],
+    "duplicate_tables": [],
+    "duplicate_roles": [],
+    "duplicate_trigger_names": [],
+    "result": "PASS"
+  },
+  "registry_audit": {
+    "registry_status": "PASS",
+    "registry_functions": 78,
+    "ddl_functions": 78,
+    "signature_differences": [],
+    "owner_mismatches": [],
+    "unsafe_security_definer_search_paths": [],
+    "public_execute": [],
+    "unresolved_registry_calls": [],
+    "result": "PASS"
+  },
+  "fk_audit": {
+    "findings": [],
+    "source_chain_coverage": {
+      "app.selection_requirement_field": {
+        "required": [
+          "requirement_version_id",
+          "source_revision_id",
+          "source_value_id"
+        ],
+        "covered_by_fk": [],
+        "uncovered": [
+          "requirement_version_id",
+          "source_revision_id",
+          "source_value_id"
+        ]
+      },
+      "app.selection_catalog_review_result": {
+        "required": [
+          "catalog_review_id",
+          "source_revision_id",
+          "target_revision_id"
+        ],
+        "covered_by_fk": [],
+        "uncovered": [
+          "catalog_review_id",
+          "source_revision_id",
+          "target_revision_id"
+        ]
+      },
+      "app.selection_professional_review_result": {
+        "required": [
+          "professional_review_event_id",
+          "professional_review_id",
+          "target_revision_id"
+        ],
+        "covered_by_fk": [],
+        "uncovered": [
+          "professional_review_event_id",
+          "professional_review_id",
+          "target_revision_id"
+        ]
+      }
+    }
+  },
+  "privilege_audit": {
+    "connect_roles": [
+      "elevator_identity_broker",
+      "elevator_readonly_auditor",
+      "elevator_reporting_readonly",
+      "elevator_runtime_web",
+      "elevator_runtime_worker"
+    ],
+    "authority_grant_insert_sites": [
+      "app.issue_authority_grant(text, text, text, text, text, text, text, timestamptz)"
+    ],
+    "bootstrap_grant_functions": [],
+    "issue_grant_requires_existing_grant": true,
+    "runtime_all_table_grant_violations": [],
+    "runtime_direct_table_grant_violations": [],
+    "public_execute": [],
+    "result": "PASS"
+  },
+  "session_audit": {
+    "claim_checks_session_id": false,
+    "claim_body_has_principal_check": true,
+    "session_role_missing_checks": [
+      "rolcreatedb",
+      "rolcreaterole",
+      "rolinherit",
+      "membership_inherit_option",
+      "membership_set_option",
+      "recursive_membership_closure"
+    ]
+  },
+  "snapshot_audit": {
+    "sales_snapshot_price_digest_missing_fields": [
+      "amount_minor",
+      "currency",
+      "price_basis",
+      "tax_basis",
+      "applicability",
+      "valid_from",
+      "valid_until",
+      "quoted_at"
+    ],
+    "professional_review_decision_check_asymmetric": true
+  },
+  "open_decisions": {
+    "expected": 57,
+    "present": 57,
+    "unique": 57,
+    "differences": [],
+    "approved_tokens": 0,
+    "still_open": 57,
+    "result": "PASS"
+  },
+  "c6_snap_01": {
+    "records": 15,
+    "record_types": [
+      0,
+      1,
+      1,
+      2,
+      2,
+      3,
+      3,
+      4,
+      4,
+      5,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "bytes": 4036,
+    "sha256": "7D3CAC885F839594006650CC500FEF8A59D22AD151E6CB21567008D0D19519EB",
+    "expected_records": 15,
+    "expected_record_types": [
+      0,
+      1,
+      1,
+      2,
+      2,
+      3,
+      3,
+      4,
+      4,
+      5,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "expected_bytes": 4036,
+    "expected_sha256": "7D3CAC885F839594006650CC500FEF8A59D22AD151E6CB21567008D0D19519EB",
+    "result": "PASS"
+  },
+  "r6_scalar": {
+    "total": 23,
+    "failed": 0,
+    "results": [
+      {
+        "id": "SC-TXT-01",
+        "expected": "ACCEPT",
+        "observed": "ACCEPT",
+        "reason": "OK",
+        "result": "PASS"
+      },
+      {
+        "id": "SC-TXT-02",
+        "expected": "REJECT",
+        "observed": "REJECT",
+        "reason": "TEXT_LENGTH",
+        "result": "PASS"
+      },
+      {
+        "id": "SC-TXT-03",
+        "expected": "REJECT",
+        "observed": "REJECT",
+        "reason": "TEXT_NUL",
+        "result": "PASS"
+      },
+      {
+        "id": "SC-DEC-01",
+        "expected": "ACCEPT",
+        "observed": "ACCEPT",
+        "reason": "OK",
+        "result": "PASS"
+      },
+      {
+        "id": "SC-DEC-02",
+        "expected": "REJECT",
+        "observed": "REJECT",
+        "reason": "DECIMAL_GRAMMAR",
+        "result": "PASS"
+      },
+      {
+        "id": "SC-DEC-03",
+        "expected": "REJECT",
+        "observed": "REJECT",
+        "reason": "DECIMAL_NOT_CANONICAL",
+        "result": "PASS"
+      },
+      {
+        "id": "SC-DEC-04",
+        "expected": "REJECT",
+        "observed": "REJECT",
+        "reason": "DECIMAL_PRECISION",
+        "result": "PASS"
+      },
+      {
+        "id": "SC-BOOL-01",
+        "expected": "ACCEPT",
+        "observed": "ACCEPT",
+        "reason": "OK",
+        "result": "PASS"
+      },
+      {
+        "id": "SC-BOOL-02",
+        "expected": "REJECT",
+        "observed": "REJECT",
+        "reason": "BOOLEAN_TYPE",
+        "result": "PASS"
+      },
+      {
+        "id": "SC-BOOL-03",
+        "expected": "REJECT",
+        "observed": "REJECT",
+        "reason": "BOOLEAN_TYPE",
+        "result": "PASS"
+      },
+      {
+        "id": "SC-INT-01",
+        "expected": "ACCEPT",
+        "observed": "ACCEPT",
+        "reason": "OK",
+        "result": "PASS"
+      },
+      {
+        "id": "SC-INT-02",
+        "expected": "REJECT",
+        "observed": "REJECT",
+        "reason": "'q' format requires -9223372036854775808 <= number <= 9223372036854775807",
+        "result": "PASS"
+      },
+      {
+        "id": "SC-BYTE-01",
+        "expected": "ACCEPT",
+        "observed": "ACCEPT",
+        "reason": "OK",
+        "result": "PASS"
+      },
+      {
+        "id": "SC-BYTE-02",
+        "expected": "REJECT",
+        "observed": "REJECT",
+        "reason": "BYTES_LENGTH",
+        "result": "PASS"
+      },
+      {
+        "id": "SC-AUX-01",
+        "expected": "ACCEPT",
+        "observed": "ACCEPT",
+        "reason": "OK",
+        "result": "PASS"
+      },
+      {
+        "id": "SC-AUX-02",
+        "expected": "REJECT",
+        "observed": "REJECT",
+        "reason": "SOURCE_AUX_CONTROL",
+        "result": "PASS"
+      },
+      {
+        "id": "SC-AUX-03",
+        "expected": "REJECT",
+        "observed": "REJECT",
+        "reason": "SOURCE_AUX_EMPTY",
+        "result": "PASS"
+      },
+      {
+        "id": "C7-DEC-NEG-ZERO",
+        "expected": "REJECT",
+        "observed": "REJECT",
+        "reason": "DECIMAL_NEGATIVE_ZERO",
+        "result": "PASS"
+      },
+      {
+        "id": "C7-BOOL-NULL",
+        "expected": "REJECT",
+        "observed": "REJECT",
+        "reason": "BOOLEAN_TYPE",
+        "result": "PASS"
+      },
+      {
+        "id": "C7-TEXT-NFD",
+        "expected": "REJECT",
+        "observed": "REJECT",
+        "reason": "TEXT_NOT_NFC",
+        "result": "PASS"
+      },
+      {
+        "id": "C7-ENUM-65",
+        "expected": "REJECT",
+        "observed": "REJECT",
+        "reason": "ASCII_DOMAIN",
+        "result": "PASS"
+      },
+      {
+        "id": "C7-BYTES-EMPTY",
+        "expected": "REJECT",
+        "observed": "REJECT",
+        "reason": "BYTES_EMPTY",
+        "result": "PASS"
+      },
+      {
+        "id": "C7-UNKNOWN-TYPE",
+        "expected": "REJECT",
+        "observed": "REJECT",
+        "reason": "SCALAR_TYPE",
+        "result": "PASS"
+      }
+    ]
+  },
+  "r6_resource_limits": {
+    "total": 14,
+    "failed": 0,
+    "results": [
+      {
+        "id": "LIM-REC-4096",
+        "expected": "ACCEPT",
+        "observed": "ACCEPT",
+        "reason": "OK",
+        "result": "PASS"
+      },
+      {
+        "id": "LIM-REC-4097",
+        "expected": "REJECT",
+        "observed": "REJECT",
+        "reason": "recordCount",
+        "result": "PASS"
+      },
+      {
+        "id": "LIM-FIELD-65536",
+        "expected": "ACCEPT",
+        "observed": "ACCEPT",
+        "reason": "OK",
+        "result": "PASS"
+      },
+      {
+        "id": "LIM-FIELD-65537",
+        "expected": "REJECT",
+        "observed": "REJECT",
+        "reason": "totalFields",
+        "result": "PASS"
+      },
+      {
+        "id": "LIM-RECORD-FIELDS-32",
+        "expected": "ACCEPT",
+        "observed": "ACCEPT",
+        "reason": "OK",
+        "result": "PASS"
+      },
+      {
+        "id": "LIM-RECORD-FIELDS-33",
+        "expected": "REJECT",
+        "observed": "REJECT",
+        "reason": "fieldsPerRecord",
+        "result": "PASS"
+      },
+      {
+        "id": "LIM-RECORD-BYTES-16874",
+        "expected": "ACCEPT",
+        "observed": "ACCEPT",
+        "reason": "OK",
+        "result": "PASS"
+      },
+      {
+        "id": "LIM-RECORD-BYTES-16875",
+        "expected": "REJECT",
+        "observed": "REJECT",
+        "reason": "recordBytes",
+        "result": "PASS"
+      },
+      {
+        "id": "LIM-FIELD-BYTES-520",
+        "expected": "ACCEPT",
+        "observed": "ACCEPT",
+        "reason": "OK",
+        "result": "PASS"
+      },
+      {
+        "id": "LIM-FIELD-BYTES-521",
+        "expected": "REJECT",
+        "observed": "REJECT",
+        "reason": "fieldBytes",
+        "result": "PASS"
+      },
+      {
+        "id": "LIM-BODY-16777216",
+        "expected": "ACCEPT",
+        "observed": "ACCEPT",
+        "reason": "OK",
+        "result": "PASS"
+      },
+      {
+        "id": "LIM-BODY-16777217",
+        "expected": "REJECT",
+        "observed": "REJECT",
+        "reason": "bodyBytes",
+        "result": "PASS"
+      },
+      {
+        "id": "LIM-BASIS-16777244",
+        "expected": "ACCEPT",
+        "observed": "ACCEPT",
+        "reason": "OK",
+        "result": "PASS"
+      },
+      {
+        "id": "LIM-BASIS-16777245",
+        "expected": "REJECT",
+        "observed": "REJECT",
+        "reason": "basisBytes",
+        "result": "PASS"
+      }
+    ]
+  },
+  "sql_r6_static_alignment": {
+    "checks": {
+      "decimal_18_digit_limit": true,
+      "decimal_negative_zero_rejected": true,
+      "decimal_scale_limit": true,
+      "exact_header_type_dispatch": true,
+      "header_record_types_0_through_9": true,
+      "stable_key_arity": true,
+      "record_field_inventory": true,
+      "source_key_nfc": true,
+      "source_key_362_limit": true,
+      "stable_key_158_limit": true,
+      "record_16874_limit": true,
+      "basis_16777244_limit": true
+    },
+    "result": "PASS",
+    "scope": "STATIC SOURCE-TEXT CHECK ONLY; SQL NOT EXECUTED"
+  },
+  "critical_static_findings": [
+    {
+      "type": "SNAPSHOT_PRICE_DIGEST_OMITS_CONTENT",
+      "missing_fields": [
+        "amount_minor",
+        "currency",
+        "price_basis",
+        "tax_basis",
+        "applicability",
+        "valid_from",
+        "valid_until",
+        "quoted_at"
+      ]
+    },
+    {
+      "type": "AUTHORITY_GRANT_BOOTSTRAP_CIRCULAR",
+      "authority_grant_insert_sites": [
+        "app.issue_authority_grant(text, text, text, text, text, text, text, timestamptz)"
+      ],
+      "requires_existing_grant": true
+    },
+    {
+      "type": "SESSION_LOGIN_CONNECT_PATH_UNDEFINED",
+      "connect_roles": [
+        "elevator_identity_broker",
+        "elevator_readonly_auditor",
+        "elevator_reporting_readonly",
+        "elevator_runtime_web",
+        "elevator_runtime_worker"
+      ]
+    },
+    {
+      "type": "REQUEST_LEDGER_SESSION_BINDING_MISSING",
+      "function": "app_private.claim_command_request(text, text, text, text, text, text, text)"
+    },
+    {
+      "type": "SESSION_ROLE_VALIDATION_INCOMPLETE",
+      "missing_checks": [
+        "rolcreatedb",
+        "rolcreaterole",
+        "rolinherit",
+        "membership_inherit_option",
+        "membership_set_option",
+        "recursive_membership_closure"
+      ],
+      "function": "app_private.validate_session_role_r3(text, text, text)"
+    },
+    {
+      "type": "PROFESSIONAL_REVIEW_DECISION_MISMATCH_ASYMMETRIC",
+      "function": "app.record_selection_professional_review_result(text, text, text, bigint, text, text, text, text, timestamptz, text, text)"
+    },
+    {
+      "type": "PROFESSIONAL_REVIEW_TRUNCATE_GUARD_MISSING",
+      "table": "app.professional_review"
+    },
+    {
+      "type": "SOURCE_CHAIN_FK_COVERAGE_INCOMPLETE",
+      "tables": {
+        "app.selection_requirement_field": [
+          "requirement_version_id",
+          "source_revision_id",
+          "source_value_id"
+        ],
+        "app.selection_catalog_review_result": [
+          "catalog_review_id",
+          "source_revision_id",
+          "target_revision_id"
+        ],
+        "app.selection_professional_review_result": [
+          "professional_review_event_id",
+          "professional_review_id",
+          "target_revision_id"
+        ]
+      }
+    }
+  ],
+  "sql_grammar": "NOT VERIFIED \u2014 NO COMPATIBLE OFFLINE PARSER USED",
+  "postgresql_execution": "NOT EXECUTED \u2014 DATABASE NOT AUTHORIZED"
+}

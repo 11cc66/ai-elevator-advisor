@@ -1,0 +1,15 @@
+{
+  "tables": 50,
+  "functions": 78,
+  "roles": 16,
+  "foreign_keys": 64,
+  "required_digest_foreign_keys": 9,
+  "table_owner_assignments": 50,
+  "truncate_guarded_tables": 35,
+  "function_call_targets": 32,
+  "missing_business_functions": [],
+  "missing_digest_triggers": [],
+  "findings": [],
+  "result": "PASS",
+  "scope": "STATIC TEXT CONSISTENCY ONLY; NO SQL PARSER OR DATABASE EXECUTION"
+}

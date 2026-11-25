@@ -1,0 +1,147 @@
+{
+  "scope": "INDEPENDENT REPLAY OF SUBMITTED 12 TEXT MUTATIONS",
+  "guard": {
+    "python_parent_pid": 26040,
+    "python_parent_path": "C:\\Program Files\\WindowsApps\\OpenAI.CodexPrimaryRuntime.v26-1119-907-0_26.1119.907.0_x64__3k8sg7r9htsxt\\dependencies\\native\\powershell\\pwsh.exe",
+    "python_parent_creation_100ns": "134400020187922206",
+    "guard_token": "2ec9b70efb7542e2b61d3c9dcfa2e308"
+  },
+  "mutations_total": 12,
+  "mutations_detected": 12,
+  "all_detected": true,
+  "coverage_note": "These mutations only validate the submitted marker checks. They do not prove FK target-key validity, default ACLs, transaction ordering or Runtime behavior.",
+  "evidence": [
+    {
+      "id": "root_principal_binding_removed",
+      "target_check": "root_operator_state_principal_equality",
+      "original_input_sha256": "BC626FA93A13D9D2096B3213554AA1C6FFF256D9B66929AC0018BD7D62597E1D",
+      "target_was_true": true,
+      "target_now_false": true,
+      "changed_checks": [
+        "root_operator_state_principal_equality"
+      ],
+      "detected": true
+    },
+    {
+      "id": "root_grant_recipient_binding_removed",
+      "target_check": "root_grant_recipient_binding",
+      "original_input_sha256": "BC626FA93A13D9D2096B3213554AA1C6FFF256D9B66929AC0018BD7D62597E1D",
+      "target_was_true": true,
+      "target_now_false": true,
+      "changed_checks": [
+        "root_grant_recipient_binding"
+      ],
+      "detected": true
+    },
+    {
+      "id": "bootstrap_recovery_removed",
+      "target_check": "bootstrap_recovery_functions",
+      "original_input_sha256": "BC626FA93A13D9D2096B3213554AA1C6FFF256D9B66929AC0018BD7D62597E1D",
+      "target_was_true": true,
+      "target_now_false": true,
+      "changed_checks": [
+        "bootstrap_recovery_functions"
+      ],
+      "detected": true
+    },
+    {
+      "id": "database_owner_check_removed",
+      "target_check": "database_owner_rejected",
+      "original_input_sha256": "BC626FA93A13D9D2096B3213554AA1C6FFF256D9B66929AC0018BD7D62597E1D",
+      "target_was_true": true,
+      "target_now_false": true,
+      "changed_checks": [
+        "database_owner_rejected"
+      ],
+      "detected": true
+    },
+    {
+      "id": "schema_owner_check_removed",
+      "target_check": "schema_owner_rejected",
+      "original_input_sha256": "BC626FA93A13D9D2096B3213554AA1C6FFF256D9B66929AC0018BD7D62597E1D",
+      "target_was_true": true,
+      "target_now_false": true,
+      "changed_checks": [
+        "schema_owner_rejected"
+      ],
+      "detected": true
+    },
+    {
+      "id": "relation_owner_check_removed",
+      "target_check": "relation_owner_rejected",
+      "original_input_sha256": "BC626FA93A13D9D2096B3213554AA1C6FFF256D9B66929AC0018BD7D62597E1D",
+      "target_was_true": true,
+      "target_now_false": true,
+      "changed_checks": [
+        "relation_owner_rejected"
+      ],
+      "detected": true
+    },
+    {
+      "id": "function_owner_check_removed",
+      "target_check": "function_owner_rejected",
+      "original_input_sha256": "BC626FA93A13D9D2096B3213554AA1C6FFF256D9B66929AC0018BD7D62597E1D",
+      "target_was_true": true,
+      "target_now_false": true,
+      "changed_checks": [
+        "function_owner_rejected"
+      ],
+      "detected": true
+    },
+    {
+      "id": "catalog_source_target_table_removed",
+      "target_check": "catalog_binding_table",
+      "original_input_sha256": "BC626FA93A13D9D2096B3213554AA1C6FFF256D9B66929AC0018BD7D62597E1D",
+      "target_was_true": true,
+      "target_now_false": true,
+      "changed_checks": [
+        "catalog_binding_table"
+      ],
+      "detected": true
+    },
+    {
+      "id": "catalog_event_digest_target_removed",
+      "target_check": "catalog_event_digest_v2",
+      "original_input_sha256": "BC626FA93A13D9D2096B3213554AA1C6FFF256D9B66929AC0018BD7D62597E1D",
+      "target_was_true": true,
+      "target_now_false": true,
+      "changed_checks": [
+        "catalog_event_digest_v2"
+      ],
+      "detected": true
+    },
+    {
+      "id": "original_session_check_removed",
+      "target_check": "original_session_state_checked",
+      "original_input_sha256": "BC626FA93A13D9D2096B3213554AA1C6FFF256D9B66929AC0018BD7D62597E1D",
+      "target_was_true": true,
+      "target_now_false": true,
+      "changed_checks": [
+        "original_session_state_checked"
+      ],
+      "detected": true
+    },
+    {
+      "id": "field_domain_trigger_removed",
+      "target_check": "field_domain_selection_trigger",
+      "original_input_sha256": "BC626FA93A13D9D2096B3213554AA1C6FFF256D9B66929AC0018BD7D62597E1D",
+      "target_was_true": true,
+      "target_now_false": true,
+      "changed_checks": [
+        "field_domain_selection_trigger"
+      ],
+      "detected": true
+    },
+    {
+      "id": "bootstrap_audit_guard_removed",
+      "target_check": "bootstrap_audit_truncate_guard",
+      "original_input_sha256": "BC626FA93A13D9D2096B3213554AA1C6FFF256D9B66929AC0018BD7D62597E1D",
+      "target_was_true": true,
+      "target_now_false": true,
+      "changed_checks": [
+        "bootstrap_audit_truncate_guard"
+      ],
+      "detected": true
+    }
+  ]
+}

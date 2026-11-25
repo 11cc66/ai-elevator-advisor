@@ -1,0 +1,125 @@
+{
+  "design": "FULL-MVP-REMEDIATION-DESIGN-R3-C8-CORRECTIONS-R2",
+  "overall": "DESIGN COMPLETE — READY FOR INDEPENDENT REVIEW",
+  "counts": {
+    "p1_design_addressed": 3,
+    "p1_total": 3,
+    "p2_design_addressed": 3,
+    "p2_total": 3,
+    "p3_design_addressed": 2,
+    "p3_total": 2
+  },
+  "input_hashes": {
+    "corrections_manifest": "0ACBBB3A4CB5F0439302E7F7109F0ECFDCFDE50843D74941E232F830ECE552A2",
+    "corrections_review_manifest": "E71FA990581B70357F3D4103C1BF29E442665DD695459C524CC723D41DA63465",
+    "corrections_review_report": "05883B182F46F4E3BEC0A1C3AD7B95AE008A6D2CA0C7381120A8C5A8CD83C7CB"
+  },
+  "output_hashes": {
+    "complete_ddl": {
+      "path": "DATABASE_COMPLETE_DDL_DESIGN_R3_C8_CORRECTIONS_R2.sql",
+      "bytes": 592515,
+      "lines": 14117,
+      "sha256": "BC626FA93A13D9D2096B3213554AA1C6FFF256D9B66929AC0018BD7D62597E1D"
+    },
+    "overlay": {
+      "path": "DATABASE_FINAL_STATE_OVERLAY_R3_C8_CORRECTIONS_R2.sql",
+      "bytes": 128258,
+      "lines": 3255,
+      "sha256": "A2A8E061F54041431C379E41A9CF7B8232EE7F70F52BF3E7BEEEAA447614FA9C"
+    },
+    "function_registry": {
+      "path": "DATABASE_FUNCTION_SIGNATURE_REGISTRY_R3_C8_CORRECTIONS_R2.json",
+      "bytes": 67718,
+      "lines": 1933,
+      "sha256": "1DB91C894349FACFE134A1D4237E58048D6A3337F8C0CBED3F96AE61AAADC8F0"
+    },
+    "main_design": {
+      "path": "P1_PRODUCT_REMEDIATION_DESIGN_R3_C8_CORRECTIONS_R2.md",
+      "bytes": 5503,
+      "lines": 173,
+      "sha256": "82D1E0977AF8F9BDE7EF09F28B3B856E9850A1D87EA27EEDBE62E441258CCB2B"
+    }
+  },
+  "object_inventory": {
+    "tables": 71,
+    "foreign_keys": 119,
+    "functions": 145,
+    "triggers": 169,
+    "roles": 26,
+    "missing_function_owners": 0,
+    "unresolved_call_targets": 0
+  },
+  "offline_validation": {
+    "validation_result": "PASS",
+    "checks_passed": 48,
+    "checks_total": 48,
+    "mutations_detected": 12,
+    "mutations_total": 12,
+    "missing_file_fixture_passed": true,
+    "vector_result": "PASS",
+    "case_matrices": {
+      "root_principal": "10/10",
+      "owner_closure": "15/15",
+      "catalog_source_target": "10/10",
+      "bootstrap_recovery": "10/10",
+      "request_ledger": "10/10"
+    }
+  },
+  "compatibility": {
+    "c6_records": 15,
+    "c6_bytes": 4036,
+    "c6_sha256": "7D3CAC885F839594006650CC500FEF8A59D22AD151E6CB21567008D0D19519EB",
+    "r6_scalar_vectors": "23/23",
+    "r6_resource_vectors": "14/14",
+    "source_key_max_bytes": 362,
+    "basis_max_bytes": 512,
+    "sk_r2_registry_code": 3
+  },
+  "open_decisions": {
+    "original": 57,
+    "classified": 57,
+    "approved_by_user": 0,
+    "still_open": 57
+  },
+  "shell_guard": {
+    "launcher": "tools/Invoke-R2GuardedTool.ps1",
+    "python_guard": "tools/guard.py",
+    "latest_evidence": "evidence/SHELL_GUARD_EVIDENCE_R3_C8_CORRECTIONS_R2.json",
+    "history": "evidence/SHELL_GUARD_HISTORY_R3_C8_CORRECTIONS_R2.jsonl",
+    "self_test": "PASS",
+    "direct_python_negative_test": "FAIL-CLOSED PASS"
+  },
+  "review_start_git": {
+    "branch": "feature/p1-3-storage-lifecycle-schema",
+    "head": "b224388bc6160eb4a66ad8db7cecd4d23aa75fb8",
+    "tracked_modified": 41,
+    "untracked_entries": 71,
+    "untracked_files_uall": 676,
+    "staged": 0,
+    "deleted": 0,
+    "status_lines": 112
+  },
+  "output_file_counts": {
+    "before_summary": 32,
+    "with_summary": 33,
+    "expected_with_manifest": 34,
+    "manifest_records_expected": 33
+  },
+  "verification_boundaries": {
+    "postgresql_grammar": "NOT VERIFIED — NO COMPATIBLE OFFLINE PARSER",
+    "postgresql_compilation": "NOT VERIFIED — DATABASE NOT AUTHORIZED",
+    "catalog_introspection": "NOT VERIFIED — DATABASE NOT AUTHORIZED",
+    "runtime_concurrency": "NOT VERIFIED — RUNTIME NOT AUTHORIZED",
+    "database": "NOT ACCESSED",
+    "storage": "NOT ACCESSED",
+    "runtime": "NOT EXECUTED",
+    "production": "NOT AUTHORIZED",
+    "git_writes": "NONE"
+  },
+  "protected_paths": {
+    "null_content_read": false,
+    "null_hash_computed": false,
+    "null_modified": false,
+    "null_paren_created": false
+  }
+}

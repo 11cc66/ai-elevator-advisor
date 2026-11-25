@@ -1,0 +1,219 @@
+{
+  "runtime": "node",
+  "version": "v24.22.1",
+  "total": 19,
+  "accepted": 10,
+  "rejected": 9,
+  "failed": 0,
+  "results": [
+    {
+      "id": "SRC-361",
+      "inputSummary": "ASCII:64,ASCII:64,ASCII:64,UTF8_NULLABLE:127",
+      "expected": "ACCEPT",
+      "observed": "ACCEPT",
+      "reason": "OK",
+      "outputLength": 361,
+      "outputHex": "5352433300030004000101010000004061616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161000201010000004062626262626262626262626262626262626262626262626262626262626262626262626262626262626262626262626262626262626262626262626262626262000301010000004063636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363000402010000007FC3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A961FFFF",
+      "partialSourceKeyProduced": false,
+      "result": "PASS"
+    },
+    {
+      "id": "SRC-362",
+      "inputSummary": "ASCII:64,ASCII:64,ASCII:64,UTF8_NULLABLE:128",
+      "expected": "ACCEPT",
+      "observed": "ACCEPT",
+      "reason": "OK",
+      "outputLength": 362,
+      "outputHex": "53524333000300040001010100000040616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161610002010100000040626262626262626262626262626262626262626262626262626262626262626262626262626262626262626262626262626262626262626262626262626262620003010100000040636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363630004020100000080C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9FFFF",
+      "partialSourceKeyProduced": false,
+      "result": "PASS"
+    },
+    {
+      "id": "SRC-363",
+      "inputSummary": "ASCII:64,ASCII:64,ASCII:64,UTF8_NULLABLE:129",
+      "expected": "REJECT",
+      "observed": "REJECT",
+      "reason": "SOURCE_AUX_LENGTH",
+      "outputLength": 0,
+      "outputHex": "",
+      "partialSourceKeyProduced": false,
+      "result": "PASS"
+    },
+    {
+      "id": "SRC-KIND-MAX",
+      "inputSummary": "ASCII:64,ASCII:1,ASCII:1,UTF8_NULLABLE:1",
+      "expected": "ACCEPT",
+      "observed": "ACCEPT",
+      "reason": "OK",
+      "outputLength": 109,
+      "outputHex": "5352433300030004000101010000004061616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161000201010000000162000301010000000163000402010000000164FFFF",
+      "partialSourceKeyProduced": false,
+      "result": "PASS"
+    },
+    {
+      "id": "SRC-KIND-MAX+1",
+      "inputSummary": "ASCII:65,ASCII:1,ASCII:1,UTF8_NULLABLE:1",
+      "expected": "REJECT",
+      "observed": "REJECT",
+      "reason": "ASCII_LENGTH",
+      "outputLength": 0,
+      "outputHex": "",
+      "partialSourceKeyProduced": false,
+      "result": "PASS"
+    },
+    {
+      "id": "SRC-TYPE-MAX",
+      "inputSummary": "ASCII:1,ASCII:64,ASCII:1,UTF8_NULLABLE:1",
+      "expected": "ACCEPT",
+      "observed": "ACCEPT",
+      "reason": "OK",
+      "outputLength": 109,
+      "outputHex": "5352433300030004000101010000000161000201010000004061616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161000301010000000163000402010000000164FFFF",
+      "partialSourceKeyProduced": false,
+      "result": "PASS"
+    },
+    {
+      "id": "SRC-TYPE-MAX+1",
+      "inputSummary": "ASCII:1,ASCII:65,ASCII:1,UTF8_NULLABLE:1",
+      "expected": "REJECT",
+      "observed": "REJECT",
+      "reason": "ASCII_LENGTH",
+      "outputLength": 0,
+      "outputHex": "",
+      "partialSourceKeyProduced": false,
+      "result": "PASS"
+    },
+    {
+      "id": "SRC-ID-MAX",
+      "inputSummary": "ASCII:1,ASCII:1,ASCII:64,UTF8_NULLABLE:1",
+      "expected": "ACCEPT",
+      "observed": "ACCEPT",
+      "reason": "OK",
+      "outputLength": 109,
+      "outputHex": "5352433300030004000101010000000161000201010000000162000301010000004061616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161000402010000000164FFFF",
+      "partialSourceKeyProduced": false,
+      "result": "PASS"
+    },
+    {
+      "id": "SRC-ID-MAX+1",
+      "inputSummary": "ASCII:1,ASCII:1,ASCII:65,UTF8_NULLABLE:1",
+      "expected": "REJECT",
+      "observed": "REJECT",
+      "reason": "ASCII_LENGTH",
+      "outputLength": 0,
+      "outputHex": "",
+      "partialSourceKeyProduced": false,
+      "result": "PASS"
+    },
+    {
+      "id": "SRC-AUX-128",
+      "inputSummary": "ASCII:1,ASCII:1,ASCII:1,UTF8_NULLABLE:128",
+      "expected": "ACCEPT",
+      "observed": "ACCEPT",
+      "reason": "OK",
+      "outputLength": 173,
+      "outputHex": "53524333000300040001010100000001610002010100000001620003010100000001630004020100000080C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9C3A9FFFF",
+      "partialSourceKeyProduced": false,
+      "result": "PASS"
+    },
+    {
+      "id": "SRC-AUX-129",
+      "inputSummary": "ASCII:1,ASCII:1,ASCII:1,UTF8_NULLABLE:129",
+      "expected": "REJECT",
+      "observed": "REJECT",
+      "reason": "SOURCE_AUX_LENGTH",
+      "outputLength": 0,
+      "outputHex": "",
+      "partialSourceKeyProduced": false,
+      "result": "PASS"
+    },
+    {
+      "id": "SRC-AUX-NFC",
+      "inputSummary": "ASCII:1,ASCII:1,ASCII:1,UTF8_NULLABLE:5",
+      "expected": "ACCEPT",
+      "observed": "ACCEPT",
+      "reason": "OK",
+      "outputLength": 50,
+      "outputHex": "53524333000300040001010100000001610002010100000001620003010100000001630004020100000005636166C3A9FFFF",
+      "partialSourceKeyProduced": false,
+      "result": "PASS"
+    },
+    {
+      "id": "SRC-AUX-NFD",
+      "inputSummary": "ASCII:1,ASCII:1,ASCII:1,UTF8_NULLABLE:6",
+      "expected": "ACCEPT",
+      "observed": "ACCEPT",
+      "reason": "OK",
+      "outputLength": 50,
+      "outputHex": "53524333000300040001010100000001610002010100000001620003010100000001630004020100000005636166C3A9FFFF",
+      "partialSourceKeyProduced": false,
+      "result": "PASS"
+    },
+    {
+      "id": "SRC-AUX-CONTROL",
+      "inputSummary": "ASCII:1,ASCII:1,ASCII:1,UTF8_NULLABLE:3",
+      "expected": "REJECT",
+      "observed": "REJECT",
+      "reason": "SOURCE_AUX_CONTROL",
+      "outputLength": 0,
+      "outputHex": "",
+      "partialSourceKeyProduced": false,
+      "result": "PASS"
+    },
+    {
+      "id": "SRC-AUX-INVALID-UTF8",
+      "inputSummary": "ASCII:1,ASCII:1,ASCII:1,UTF8_NULLABLE:INVALID_UTF8",
+      "expected": "REJECT",
+      "observed": "REJECT",
+      "reason": "SOURCE_UTF8_INVALID",
+      "outputLength": 0,
+      "outputHex": "",
+      "partialSourceKeyProduced": false,
+      "result": "PASS"
+    },
+    {
+      "id": "SRC-AUX-NULL",
+      "inputSummary": "ASCII:1,ASCII:1,ASCII:1,UTF8_NULLABLE:NULL",
+      "expected": "ACCEPT",
+      "observed": "ACCEPT",
+      "reason": "OK",
+      "outputLength": 45,
+      "outputHex": "53524333000300040001010100000001610002010100000001620003010100000001630004000000000000FFFF",
+      "partialSourceKeyProduced": false,
+      "result": "PASS"
+    },
+    {
+      "id": "SRC-AUX-EMPTY",
+      "inputSummary": "ASCII:1,ASCII:1,ASCII:1,UTF8_NULLABLE:0",
+      "expected": "REJECT",
+      "observed": "REJECT",
+      "reason": "SOURCE_AUX_EMPTY",
+      "outputLength": 0,
+      "outputHex": "",
+      "partialSourceKeyProduced": false,
+      "result": "PASS"
+    },
+    {
+      "id": "SRC-MISSING",
+      "inputSummary": "ASCII:1,ASCII:1,ASCII:1",
+      "expected": "REJECT",
+      "observed": "REJECT",
+      "reason": "SOURCE_COMPONENT_COUNT",
+      "outputLength": 0,
+      "outputHex": "",
+      "partialSourceKeyProduced": false,
+      "result": "PASS"
+    },
+    {
+      "id": "SRC-MIN-FRAMING",
+      "inputSummary": "ASCII:1,ASCII:1,ASCII:1,UTF8_NULLABLE:1",
+      "expected": "ACCEPT",
+      "observed": "ACCEPT",
+      "reason": "OK",
+      "outputLength": 46,
+      "outputHex": "5352433300030004000101010000000161000201010000000162000301010000000163000402010000000164FFFF",
+      "partialSourceKeyProduced": false,
+      "result": "PASS"
+    }
+  ]
+}

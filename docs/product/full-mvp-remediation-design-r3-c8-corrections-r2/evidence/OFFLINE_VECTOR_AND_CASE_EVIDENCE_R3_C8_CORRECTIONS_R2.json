@@ -1,0 +1,414 @@
+{
+  "design": "FULL-MVP-REMEDIATION-DESIGN-R3-C8-CORRECTIONS-R2",
+  "guard": {
+    "verified": true,
+    "parent_pid": 13180,
+    "parent_path": "C:\\Program Files\\WindowsApps\\OpenAI.CodexPrimaryRuntime.v26-1119-907-0_26.1119.907.0_x64__3k8sg7r9htsxt\\dependencies\\native\\powershell\\pwsh.exe",
+    "parent_creation_100ns": "134400008555936734",
+    "output_root": "D:\\thinkbook\\Desktop\\jieya\\docs\\product\\full-mvp-remediation-design-r3-c8-corrections-r2",
+    "guard_evidence": "D:\\thinkbook\\Desktop\\jieya\\docs\\product\\full-mvp-remediation-design-r3-c8-corrections-r2\\evidence\\SHELL_GUARD_EVIDENCE_R3_C8_CORRECTIONS_R2.json",
+    "checked_at_utc_ns": 1795527257188764900
+  },
+  "c6_snap_01": {
+    "records": 15,
+    "types": [
+      0,
+      1,
+      1,
+      2,
+      2,
+      3,
+      3,
+      4,
+      4,
+      5,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "bytes": 4036,
+    "sha256": "7D3CAC885F839594006650CC500FEF8A59D22AD151E6CB21567008D0D19519EB",
+    "hex_match": true,
+    "source_key_max_bytes": 362,
+    "basis_max_bytes": 512,
+    "sk_r2_registry_code": 3,
+    "pass": true
+  },
+  "r6_compatibility": {
+    "scalar_total": 23,
+    "scalar_passed": 23,
+    "resource_total": 14,
+    "resource_passed": 14
+  },
+  "case_matrix": {
+    "root_principal": {
+      "total": 10,
+      "passed": 10,
+      "all_pass": true,
+      "cases": [
+        {
+          "id": "ROOT-POS",
+          "expected": "ACCEPT",
+          "actual": "ACCEPT",
+          "pass": true
+        },
+        {
+          "id": "ROOT-NEG-ROLE",
+          "expected": "REJECT",
+          "actual": "REJECT",
+          "pass": true
+        },
+        {
+          "id": "ROOT-NEG-STATE",
+          "expected": "REJECT",
+          "actual": "REJECT",
+          "pass": true
+        },
+        {
+          "id": "ROOT-NEG-SESSION",
+          "expected": "REJECT",
+          "actual": "REJECT",
+          "pass": true
+        },
+        {
+          "id": "ROOT-NEG-RECIPIENT",
+          "expected": "REJECT",
+          "actual": "REJECT",
+          "pass": true
+        },
+        {
+          "id": "ROOT-NEG-ISSUER",
+          "expected": "REJECT",
+          "actual": "REJECT",
+          "pass": true
+        },
+        {
+          "id": "ROOT-NEG-APPROVERS",
+          "expected": "REJECT",
+          "actual": "REJECT",
+          "pass": true
+        },
+        {
+          "id": "ROOT-NEG-EPOCH",
+          "expected": "REJECT",
+          "actual": "REJECT",
+          "pass": true
+        },
+        {
+          "id": "ROOT-NEG-DUPLICATE",
+          "expected": "REJECT",
+          "actual": "REJECT",
+          "pass": true
+        },
+        {
+          "id": "ROOT-REPLAY-SAME",
+          "expected": "ACCEPT",
+          "actual": "ACCEPT",
+          "pass": true
+        }
+      ]
+    },
+    "owner_closure": {
+      "total": 15,
+      "passed": 15,
+      "all_pass": true,
+      "cases": [
+        {
+          "id": "OWNER-POS",
+          "expected": "ACCEPT",
+          "actual": "ACCEPT",
+          "pass": true
+        },
+        {
+          "id": "OWNER-NEG-01",
+          "expected": "REJECT",
+          "actual": "REJECT",
+          "pass": true
+        },
+        {
+          "id": "OWNER-NEG-02",
+          "expected": "REJECT",
+          "actual": "REJECT",
+          "pass": true
+        },
+        {
+          "id": "OWNER-NEG-03",
+          "expected": "REJECT",
+          "actual": "REJECT",
+          "pass": true
+        },
+        {
+          "id": "OWNER-NEG-04",
+          "expected": "REJECT",
+          "actual": "REJECT",
+          "pass": true
+        },
+        {
+          "id": "OWNER-NEG-05",
+          "expected": "REJECT",
+          "actual": "REJECT",
+          "pass": true
+        },
+        {
+          "id": "OWNER-NEG-06",
+          "expected": "REJECT",
+          "actual": "REJECT",
+          "pass": true
+        },
+        {
+          "id": "OWNER-NEG-07",
+          "expected": "REJECT",
+          "actual": "REJECT",
+          "pass": true
+        },
+        {
+          "id": "OWNER-NEG-08",
+          "expected": "REJECT",
+          "actual": "REJECT",
+          "pass": true
+        },
+        {
+          "id": "OWNER-NEG-09",
+          "expected": "REJECT",
+          "actual": "REJECT",
+          "pass": true
+        },
+        {
+          "id": "OWNER-NEG-10",
+          "expected": "REJECT",
+          "actual": "REJECT",
+          "pass": true
+        },
+        {
+          "id": "OWNER-NEG-11",
+          "expected": "REJECT",
+          "actual": "REJECT",
+          "pass": true
+        },
+        {
+          "id": "OWNER-NEG-12",
+          "expected": "REJECT",
+          "actual": "REJECT",
+          "pass": true
+        },
+        {
+          "id": "OWNER-NEG-13",
+          "expected": "REJECT",
+          "actual": "REJECT",
+          "pass": true
+        },
+        {
+          "id": "OWNER-NEG-14",
+          "expected": "REJECT",
+          "actual": "REJECT",
+          "pass": true
+        }
+      ]
+    },
+    "catalog_source_target": {
+      "total": 10,
+      "passed": 10,
+      "all_pass": true,
+      "cases": [
+        {
+          "id": "CAT-PRODUCT-POS",
+          "expected": "ACCEPT",
+          "actual": "ACCEPT",
+          "pass": true
+        },
+        {
+          "id": "CAT-SPEC-POS",
+          "expected": "ACCEPT",
+          "actual": "ACCEPT",
+          "pass": true
+        },
+        {
+          "id": "CAT-PRICE-POS",
+          "expected": "ACCEPT",
+          "actual": "ACCEPT",
+          "pass": true
+        },
+        {
+          "id": "CAT-NEG-PROD-SPEC",
+          "expected": "REJECT",
+          "actual": "REJECT",
+          "pass": true
+        },
+        {
+          "id": "CAT-NEG-SPEC-PROD",
+          "expected": "REJECT",
+          "actual": "REJECT",
+          "pass": true
+        },
+        {
+          "id": "CAT-NEG-PRICE-PROD",
+          "expected": "REJECT",
+          "actual": "REJECT",
+          "pass": true
+        },
+        {
+          "id": "CAT-NEG-REVISION",
+          "expected": "REJECT",
+          "actual": "REJECT",
+          "pass": true
+        },
+        {
+          "id": "CAT-NEG-DIGEST",
+          "expected": "REJECT",
+          "actual": "REJECT",
+          "pass": true
+        },
+        {
+          "id": "CAT-NEG-PROJECT",
+          "expected": "REJECT",
+          "actual": "REJECT",
+          "pass": true
+        },
+        {
+          "id": "CAT-NEG-EVENT-BINDING",
+          "expected": "REJECT",
+          "actual": "REJECT",
+          "pass": true
+        }
+      ]
+    },
+    "bootstrap_recovery": {
+      "total": 10,
+      "passed": 10,
+      "all_pass": true,
+      "cases": [
+        {
+          "id": "REC-POS",
+          "expected": "ACCEPT",
+          "actual": "ACCEPT",
+          "pass": true
+        },
+        {
+          "id": "REC-NEG-ONE-APPROVAL",
+          "expected": "REJECT",
+          "actual": "REJECT",
+          "pass": true
+        },
+        {
+          "id": "REC-NEG-SAME-PRINCIPAL",
+          "expected": "REJECT",
+          "actual": "REJECT",
+          "pass": true
+        },
+        {
+          "id": "REC-NEG-GENERATION",
+          "expected": "REJECT",
+          "actual": "REJECT",
+          "pass": true
+        },
+        {
+          "id": "REC-NEG-OLD-ROOT",
+          "expected": "REJECT",
+          "actual": "REJECT",
+          "pass": true
+        },
+        {
+          "id": "REC-NEG-DUPLICATE-GRANT",
+          "expected": "REJECT",
+          "actual": "REJECT",
+          "pass": true
+        },
+        {
+          "id": "REC-NEG-NO-AUDIT",
+          "expected": "REJECT",
+          "actual": "REJECT",
+          "pass": true
+        },
+        {
+          "id": "REC-ROTATE-POS",
+          "expected": "ACCEPT",
+          "actual": "ACCEPT",
+          "pass": true
+        },
+        {
+          "id": "REC-COMPROMISE-NO-NEW",
+          "expected": "BLOCKED",
+          "actual": "BLOCKED",
+          "pass": true
+        },
+        {
+          "id": "REC-RESPONSE-LOST",
+          "expected": "ACCEPT",
+          "actual": "ACCEPT",
+          "pass": true
+        }
+      ]
+    },
+    "request_ledger": {
+      "total": 10,
+      "passed": 10,
+      "all_pass": true,
+      "cases": [
+        {
+          "id": "REQ-NORMAL-CLOSE",
+          "expected": "ORDINARY_REPLAY",
+          "actual": "ORDINARY_REPLAY",
+          "pass": true
+        },
+        {
+          "id": "REQ-NATURAL-EXPIRY",
+          "expected": "ORDINARY_REPLAY",
+          "actual": "ORDINARY_REPLAY",
+          "pass": true
+        },
+        {
+          "id": "REQ-ADMIN-REVOKE",
+          "expected": "CONTROLLED_RECOVERY",
+          "actual": "CONTROLLED_RECOVERY",
+          "pass": true
+        },
+        {
+          "id": "REQ-CREDENTIAL",
+          "expected": "CONTROLLED_RECOVERY",
+          "actual": "CONTROLLED_RECOVERY",
+          "pass": true
+        },
+        {
+          "id": "REQ-GRANT",
+          "expected": "CONTROLLED_RECOVERY",
+          "actual": "CONTROLLED_RECOVERY",
+          "pass": true
+        },
+        {
+          "id": "REQ-SECURITY",
+          "expected": "PERMANENT_DENY",
+          "actual": "PERMANENT_DENY",
+          "pass": true
+        },
+        {
+          "id": "REQ-DISABLED",
+          "expected": "PERMANENT_DENY",
+          "actual": "PERMANENT_DENY",
+          "pass": true
+        },
+        {
+          "id": "REQ-OTHER-PRINCIPAL",
+          "expected": "DENY",
+          "actual": "DENY",
+          "pass": true
+        },
+        {
+          "id": "REQ-PAYLOAD-CONFLICT",
+          "expected": "DENY",
+          "actual": "DENY",
+          "pass": true
+        },
+        {
+          "id": "REQ-UNKNOWN",
+          "expected": "DENY",
+          "actual": "DENY",
+          "pass": true
+        }
+      ]
+    }
+  },
+  "all_case_matrices_pass": true,
+  "result": "PASS"
+}

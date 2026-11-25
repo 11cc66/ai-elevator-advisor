@@ -1,0 +1,26 @@
+{
+  "guard_token": "2bdb4349febc43f1823e553ae5e574d9",
+  "verified": true,
+  "powershell_version": "7.6.9",
+  "powershell_edition": "Core",
+  "powershell_pid": 15976,
+  "powershell_path": "C:\\Program Files\\WindowsApps\\OpenAI.CodexPrimaryRuntime.v26-1119-907-0_26.1119.907.0_x64__3k8sg7r9htsxt\\dependencies\\native\\powershell\\pwsh.exe",
+  "powershell_creation_100ns": 134400024831375268,
+  "file_version": "7.6.9.500",
+  "parent_pid": 23872,
+  "parent_name": "codex",
+  "parent_path": "C:\\Program Files\\WindowsApps\\OpenAI.Codex_26.1117.4957.0_x64__2p2nqsd0c76g0\\app\\resources\\codex.exe",
+  "working_directory": "D:\\thinkbook\\Desktop\\jieya",
+  "python_candidates": [
+    "C:\\Users\\thinkbook\\AppData\\Local\\Microsoft\\WindowsApps\\python.exe",
+    "D:\\python\\python.exe"
+  ],
+  "verified_python": [
+    {
+      "path": "D:\\python\\python.exe",
+      "version": "Python 3.15.1"
+    }
+  ],
+  "script": "D:\\thinkbook\\Desktop\\jieya\\docs\\product\\full-mvp-remediation-review-r3-c8-corrections-r2\\evidence\\independent_audit.py",
+  "checked_at_utc": "2026-11-24T14:01:24.4197702Z"
+}

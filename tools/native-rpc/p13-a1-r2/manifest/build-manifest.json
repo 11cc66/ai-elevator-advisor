@@ -1,0 +1,165 @@
+{
+  "schemaVersion": 1,
+  "status": "BUILD-ONLY / RUNTIME NOT EXECUTED",
+  "generatedAtUtc": "2026-11-21T15:53:35.8504293Z",
+  "repositoryRoot": "D:\\thinkbook\\Desktop\\jieya",
+  "harnessRoot": "D:\\thinkbook\\Desktop\\jieya\\tools\\native-rpc\\p13-a1-r2",
+  "buildOnly": true,
+  "runtimeExecuted": false,
+  "target": "x64",
+  "toolchain": {
+    "visualStudio": "17.14.45 / 17.14.37906.3",
+    "msvc": "14.44.35207",
+    "compiler": "19.44.35230.0",
+    "linker": "14.44.35230.0",
+    "windowsSdk": "10.0.26100.0",
+    "classicMidl": "8.01.0628 / 10.0.26100.9457",
+    "midlPath": "C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.26100.0\\x64\\midl.exe",
+    "clPath": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+    "linkPath": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\link.exe",
+    "dumpbinPath": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\dumpbin.exe",
+    "include": [
+      "C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.26100.0",
+      "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\include"
+    ],
+    "libraries": [
+      "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\lib\\x64",
+      "C:\\Program Files (x86)\\Windows Kits\\10\\Lib\\10.0.26100.0\\um\\x64",
+      "C:\\Program Files (x86)\\Windows Kits\\10\\Lib\\10.0.26100.0\\ucrt\\x64"
+    ]
+  },
+  "pfr": {
+    "beforeCount": 46,
+    "beforeSha256": "0FF69EDFED875BA6310D27382562D1221C0E4EFD9B29625D4035FC06A2DFC1EC",
+    "afterCount": 46,
+    "afterSha256": "0FF69EDFED875BA6310D27382562D1221C0E4EFD9B29625D4035FC06A2DFC1EC",
+    "stable": true
+  },
+  "artifacts": [
+    {
+      "path": "bin/x64/p13_native_rpc_client.exe",
+      "length": 184320,
+      "sha256": "C86BE3839F414A8CE95DFC4312878EA598BE1FEC4A53AE254E943573897B4C6A"
+    },
+    {
+      "path": "bin/x64/p13_native_rpc_server.exe",
+      "length": 352768,
+      "sha256": "A1169E2F6882BE5CA6F7D18C435DDA77E0F78A15467DE3C3A3271ABE241E38A5"
+    },
+    {
+      "path": "generated/x64/p13_authority_c.c",
+      "length": 16969,
+      "sha256": "BEE2604A63E67FE02243817808C61DDCCC42CB2124EA77DB84D1E052AE8CB34F"
+    },
+    {
+      "path": "generated/x64/p13_authority_s.c",
+      "length": 17270,
+      "sha256": "7D76C83A875DED8D0DD264647BCD04FFED3237ED008A25E1219A1D4CF1A276CD"
+    },
+    {
+      "path": "generated/x64/p13_authority.h",
+      "length": 5533,
+      "sha256": "DF5F01CD881BC44CB8A2728898027A99AD50D5557B9D0E9C0CD32F7F7CD437FD"
+    },
+    {
+      "path": "logs/build/compile.log",
+      "length": 8753,
+      "sha256": "4E8336A0279F6E39AC15CEDB7647A928687AAAFCE1713E875062EC31124C5194"
+    },
+    {
+      "path": "logs/build/link.log",
+      "length": 2043,
+      "sha256": "E4B83D04D3ED679B86E194E6A44B6B920F3CBC99DCBD1DFA49792EC3056B8BF3"
+    },
+    {
+      "path": "logs/build/midl.log",
+      "length": 1332,
+      "sha256": "4ECD6983151475141EB3ABCAB5186FA2E85A5BE1CD0C804535E24BD50D0776A7"
+    },
+    {
+      "path": "logs/static-review/binary-inspection.log",
+      "length": 28342,
+      "sha256": "79DF6D80A191D46C4568D70B5418CAD8BA77A248DF70853A6802D20602FE6A2B"
+    },
+    {
+      "path": "obj/x64/client_p13_client_main.obj",
+      "length": 55198,
+      "sha256": "78F5BDC1D4EE0AF67C4EA28B1AB771EB84D6E9DDB1095B121C3E702934A1C854"
+    },
+    {
+      "path": "obj/x64/client_p13_client_runtime.obj",
+      "length": 74007,
+      "sha256": "3B1D8994FAC74C0AA724970094958346BC7DBCA236569F9E4E2132A447811CCA"
+    },
+    {
+      "path": "obj/x64/client_p13_types.obj",
+      "length": 153883,
+      "sha256": "E2D09176373224DAFAB9B5050AEDE8D9C7D5B8201082FC596B7CCDBAD8BBA54B"
+    },
+    {
+      "path": "obj/x64/job_lifecycle_adapter.obj",
+      "length": 155618,
+      "sha256": "310B605D2078860A9A9A66DBA6C1C15A3F56E39ED09D2ADFE382E1FE5535CFCA"
+    },
+    {
+      "path": "obj/x64/p13_authority_c.obj",
+      "length": 3348,
+      "sha256": "54E281BA7BBE84D02857DCD49C4768566D8E819CE3EC9AEF66B4B3AFAC0A27E7"
+    },
+    {
+      "path": "obj/x64/p13_authority_components.obj",
+      "length": 1097570,
+      "sha256": "FAF320D016189E7EE6E5A27DD1724CF9688D3A8EDBD904A56083BE8ACFB4CE95"
+    },
+    {
+      "path": "obj/x64/p13_authority_s.obj",
+      "length": 3127,
+      "sha256": "E80EC8A6E7F22B1755005F75F70A3AE88423E62FCED6BAC4FD5AEBDD39EF6234"
+    },
+    {
+      "path": "obj/x64/p13_authority_service.obj",
+      "length": 842965,
+      "sha256": "63CC1974E2714C9169408B88794B540C567F86F07D2247F30215DDE4AE9A7632"
+    },
+    {
+      "path": "obj/x64/p13_launch_components.obj",
+      "length": 446664,
+      "sha256": "EE775CAD47BA7F4E78C39470774F4971CD6F893BCF8015E3D9E864097A57075F"
+    },
+    {
+      "path": "obj/x64/p13_managers.obj",
+      "length": 114689,
+      "sha256": "BB9B8B655342F5450F0EFF422005C15613348EFD1CFD63E8C6BD6FE7D4D4645F"
+    },
+    {
+      "path": "obj/x64/p13_server_main.obj",
+      "length": 56634,
+      "sha256": "D5A589FF038CBBA0DE6F007DC7AB1F02BB6A3A2856C6B6300773CB8CA32E684F"
+    },
+    {
+      "path": "obj/x64/p13_server_runtime.obj",
+      "length": 60595,
+      "sha256": "1329E8959AED6F604A7A0A33B8F5AA0B72B8B3D0BF40B2E8368762AD78334A31"
+    },
+    {
+      "path": "obj/x64/p13_types.obj",
+      "length": 153875,
+      "sha256": "D921A9AC73795D248E5BBD2A807CDF2273F54D9A72FFF83C9635E16C7A5C58B0"
+    },
+    {
+      "path": "obj/x64/sealed_adapter.obj",
+      "length": 94857,
+      "sha256": "8C801096073E54EB3C5CD1653F244099CFB8E0117008393A43EC211F2600E5B4"
+    },
+    {
+      "path": "obj/x64/windows_identity_adapter.obj",
+      "length": 243040,
+      "sha256": "8F0813A3C5799342AECCB4CC7AEB37EC2E7B280489D8733A696D002EAE87045C"
+    },
+    {
+      "path": "p13_authority_s.obj",
+      "length": 3119,
+      "sha256": "C93D5BC43DF32EC3C5A3E86D6648DB81AA081545175AF54BB6E4D697B3C8E52A"
+    }
+  ]
+}

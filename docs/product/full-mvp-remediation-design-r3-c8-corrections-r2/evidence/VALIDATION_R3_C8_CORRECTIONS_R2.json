@@ -1,0 +1,244 @@
+{
+  "design": "FULL-MVP-REMEDIATION-DESIGN-R3-C8-CORRECTIONS-R2",
+  "scope": "STATIC OFFLINE DESIGN VALIDATION; NOT POSTGRESQL PARSER/EXECUTION",
+  "guard": {
+    "verified": true,
+    "parent_pid": 14368,
+    "parent_path": "C:\\Program Files\\WindowsApps\\OpenAI.CodexPrimaryRuntime.v26-1119-907-0_26.1119.907.0_x64__3k8sg7r9htsxt\\dependencies\\native\\powershell\\pwsh.exe",
+    "parent_creation_100ns": "134400008500148058",
+    "output_root": "D:\\thinkbook\\Desktop\\jieya\\docs\\product\\full-mvp-remediation-design-r3-c8-corrections-r2",
+    "guard_evidence": "D:\\thinkbook\\Desktop\\jieya\\docs\\product\\full-mvp-remediation-design-r3-c8-corrections-r2\\evidence\\SHELL_GUARD_EVIDENCE_R3_C8_CORRECTIONS_R2.json",
+    "checked_at_utc_ns": 1795527251622206800
+  },
+  "input_hashes": {
+    "corrections_manifest": "0ACBBB3A4CB5F0439302E7F7109F0ECFDCFDE50843D74941E232F830ECE552A2",
+    "review_manifest": "E71FA990581B70357F3D4103C1BF29E442665DD695459C524CC723D41DA63465",
+    "review_report": "05883B182F46F4E3BEC0A1C3AD7B95AE008A6D2CA0C7381120A8C5A8CD83C7CB"
+  },
+  "input_hashes_match": true,
+  "checks_total": 48,
+  "checks_passed": 48,
+  "checks": {
+    "root_operator_state_principal_equality": true,
+    "root_operator_state_role_equality": true,
+    "root_grant_recipient_binding": true,
+    "bootstrap_generation_fk": true,
+    "bootstrap_request_ledger": true,
+    "bootstrap_recovery_state_machine": true,
+    "bootstrap_recovery_functions": true,
+    "bootstrap_duplicate_approval_prevention": true,
+    "database_owner_rejected": true,
+    "pg_database_owner_semantics": true,
+    "schema_owner_rejected": true,
+    "relation_owner_rejected": true,
+    "function_owner_rejected": true,
+    "type_owner_rejected": true,
+    "recursive_membership": true,
+    "membership_options": true,
+    "owner_catalog_completeness": true,
+    "owner_closure_stability": true,
+    "catalog_binding_table": true,
+    "catalog_product_source_fk": true,
+    "catalog_spec_source_fk": true,
+    "catalog_price_source_fk": true,
+    "catalog_binding_exact_fk": true,
+    "catalog_event_binding_fk": true,
+    "catalog_event_digest_v2": true,
+    "catalog_selection_binding_fk": true,
+    "catalog_snapshot_binding_fk": true,
+    "session_termination_classes": true,
+    "original_session_state_checked": true,
+    "ordinary_replay_fail_closed": true,
+    "controlled_result_recovery": true,
+    "recovery_two_approvals": true,
+    "recovery_execute_once": true,
+    "field_domain_function": true,
+    "field_domain_requirement_trigger": true,
+    "field_domain_selection_trigger": true,
+    "field_domain_snapshot_trigger": true,
+    "field_unit_shared_shape": true,
+    "trusted_session_truncate_guard": true,
+    "review_truncate_guard": true,
+    "bootstrap_audit_truncate_guard": true,
+    "catalog_binding_truncate_guard": true,
+    "c6_marker": true,
+    "required_files_complete": true,
+    "missing_file_fails_closed": true,
+    "input_hashes_match": true,
+    "registry_valid": true,
+    "fk_arity_equal": true
+  },
+  "failed_checks": [],
+  "object_inventory": {
+    "tables": 71,
+    "foreign_keys": 119,
+    "functions": 145,
+    "triggers": 169,
+    "roles": 26
+  },
+  "fk_arity_errors": [],
+  "mutations_total": 12,
+  "mutations_detected": 12,
+  "mutation_evidence": [
+    {
+      "id": "root_principal_binding_removed",
+      "original_input_sha256": "BC626FA93A13D9D2096B3213554AA1C6FFF256D9B66929AC0018BD7D62597E1D",
+      "description": "root principal binding removed",
+      "location": "DATABASE_COMPLETE_DDL_DESIGN_R3_C8_CORRECTIONS_R2.sql",
+      "expected_check": "root_operator_state_principal_equality",
+      "actual_detected": true,
+      "new_failures": [
+        "root_operator_state_principal_equality"
+      ],
+      "false_positive": false,
+      "missed": false
+    },
+    {
+      "id": "root_grant_recipient_binding_removed",
+      "original_input_sha256": "BC626FA93A13D9D2096B3213554AA1C6FFF256D9B66929AC0018BD7D62597E1D",
+      "description": "root grant recipient binding removed",
+      "location": "DATABASE_COMPLETE_DDL_DESIGN_R3_C8_CORRECTIONS_R2.sql",
+      "expected_check": "root_grant_recipient_binding",
+      "actual_detected": true,
+      "new_failures": [
+        "root_grant_recipient_binding"
+      ],
+      "false_positive": false,
+      "missed": false
+    },
+    {
+      "id": "bootstrap_recovery_removed",
+      "original_input_sha256": "BC626FA93A13D9D2096B3213554AA1C6FFF256D9B66929AC0018BD7D62597E1D",
+      "description": "bootstrap recovery removed",
+      "location": "DATABASE_COMPLETE_DDL_DESIGN_R3_C8_CORRECTIONS_R2.sql",
+      "expected_check": "bootstrap_recovery_functions",
+      "actual_detected": true,
+      "new_failures": [
+        "bootstrap_recovery_functions"
+      ],
+      "false_positive": false,
+      "missed": false
+    },
+    {
+      "id": "database_owner_check_removed",
+      "original_input_sha256": "BC626FA93A13D9D2096B3213554AA1C6FFF256D9B66929AC0018BD7D62597E1D",
+      "description": "database owner check removed",
+      "location": "DATABASE_COMPLETE_DDL_DESIGN_R3_C8_CORRECTIONS_R2.sql",
+      "expected_check": "database_owner_rejected",
+      "actual_detected": true,
+      "new_failures": [
+        "database_owner_rejected"
+      ],
+      "false_positive": false,
+      "missed": false
+    },
+    {
+      "id": "schema_owner_check_removed",
+      "original_input_sha256": "BC626FA93A13D9D2096B3213554AA1C6FFF256D9B66929AC0018BD7D62597E1D",
+      "description": "schema owner check removed",
+      "location": "DATABASE_COMPLETE_DDL_DESIGN_R3_C8_CORRECTIONS_R2.sql",
+      "expected_check": "schema_owner_rejected",
+      "actual_detected": true,
+      "new_failures": [
+        "schema_owner_rejected"
+      ],
+      "false_positive": false,
+      "missed": false
+    },
+    {
+      "id": "relation_owner_check_removed",
+      "original_input_sha256": "BC626FA93A13D9D2096B3213554AA1C6FFF256D9B66929AC0018BD7D62597E1D",
+      "description": "relation owner check removed",
+      "location": "DATABASE_COMPLETE_DDL_DESIGN_R3_C8_CORRECTIONS_R2.sql",
+      "expected_check": "relation_owner_rejected",
+      "actual_detected": true,
+      "new_failures": [
+        "relation_owner_rejected"
+      ],
+      "false_positive": false,
+      "missed": false
+    },
+    {
+      "id": "function_owner_check_removed",
+      "original_input_sha256": "BC626FA93A13D9D2096B3213554AA1C6FFF256D9B66929AC0018BD7D62597E1D",
+      "description": "function owner check removed",
+      "location": "DATABASE_COMPLETE_DDL_DESIGN_R3_C8_CORRECTIONS_R2.sql",
+      "expected_check": "function_owner_rejected",
+      "actual_detected": true,
+      "new_failures": [
+        "function_owner_rejected"
+      ],
+      "false_positive": false,
+      "missed": false
+    },
+    {
+      "id": "catalog_source_target_table_removed",
+      "original_input_sha256": "BC626FA93A13D9D2096B3213554AA1C6FFF256D9B66929AC0018BD7D62597E1D",
+      "description": "catalog source target table removed",
+      "location": "DATABASE_COMPLETE_DDL_DESIGN_R3_C8_CORRECTIONS_R2.sql",
+      "expected_check": "catalog_binding_table",
+      "actual_detected": true,
+      "new_failures": [
+        "catalog_binding_table"
+      ],
+      "false_positive": false,
+      "missed": false
+    },
+    {
+      "id": "catalog_event_digest_target_removed",
+      "original_input_sha256": "BC626FA93A13D9D2096B3213554AA1C6FFF256D9B66929AC0018BD7D62597E1D",
+      "description": "catalog event digest target removed",
+      "location": "DATABASE_COMPLETE_DDL_DESIGN_R3_C8_CORRECTIONS_R2.sql",
+      "expected_check": "catalog_event_digest_v2",
+      "actual_detected": true,
+      "new_failures": [
+        "catalog_event_digest_v2"
+      ],
+      "false_positive": false,
+      "missed": false
+    },
+    {
+      "id": "original_session_check_removed",
+      "original_input_sha256": "BC626FA93A13D9D2096B3213554AA1C6FFF256D9B66929AC0018BD7D62597E1D",
+      "description": "original session check removed",
+      "location": "DATABASE_COMPLETE_DDL_DESIGN_R3_C8_CORRECTIONS_R2.sql",
+      "expected_check": "original_session_state_checked",
+      "actual_detected": true,
+      "new_failures": [
+        "original_session_state_checked"
+      ],
+      "false_positive": false,
+      "missed": false
+    },
+    {
+      "id": "field_domain_trigger_removed",
+      "original_input_sha256": "BC626FA93A13D9D2096B3213554AA1C6FFF256D9B66929AC0018BD7D62597E1D",
+      "description": "field domain trigger removed",
+      "location": "DATABASE_COMPLETE_DDL_DESIGN_R3_C8_CORRECTIONS_R2.sql",
+      "expected_check": "field_domain_selection_trigger",
+      "actual_detected": true,
+      "new_failures": [
+        "field_domain_selection_trigger"
+      ],
+      "false_positive": false,
+      "missed": false
+    },
+    {
+      "id": "bootstrap_audit_guard_removed",
+      "original_input_sha256": "BC626FA93A13D9D2096B3213554AA1C6FFF256D9B66929AC0018BD7D62597E1D",
+      "description": "bootstrap audit guard removed",
+      "location": "DATABASE_COMPLETE_DDL_DESIGN_R3_C8_CORRECTIONS_R2.sql",
+      "expected_check": "bootstrap_audit_truncate_guard",
+      "actual_detected": true,
+      "new_failures": [
+        "bootstrap_audit_truncate_guard"
+      ],
+      "false_positive": false,
+      "missed": false
+    }
+  ],
+  "missing_file_negative_fixture": true,
+  "postgresql_grammar": "NOT VERIFIED \u2014 NO COMPATIBLE OFFLINE PARSER",
+  "postgresql_execution": "NOT EXECUTED \u2014 DATABASE NOT AUTHORIZED",
+  "result": "PASS"
+}

@@ -1,0 +1,151 @@
+{
+  "review": "FULL-MVP-REMEDIATION-DESIGN-R3-C8-CORRECTIONS",
+  "scope": "OFFLINE STATIC VALIDATION; NOT POSTGRESQL PARSER OR EXECUTION",
+  "invariants": {
+    "price_fact_canonical_v1": true,
+    "price_fact_full_row_payload": true,
+    "price_selection_fact_fk": true,
+    "price_snapshot_fact_fk": true,
+    "requirement_assertion_fk": true,
+    "requirement_value_fk": true,
+    "catalog_event_fk": true,
+    "catalog_event_digest": true,
+    "professional_result_fk": true,
+    "professional_event_fk": true,
+    "professional_basis_computed": true,
+    "professional_decision_mapping": true,
+    "role_attributes_checked": true,
+    "recursive_membership_closure": true,
+    "membership_options_checked": true,
+    "direct_connect_check": true,
+    "bootstrap_flow": true,
+    "root_grant_one_shot": true,
+    "request_epoch": true,
+    "request_replay_audit": true,
+    "request_session_semantics": true,
+    "professional_truncate": true,
+    "trusted_session_truncate": true,
+    "source_aux_helper": true,
+    "source_aux_pre_seal": true,
+    "source_aux_seal_call": true,
+    "c6_compatibility_marker": true,
+    "all_fk_targets_exact": true
+  },
+  "fk_errors": [],
+  "object_inventory": {
+    "tables": 58,
+    "foreign_keys": 87,
+    "functions": 118,
+    "triggers": 137,
+    "roles": 26
+  },
+  "invariants_passed": 28,
+  "invariants_total": 28,
+  "mutations": {
+    "price_digest_removed": {
+      "detected": true,
+      "failed_checks": [
+        "price_fact_full_row_payload"
+      ]
+    },
+    "requirement_fk_removed": {
+      "detected": true,
+      "failed_checks": [
+        "requirement_assertion_fk"
+      ]
+    },
+    "catalog_fk_removed": {
+      "detected": true,
+      "failed_checks": [
+        "catalog_event_fk"
+      ]
+    },
+    "professional_decision_mapping_removed": {
+      "detected": true,
+      "failed_checks": [
+        "professional_decision_mapping"
+      ]
+    },
+    "professional_event_fk_removed": {
+      "detected": true,
+      "failed_checks": [
+        "professional_event_fk"
+      ]
+    },
+    "professional_basis_removed": {
+      "detected": true,
+      "failed_checks": [
+        "professional_basis_computed"
+      ]
+    },
+    "role_attribute_removed": {
+      "detected": true,
+      "failed_checks": [
+        "role_attributes_checked"
+      ]
+    },
+    "recursive_closure_removed": {
+      "detected": true,
+      "failed_checks": [
+        "recursive_membership_closure"
+      ]
+    },
+    "bootstrap_removed": {
+      "detected": true,
+      "failed_checks": [
+        "bootstrap_flow"
+      ]
+    },
+    "connect_check_removed": {
+      "detected": true,
+      "failed_checks": [
+        "direct_connect_check"
+      ]
+    },
+    "request_epoch_removed": {
+      "detected": true,
+      "failed_checks": [
+        "request_epoch"
+      ]
+    },
+    "professional_truncate_removed": {
+      "detected": true,
+      "failed_checks": [
+        "professional_truncate"
+      ]
+    },
+    "source_aux_removed": {
+      "detected": true,
+      "failed_checks": [
+        "source_aux_pre_seal",
+        "source_aux_seal_call"
+      ]
+    }
+  },
+  "mutations_detected": 13,
+  "mutations_total": 13,
+  "c6_snap_01": {
+    "records": 15,
+    "types": [
+      0,
+      1,
+      1,
+      2,
+      2,
+      3,
+      3,
+      4,
+      4,
+      5,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "bytes": 4036,
+    "sha256": "7D3CAC885F839594006650CC500FEF8A59D22AD151E6CB21567008D0D19519EB",
+    "hex_match": true
+  },
+  "result": "PASS"
+}

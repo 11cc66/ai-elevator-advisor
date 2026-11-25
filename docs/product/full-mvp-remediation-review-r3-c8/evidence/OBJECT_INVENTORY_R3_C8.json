@@ -1,0 +1,1970 @@
+{
+  "review": "FULL-MVP-REMEDIATION-REVIEW-R3-C8",
+  "scope": "STATIC OBJECT INVENTORY; NOT POSTGRESQL CATALOG",
+  "tables": [
+    "app.authority_grant",
+    "app.catalog_parameter_revision",
+    "app.catalog_source_revision",
+    "app.command_request",
+    "app.conversation",
+    "app.policy_current",
+    "app.policy_review_event",
+    "app.policy_revision",
+    "app.price_revision",
+    "app.principal_epoch",
+    "app.product_revision",
+    "app.professional_review",
+    "app.professional_review_event",
+    "app.project",
+    "app.requirement",
+    "app.requirement_version",
+    "app.review_audit",
+    "app.rule_set_revision",
+    "app.sales_case",
+    "app.sales_handoff_snapshot_r3",
+    "app.sales_snapshot_basis_record_r3",
+    "app.sales_snapshot_candidate_r3",
+    "app.sales_snapshot_catalog_review_r3",
+    "app.sales_snapshot_missing_field_r3",
+    "app.sales_snapshot_parameter_r3",
+    "app.sales_snapshot_price_r3",
+    "app.sales_snapshot_professional_review_r3",
+    "app.sales_snapshot_requirement_field_r3",
+    "app.sales_snapshot_source_r3",
+    "app.sales_snapshot_warning_r3",
+    "app.selection_candidate",
+    "app.selection_candidate_parameter",
+    "app.selection_candidate_price",
+    "app.selection_candidate_result",
+    "app.selection_catalog_review_result",
+    "app.selection_missing_field_result",
+    "app.selection_professional_review_result",
+    "app.selection_requirement_field",
+    "app.selection_run",
+    "app.selection_run_event",
+    "app.selection_run_seal",
+    "app.selection_source_result",
+    "app.selection_warning_result",
+    "app.session_audit",
+    "app.session_binding_audit",
+    "app.session_role_registry",
+    "app.snapshot_basis_metadata_r3",
+    "app.specification_revision",
+    "app.trusted_principal",
+    "app.trusted_session"
+  ],
+  "views": [
+    "app.audit_policy_events_v",
+    "app.audit_professional_review_events_v",
+    "app.authority_grant_v",
+    "app.current_policy_revision_v",
+    "app.current_professional_review_v",
+    "app.current_sales_snapshot_v",
+    "app.selection_result_read_v",
+    "app.trusted_session_audit_v",
+    "app.trusted_session_status_v"
+  ],
+  "roles": [
+    "elevator_database_owner",
+    "elevator_function_owner",
+    "elevator_identity_broker",
+    "elevator_migrator",
+    "elevator_policy_author",
+    "elevator_policy_reviewer",
+    "elevator_professional_reviewer",
+    "elevator_readonly_auditor",
+    "elevator_reporting_readonly",
+    "elevator_review_function_owner",
+    "elevator_runtime_web",
+    "elevator_runtime_worker",
+    "elevator_schema_owner",
+    "elevator_security_admin",
+    "elevator_session_bootstrap",
+    "elevator_table_owner"
+  ],
+  "functions": [
+    "app.activate_trusted_session(text, text)",
+    "app.add_selection_candidate(text, text, text, text, text, text)",
+    "app.advance_principal_epoch(text, text)",
+    "app.build_snapshot_basis_r6(text)",
+    "app.complete_selection_candidate_result(text, text, text, text, text, text, text, text, text)",
+    "app.create_policy_revision(text, text, text, bigint, text, text, text, text, text)",
+    "app.create_professional_review(text, text, text, text, text, text, text, text, text, text, text)",
+    "app.create_selection_run(text, text, text, bigint, text, text)",
+    "app.create_snapshot_r3(text, text, bigint)",
+    "app.finalize_snapshot_r3(text, bigint)",
+    "app.has_project_authority(text, text, text)",
+    "app.issue_authority_grant(text, text, text, text, text, text, text, timestamptz)",
+    "app.open_trusted_session(text, text, bigint, text, text, text, text, text, timestamptz, timestamptz, timestamptz)",
+    "app.policy_digest(text)",
+    "app.policy_is_effective(text)",
+    "app.record_selection_catalog_review_result(text, text, text, text, text, text, timestamptz, text, text)",
+    "app.record_selection_missing_field_result(text, text, text, text, text, text, text)",
+    "app.record_selection_professional_review_result(text, text, text, bigint, text, text, text, text, timestamptz, text, text)",
+    "app.record_selection_requirement_field(text, text, text, jsonb, text, text, text, text, text, text, boolean, text, text, text, text, text)",
+    "app.record_selection_source_result(text, text, text, text)",
+    "app.record_selection_warning_result(text, text, bigint, text, text, text, text, text, text)",
+    "app.register_session_role(text, text, text, text)",
+    "app.revoke_authority_grant(text, text)",
+    "app.revoke_trusted_session(text, text)",
+    "app.seal_selection_run(text, bigint, text)",
+    "app.selection_result_digest(text)",
+    "app.set_selection_candidate_parameter(text, text, text, text)",
+    "app.set_selection_candidate_price(text, text, text, text)",
+    "app.snapshot_record_count(text)",
+    "app.source_key_r3(text, text, text, boolean, text)",
+    "app.transition_policy_review(text, bigint, app.policy_command, text, text, text)",
+    "app.transition_professional_review(text, bigint, app.professional_review_command, text, text, text, text, text)",
+    "app.verify_snapshot_basis_r6(bytea, text)",
+    "app_private.append_selection_run_event(text, text, text, text, text, text, text)",
+    "app_private.assert_active_session(text, text, bigint)",
+    "app_private.canonical_row_payload_r3(text, jsonb)",
+    "app_private.claim_command_request(text, text, text, text, text, text, text)",
+    "app_private.complete_command_request(text, text, text)",
+    "app_private.compute_selection_row_digest_r3()",
+    "app_private.current_session_context()",
+    "app_private.deny_delete_r3()",
+    "app_private.deny_snapshot_truncate_r3()",
+    "app_private.deny_truncate_r3()",
+    "app_private.dispatch_snapshot_validation_r3()",
+    "app_private.guard_append_only_r3()",
+    "app_private.guard_authority_grant_r3()",
+    "app_private.guard_command_request_r3()",
+    "app_private.guard_policy_current_r3()",
+    "app_private.guard_policy_event_link_r3()",
+    "app_private.guard_policy_revision_r3()",
+    "app_private.guard_sealed_result_r3()",
+    "app_private.guard_selection_run_r3()",
+    "app_private.guard_session_role_registry_r3()",
+    "app_private.guard_snapshot_child_r3()",
+    "app_private.guard_snapshot_header_r3()",
+    "app_private.has_current_authority(text, text, text, text, text)",
+    "app_private.i64be(bigint)",
+    "app_private.lock_active_session(text, text)",
+    "app_private.lock_authority_grant(text, text, text, text, text, text, text)",
+    "app_private.lock_current_session()",
+    "app_private.materialize_snapshot_r3(text)",
+    "app_private.r6_field(integer, integer, integer, bytea)",
+    "app_private.r6_field_allowed(smallint, integer, text)",
+    "app_private.r6_record(smallint, text, bytea, jsonb)",
+    "app_private.r6_request_hash(jsonb)",
+    "app_private.refresh_snapshot_basis_records_r3(text)",
+    "app_private.require_no_active_snapshot_children_r3(text)",
+    "app_private.row_digest_r3(text, text, jsonb)",
+    "app_private.session_token_digest(text)",
+    "app_private.sha256_hex(bytea)",
+    "app_private.snapshot_record_projection_r3(text)",
+    "app_private.stable_key_r3(smallint, jsonb)",
+    "app_private.u16be(integer)",
+    "app_private.u32be(bigint)",
+    "app_private.u64be(bigint)",
+    "app_private.validate_session_role_r3(text, text, text)",
+    "app_private.validate_snapshot_r3(text)",
+    "app_private.verify_snapshot_row_digest_r3()"
+  ],
+  "foreign_keys_by_table": {
+    "app.authority_grant": [
+      {
+        "source": [
+          "session_id"
+        ],
+        "target_table": "app.trusted_session",
+        "target": [
+          "session_id"
+        ]
+      },
+      {
+        "source": [
+          "subject_principal_id"
+        ],
+        "target_table": "app.trusted_principal",
+        "target": [
+          "id"
+        ]
+      }
+    ],
+    "app.catalog_parameter_revision": [
+      {
+        "source": [
+          "product_id",
+          "product_revision_id"
+        ],
+        "target_table": "app.product_revision",
+        "target": [
+          "product_id",
+          "id"
+        ]
+      },
+      {
+        "source": [
+          "source_revision_id"
+        ],
+        "target_table": "app.catalog_source_revision",
+        "target": [
+          "id"
+        ]
+      }
+    ],
+    "app.policy_current": [
+      {
+        "source": [
+          "policy_id",
+          "revision_id"
+        ],
+        "target_table": "app.policy_revision",
+        "target": [
+          "policy_id",
+          "id"
+        ]
+      },
+      {
+        "source": [
+          "policy_id",
+          "revision_id",
+          "effective_event_id"
+        ],
+        "target_table": "app.policy_review_event",
+        "target": [
+          "policy_id",
+          "policy_revision_id",
+          "id"
+        ]
+      }
+    ],
+    "app.policy_review_event": [
+      {
+        "source": [
+          "actor_principal_id",
+          "actor_authority_grant_id"
+        ],
+        "target_table": "app.authority_grant",
+        "target": [
+          "principal_id",
+          "id"
+        ]
+      },
+      {
+        "source": [
+          "actor_session_id",
+          "actor_authority_grant_id"
+        ],
+        "target_table": "app.authority_grant",
+        "target": [
+          "session_id",
+          "id"
+        ]
+      }
+    ],
+    "app.price_revision": [
+      {
+        "source": [
+          "product_id",
+          "product_revision_id",
+          "specification_revision_id"
+        ],
+        "target_table": "app.specification_revision",
+        "target": [
+          "product_id",
+          "product_revision_id",
+          "id"
+        ]
+      },
+      {
+        "source": [
+          "source_revision_id"
+        ],
+        "target_table": "app.catalog_source_revision",
+        "target": [
+          "id"
+        ]
+      }
+    ],
+    "app.professional_review_event": [
+      {
+        "source": [
+          "review_id",
+          "project_id",
+          "conversation_id",
+          "requirement_id",
+          "requirement_version_id",
+          "installation_scenario",
+          "candidate_id",
+          "policy_id",
+          "policy_revision_id"
+        ],
+        "target_table": "app.professional_review",
+        "target": [
+          "id",
+          "project_id",
+          "conversation_id",
+          "requirement_id",
+          "requirement_version_id",
+          "installation_scenario",
+          "candidate_id",
+          "policy_id",
+          "policy_revision_id"
+        ]
+      },
+      {
+        "source": [
+          "actor_principal_id",
+          "actor_authority_grant_id"
+        ],
+        "target_table": "app.authority_grant",
+        "target": [
+          "principal_id",
+          "id"
+        ]
+      },
+      {
+        "source": [
+          "actor_session_id",
+          "actor_authority_grant_id"
+        ],
+        "target_table": "app.authority_grant",
+        "target": [
+          "session_id",
+          "id"
+        ]
+      }
+    ],
+    "app.requirement": [
+      {
+        "source": [
+          "conversation_id",
+          "project_id"
+        ],
+        "target_table": "app.conversation",
+        "target": [
+          "id",
+          "project_id"
+        ]
+      }
+    ],
+    "app.requirement_version": [
+      {
+        "source": [
+          "requirement_id",
+          "project_id",
+          "conversation_id"
+        ],
+        "target_table": "app.requirement",
+        "target": [
+          "id",
+          "project_id",
+          "conversation_id"
+        ]
+      }
+    ],
+    "app.sales_case": [
+      {
+        "source": [
+          "requirement_version_id",
+          "requirement_id",
+          "project_id",
+          "conversation_id",
+          "installation_scenario"
+        ],
+        "target_table": "app.requirement_version",
+        "target": [
+          "id",
+          "requirement_id",
+          "project_id",
+          "conversation_id",
+          "installation_scenario"
+        ]
+      }
+    ],
+    "app.sales_handoff_snapshot_r3": [
+      {
+        "source": [
+          "selection_run_id",
+          "case_id",
+          "project_id",
+          "conversation_id",
+          "requirement_id",
+          "requirement_version_id",
+          "installation_scenario",
+          "rule_set_revision_id",
+          "rule_set_content_digest"
+        ],
+        "target_table": "app.selection_run_seal",
+        "target": [
+          "selection_run_id",
+          "case_id",
+          "project_id",
+          "conversation_id",
+          "requirement_id",
+          "requirement_version_id",
+          "installation_scenario",
+          "rule_set_revision_id",
+          "rule_set_content_digest"
+        ]
+      }
+    ],
+    "app.sales_snapshot_candidate_r3": [
+      {
+        "source": [
+          "snapshot_id",
+          "selection_run_id"
+        ],
+        "target_table": "app.sales_handoff_snapshot_r3",
+        "target": [
+          "id",
+          "selection_run_id"
+        ]
+      },
+      {
+        "source": [
+          "selection_result_item_id",
+          "candidate_id",
+          "selection_run_id"
+        ],
+        "target_table": "app.selection_candidate_result",
+        "target": [
+          "id",
+          "candidate_id",
+          "selection_run_id"
+        ]
+      },
+      {
+        "source": [
+          "selection_result_item_id",
+          "candidate_id",
+          "selection_run_id",
+          "result_row_digest"
+        ],
+        "target_table": "app.selection_candidate_result",
+        "target": [
+          "id",
+          "candidate_id",
+          "selection_run_id",
+          "row_digest"
+        ]
+      }
+    ],
+    "app.sales_snapshot_catalog_review_r3": [
+      {
+        "source": [
+          "snapshot_id",
+          "selection_run_id"
+        ],
+        "target_table": "app.sales_handoff_snapshot_r3",
+        "target": [
+          "id",
+          "selection_run_id"
+        ]
+      },
+      {
+        "source": [
+          "selection_run_id",
+          "catalog_review_id"
+        ],
+        "target_table": "app.selection_catalog_review_result",
+        "target": [
+          "selection_run_id",
+          "catalog_review_id"
+        ]
+      },
+      {
+        "source": [
+          "selection_run_id",
+          "catalog_review_id",
+          "source_row_digest"
+        ],
+        "target_table": "app.selection_catalog_review_result",
+        "target": [
+          "selection_run_id",
+          "catalog_review_id",
+          "row_digest"
+        ]
+      }
+    ],
+    "app.sales_snapshot_missing_field_r3": [
+      {
+        "source": [
+          "snapshot_id",
+          "selection_run_id"
+        ],
+        "target_table": "app.sales_handoff_snapshot_r3",
+        "target": [
+          "id",
+          "selection_run_id"
+        ]
+      },
+      {
+        "source": [
+          "snapshot_id",
+          "candidate_row_id"
+        ],
+        "target_table": "app.sales_snapshot_candidate_r3",
+        "target": [
+          "snapshot_id",
+          "candidate_row_id"
+        ]
+      },
+      {
+        "source": [
+          "selection_run_id",
+          "candidate_id",
+          "field_key"
+        ],
+        "target_table": "app.selection_missing_field_result",
+        "target": [
+          "selection_run_id",
+          "candidate_id",
+          "field_key"
+        ]
+      },
+      {
+        "source": [
+          "selection_run_id",
+          "candidate_id",
+          "field_key",
+          "source_row_digest"
+        ],
+        "target_table": "app.selection_missing_field_result",
+        "target": [
+          "selection_run_id",
+          "candidate_id",
+          "field_key",
+          "row_digest"
+        ]
+      }
+    ],
+    "app.sales_snapshot_parameter_r3": [
+      {
+        "source": [
+          "snapshot_id",
+          "candidate_row_id",
+          "candidate_id",
+          "product_id",
+          "product_revision_id",
+          "specification_revision_id"
+        ],
+        "target_table": "app.sales_snapshot_candidate_r3",
+        "target": [
+          "snapshot_id",
+          "candidate_row_id",
+          "candidate_id",
+          "product_id",
+          "product_revision_id",
+          "specification_revision_id"
+        ]
+      },
+      {
+        "source": [
+          "catalog_parameter_revision_id",
+          "product_id",
+          "product_revision_id",
+          "parameter_key",
+          "value_type",
+          "source_revision_id"
+        ],
+        "target_table": "app.catalog_parameter_revision",
+        "target": [
+          "id",
+          "product_id",
+          "product_revision_id",
+          "parameter_key",
+          "value_type",
+          "source_revision_id"
+        ]
+      },
+      {
+        "source": [
+          "candidate_id",
+          "parameter_key",
+          "source_row_digest"
+        ],
+        "target_table": "app.selection_candidate_parameter",
+        "target": [
+          "candidate_id",
+          "parameter_key",
+          "row_digest"
+        ]
+      },
+      {
+        "source": [
+          "snapshot_id",
+          "selection_run_id"
+        ],
+        "target_table": "app.sales_handoff_snapshot_r3",
+        "target": [
+          "id",
+          "selection_run_id"
+        ]
+      }
+    ],
+    "app.sales_snapshot_price_r3": [
+      {
+        "source": [
+          "snapshot_id",
+          "candidate_row_id",
+          "candidate_id",
+          "product_id",
+          "product_revision_id",
+          "specification_revision_id"
+        ],
+        "target_table": "app.sales_snapshot_candidate_r3",
+        "target": [
+          "snapshot_id",
+          "candidate_row_id",
+          "candidate_id",
+          "product_id",
+          "product_revision_id",
+          "specification_revision_id"
+        ]
+      },
+      {
+        "source": [
+          "price_revision_id",
+          "product_id",
+          "product_revision_id",
+          "specification_revision_id",
+          "source_revision_id"
+        ],
+        "target_table": "app.price_revision",
+        "target": [
+          "id",
+          "product_id",
+          "product_revision_id",
+          "specification_revision_id",
+          "source_revision_id"
+        ]
+      },
+      {
+        "source": [
+          "candidate_id",
+          "price_revision_id",
+          "source_row_digest"
+        ],
+        "target_table": "app.selection_candidate_price",
+        "target": [
+          "candidate_id",
+          "price_revision_id",
+          "row_digest"
+        ]
+      },
+      {
+        "source": [
+          "snapshot_id",
+          "selection_run_id"
+        ],
+        "target_table": "app.sales_handoff_snapshot_r3",
+        "target": [
+          "id",
+          "selection_run_id"
+        ]
+      }
+    ],
+    "app.sales_snapshot_professional_review_r3": [
+      {
+        "source": [
+          "snapshot_id",
+          "selection_run_id"
+        ],
+        "target_table": "app.sales_handoff_snapshot_r3",
+        "target": [
+          "id",
+          "selection_run_id"
+        ]
+      },
+      {
+        "source": [
+          "selection_run_id",
+          "professional_review_id",
+          "event_sequence"
+        ],
+        "target_table": "app.selection_professional_review_result",
+        "target": [
+          "selection_run_id",
+          "professional_review_id",
+          "event_sequence"
+        ]
+      },
+      {
+        "source": [
+          "selection_run_id",
+          "professional_review_id",
+          "event_sequence",
+          "source_row_digest"
+        ],
+        "target_table": "app.selection_professional_review_result",
+        "target": [
+          "selection_run_id",
+          "professional_review_id",
+          "event_sequence",
+          "row_digest"
+        ]
+      }
+    ],
+    "app.sales_snapshot_requirement_field_r3": [
+      {
+        "source": [
+          "snapshot_id",
+          "selection_run_id"
+        ],
+        "target_table": "app.sales_handoff_snapshot_r3",
+        "target": [
+          "id",
+          "selection_run_id"
+        ]
+      },
+      {
+        "source": [
+          "selection_run_id",
+          "requirement_version_id",
+          "field_key"
+        ],
+        "target_table": "app.selection_requirement_field",
+        "target": [
+          "selection_run_id",
+          "requirement_version_id",
+          "field_key"
+        ]
+      },
+      {
+        "source": [
+          "selection_run_id",
+          "requirement_version_id",
+          "field_key",
+          "source_row_digest"
+        ],
+        "target_table": "app.selection_requirement_field",
+        "target": [
+          "selection_run_id",
+          "requirement_version_id",
+          "field_key",
+          "row_digest"
+        ]
+      }
+    ],
+    "app.sales_snapshot_source_r3": [
+      {
+        "source": [
+          "snapshot_id",
+          "selection_run_id"
+        ],
+        "target_table": "app.sales_handoff_snapshot_r3",
+        "target": [
+          "id",
+          "selection_run_id"
+        ]
+      },
+      {
+        "source": [
+          "source_revision_id"
+        ],
+        "target_table": "app.catalog_source_revision",
+        "target": [
+          "id"
+        ]
+      },
+      {
+        "source": [
+          "selection_run_id",
+          "source_revision_id"
+        ],
+        "target_table": "app.selection_source_result",
+        "target": [
+          "selection_run_id",
+          "source_revision_id"
+        ]
+      },
+      {
+        "source": [
+          "selection_run_id",
+          "source_revision_id",
+          "source_row_digest"
+        ],
+        "target_table": "app.selection_source_result",
+        "target": [
+          "selection_run_id",
+          "source_revision_id",
+          "row_digest"
+        ]
+      }
+    ],
+    "app.sales_snapshot_warning_r3": [
+      {
+        "source": [
+          "snapshot_id",
+          "selection_run_id"
+        ],
+        "target_table": "app.sales_handoff_snapshot_r3",
+        "target": [
+          "id",
+          "selection_run_id"
+        ]
+      },
+      {
+        "source": [
+          "snapshot_id",
+          "candidate_row_id"
+        ],
+        "target_table": "app.sales_snapshot_candidate_r3",
+        "target": [
+          "snapshot_id",
+          "candidate_row_id"
+        ]
+      },
+      {
+        "source": [
+          "selection_run_id",
+          "candidate_id",
+          "warning_sequence"
+        ],
+        "target_table": "app.selection_warning_result",
+        "target": [
+          "selection_run_id",
+          "candidate_id",
+          "warning_sequence"
+        ]
+      },
+      {
+        "source": [
+          "selection_run_id",
+          "candidate_id",
+          "warning_sequence",
+          "source_row_digest"
+        ],
+        "target_table": "app.selection_warning_result",
+        "target": [
+          "selection_run_id",
+          "candidate_id",
+          "warning_sequence",
+          "row_digest"
+        ]
+      }
+    ],
+    "app.selection_candidate": [
+      {
+        "source": [
+          "selection_run_id",
+          "project_id",
+          "conversation_id",
+          "requirement_id",
+          "requirement_version_id",
+          "installation_scenario",
+          "rule_set_revision_id",
+          "rule_set_content_digest"
+        ],
+        "target_table": "app.selection_run",
+        "target": [
+          "id",
+          "project_id",
+          "conversation_id",
+          "requirement_id",
+          "requirement_version_id",
+          "installation_scenario",
+          "rule_set_revision_id",
+          "rule_set_content_digest"
+        ]
+      },
+      {
+        "source": [
+          "product_id",
+          "product_revision_id",
+          "product_revision_digest"
+        ],
+        "target_table": "app.product_revision",
+        "target": [
+          "product_id",
+          "id",
+          "content_digest"
+        ]
+      },
+      {
+        "source": [
+          "product_id",
+          "product_revision_id",
+          "specification_revision_id",
+          "specification_revision_digest"
+        ],
+        "target_table": "app.specification_revision",
+        "target": [
+          "product_id",
+          "product_revision_id",
+          "id",
+          "content_digest"
+        ]
+      }
+    ],
+    "app.selection_candidate_parameter": [
+      {
+        "source": [
+          "candidate_id",
+          "product_id",
+          "product_revision_id"
+        ],
+        "target_table": "app.selection_candidate",
+        "target": [
+          "id",
+          "product_id",
+          "product_revision_id"
+        ]
+      },
+      {
+        "source": [
+          "catalog_parameter_revision_id",
+          "product_id",
+          "product_revision_id",
+          "parameter_key",
+          "value_type",
+          "source_revision_id"
+        ],
+        "target_table": "app.catalog_parameter_revision",
+        "target": [
+          "id",
+          "product_id",
+          "product_revision_id",
+          "parameter_key",
+          "value_type",
+          "source_revision_id"
+        ]
+      }
+    ],
+    "app.selection_candidate_price": [
+      {
+        "source": [
+          "candidate_id",
+          "product_id",
+          "product_revision_id",
+          "specification_revision_id"
+        ],
+        "target_table": "app.selection_candidate",
+        "target": [
+          "id",
+          "product_id",
+          "product_revision_id",
+          "specification_revision_id"
+        ]
+      },
+      {
+        "source": [
+          "price_revision_id",
+          "product_id",
+          "product_revision_id",
+          "specification_revision_id",
+          "source_revision_id"
+        ],
+        "target_table": "app.price_revision",
+        "target": [
+          "id",
+          "product_id",
+          "product_revision_id",
+          "specification_revision_id",
+          "source_revision_id"
+        ]
+      }
+    ],
+    "app.selection_candidate_result": [
+      {
+        "source": [
+          "candidate_id",
+          "selection_run_id",
+          "project_id",
+          "conversation_id",
+          "requirement_id",
+          "requirement_version_id",
+          "installation_scenario",
+          "rule_set_revision_id",
+          "rule_set_content_digest",
+          "product_id",
+          "product_revision_id",
+          "product_revision_digest",
+          "specification_revision_id",
+          "specification_revision_digest"
+        ],
+        "target_table": "app.selection_candidate",
+        "target": [
+          "id",
+          "selection_run_id",
+          "project_id",
+          "conversation_id",
+          "requirement_id",
+          "requirement_version_id",
+          "installation_scenario",
+          "rule_set_revision_id",
+          "rule_set_content_digest",
+          "product_id",
+          "product_revision_id",
+          "product_revision_digest",
+          "specification_revision_id",
+          "specification_revision_digest"
+        ]
+      }
+    ],
+    "app.selection_run": [
+      {
+        "source": [
+          "case_id",
+          "project_id",
+          "conversation_id",
+          "requirement_id",
+          "requirement_version_id",
+          "installation_scenario"
+        ],
+        "target_table": "app.sales_case",
+        "target": [
+          "id",
+          "project_id",
+          "conversation_id",
+          "requirement_id",
+          "requirement_version_id",
+          "installation_scenario"
+        ]
+      },
+      {
+        "source": [
+          "rule_set_revision_id",
+          "rule_set_content_digest"
+        ],
+        "target_table": "app.rule_set_revision",
+        "target": [
+          "id",
+          "content_digest"
+        ]
+      }
+    ],
+    "app.selection_run_event": [
+      {
+        "source": [
+          "actor_session_id",
+          "actor_authority_grant_id"
+        ],
+        "target_table": "app.authority_grant",
+        "target": [
+          "session_id",
+          "id"
+        ]
+      }
+    ],
+    "app.selection_run_seal": [
+      {
+        "source": [
+          "selection_run_id",
+          "case_id",
+          "project_id",
+          "conversation_id",
+          "requirement_id",
+          "requirement_version_id",
+          "installation_scenario",
+          "rule_set_revision_id",
+          "rule_set_content_digest"
+        ],
+        "target_table": "app.selection_run",
+        "target": [
+          "id",
+          "case_id",
+          "project_id",
+          "conversation_id",
+          "requirement_id",
+          "requirement_version_id",
+          "installation_scenario",
+          "rule_set_revision_id",
+          "rule_set_content_digest"
+        ]
+      }
+    ],
+    "app.selection_source_result": [
+      {
+        "source": [
+          "source_revision_id"
+        ],
+        "target_table": "app.catalog_source_revision",
+        "target": [
+          "id"
+        ]
+      }
+    ],
+    "app.specification_revision": [
+      {
+        "source": [
+          "product_id",
+          "product_revision_id"
+        ],
+        "target_table": "app.product_revision",
+        "target": [
+          "product_id",
+          "id"
+        ]
+      }
+    ],
+    "app.trusted_session": [
+      {
+        "source": [
+          "db_auth_role"
+        ],
+        "target_table": "app.session_role_registry",
+        "target": [
+          "role_name"
+        ]
+      }
+    ]
+  },
+  "triggers": [
+    {
+      "name": "a_compute_selection_catalog_review_digest",
+      "timing": "before",
+      "events": "insert or update",
+      "table": "app.selection_catalog_review_result",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "a_compute_selection_missing_digest",
+      "timing": "before",
+      "events": "insert or update",
+      "table": "app.selection_missing_field_result",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "a_compute_selection_parameter_digest",
+      "timing": "before",
+      "events": "insert or update",
+      "table": "app.selection_candidate_parameter",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "a_compute_selection_price_digest",
+      "timing": "before",
+      "events": "insert or update",
+      "table": "app.selection_candidate_price",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "a_compute_selection_professional_review_digest",
+      "timing": "before",
+      "events": "insert or update",
+      "table": "app.selection_professional_review_result",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "a_compute_selection_requirement_digest",
+      "timing": "before",
+      "events": "insert or update",
+      "table": "app.selection_requirement_field",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "a_compute_selection_result_digest",
+      "timing": "before",
+      "events": "insert or update",
+      "table": "app.selection_candidate_result",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "a_compute_selection_source_digest",
+      "timing": "before",
+      "events": "insert or update",
+      "table": "app.selection_source_result",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "a_compute_selection_warning_digest",
+      "timing": "before",
+      "events": "insert or update",
+      "table": "app.selection_warning_result",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "a_verify_snapshot_candidate_digest",
+      "timing": "before",
+      "events": "insert or update",
+      "table": "app.sales_snapshot_candidate_r3",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "a_verify_snapshot_catalog_review_digest",
+      "timing": "before",
+      "events": "insert or update",
+      "table": "app.sales_snapshot_catalog_review_r3",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "a_verify_snapshot_missing_digest",
+      "timing": "before",
+      "events": "insert or update",
+      "table": "app.sales_snapshot_missing_field_r3",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "a_verify_snapshot_parameter_digest",
+      "timing": "before",
+      "events": "insert or update",
+      "table": "app.sales_snapshot_parameter_r3",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "a_verify_snapshot_price_digest",
+      "timing": "before",
+      "events": "insert or update",
+      "table": "app.sales_snapshot_price_r3",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "a_verify_snapshot_professional_review_digest",
+      "timing": "before",
+      "events": "insert or update",
+      "table": "app.sales_snapshot_professional_review_r3",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "a_verify_snapshot_requirement_digest",
+      "timing": "before",
+      "events": "insert or update",
+      "table": "app.sales_snapshot_requirement_field_r3",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "a_verify_snapshot_source_digest",
+      "timing": "before",
+      "events": "insert or update",
+      "table": "app.sales_snapshot_source_r3",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "a_verify_snapshot_warning_digest",
+      "timing": "before",
+      "events": "insert or update",
+      "table": "app.sales_snapshot_warning_r3",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "deny_authority_grant_truncate_r3",
+      "timing": "before",
+      "events": "truncate",
+      "table": "app.authority_grant",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "deny_command_request_truncate_r3",
+      "timing": "before",
+      "events": "truncate",
+      "table": "app.command_request",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "deny_policy_current_delete_r3",
+      "timing": "before",
+      "events": "delete",
+      "table": "app.policy_current",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "deny_policy_current_truncate_r3",
+      "timing": "before",
+      "events": "truncate",
+      "table": "app.policy_current",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "deny_policy_review_event_truncate_r3",
+      "timing": "before",
+      "events": "truncate",
+      "table": "app.policy_review_event",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "deny_policy_revision_truncate_r3",
+      "timing": "before",
+      "events": "truncate",
+      "table": "app.policy_revision",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "deny_professional_review_event_truncate_r3",
+      "timing": "before",
+      "events": "truncate",
+      "table": "app.professional_review_event",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "deny_review_audit_truncate_r3",
+      "timing": "before",
+      "events": "truncate",
+      "table": "app.review_audit",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "deny_selection_candidate_parameter_truncate_r3",
+      "timing": "before",
+      "events": "truncate",
+      "table": "app.selection_candidate_parameter",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "deny_selection_candidate_price_truncate_r3",
+      "timing": "before",
+      "events": "truncate",
+      "table": "app.selection_candidate_price",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "deny_selection_candidate_result_truncate_r3",
+      "timing": "before",
+      "events": "truncate",
+      "table": "app.selection_candidate_result",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "deny_selection_candidate_truncate_r3",
+      "timing": "before",
+      "events": "truncate",
+      "table": "app.selection_candidate",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "deny_selection_catalog_review_truncate_r3",
+      "timing": "before",
+      "events": "truncate",
+      "table": "app.selection_catalog_review_result",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "deny_selection_missing_truncate_r3",
+      "timing": "before",
+      "events": "truncate",
+      "table": "app.selection_missing_field_result",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "deny_selection_professional_review_truncate_r3",
+      "timing": "before",
+      "events": "truncate",
+      "table": "app.selection_professional_review_result",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "deny_selection_requirement_truncate_r3",
+      "timing": "before",
+      "events": "truncate",
+      "table": "app.selection_requirement_field",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "deny_selection_run_event_truncate_r3",
+      "timing": "before",
+      "events": "truncate",
+      "table": "app.selection_run_event",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "deny_selection_run_seal_truncate_r3",
+      "timing": "before",
+      "events": "truncate",
+      "table": "app.selection_run_seal",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "deny_selection_run_truncate_r3",
+      "timing": "before",
+      "events": "truncate",
+      "table": "app.selection_run",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "deny_selection_source_truncate_r3",
+      "timing": "before",
+      "events": "truncate",
+      "table": "app.selection_source_result",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "deny_selection_warning_truncate_r3",
+      "timing": "before",
+      "events": "truncate",
+      "table": "app.selection_warning_result",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "deny_session_audit_truncate_r3",
+      "timing": "before",
+      "events": "truncate",
+      "table": "app.session_audit",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "deny_session_binding_audit_truncate_r3",
+      "timing": "before",
+      "events": "truncate",
+      "table": "app.session_binding_audit",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "deny_session_role_registry_delete_r3",
+      "timing": "before",
+      "events": "delete",
+      "table": "app.session_role_registry",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "deny_session_role_registry_truncate_r3",
+      "timing": "before",
+      "events": "truncate",
+      "table": "app.session_role_registry",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "deny_snapshot_basis_metadata_truncate_r3",
+      "timing": "before",
+      "events": "truncate",
+      "table": "app.snapshot_basis_metadata_r3",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "deny_snapshot_basis_record_truncate_r3",
+      "timing": "before",
+      "events": "truncate",
+      "table": "app.sales_snapshot_basis_record_r3",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "deny_snapshot_candidate_truncate_r3",
+      "timing": "before",
+      "events": "truncate",
+      "table": "app.sales_snapshot_candidate_r3",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "deny_snapshot_catalog_review_truncate_r3",
+      "timing": "before",
+      "events": "truncate",
+      "table": "app.sales_snapshot_catalog_review_r3",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "deny_snapshot_header_truncate_r3",
+      "timing": "before",
+      "events": "truncate",
+      "table": "app.sales_handoff_snapshot_r3",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "deny_snapshot_missing_field_truncate_r3",
+      "timing": "before",
+      "events": "truncate",
+      "table": "app.sales_snapshot_missing_field_r3",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "deny_snapshot_parameter_truncate_r3",
+      "timing": "before",
+      "events": "truncate",
+      "table": "app.sales_snapshot_parameter_r3",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "deny_snapshot_price_truncate_r3",
+      "timing": "before",
+      "events": "truncate",
+      "table": "app.sales_snapshot_price_r3",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "deny_snapshot_professional_review_truncate_r3",
+      "timing": "before",
+      "events": "truncate",
+      "table": "app.sales_snapshot_professional_review_r3",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "deny_snapshot_requirement_field_truncate_r3",
+      "timing": "before",
+      "events": "truncate",
+      "table": "app.sales_snapshot_requirement_field_r3",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "deny_snapshot_source_truncate_r3",
+      "timing": "before",
+      "events": "truncate",
+      "table": "app.sales_snapshot_source_r3",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "deny_snapshot_warning_truncate_r3",
+      "timing": "before",
+      "events": "truncate",
+      "table": "app.sales_snapshot_warning_r3",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "guard_authority_grant_r3",
+      "timing": "before",
+      "events": "update or delete",
+      "table": "app.authority_grant",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "guard_command_request_r3",
+      "timing": "before",
+      "events": "update or delete",
+      "table": "app.command_request",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "guard_policy_current_r3",
+      "timing": "before",
+      "events": "insert or update",
+      "table": "app.policy_current",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "guard_policy_event_link_r3",
+      "timing": "before",
+      "events": "insert",
+      "table": "app.policy_review_event",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "guard_policy_review_event_r3",
+      "timing": "before",
+      "events": "update or delete",
+      "table": "app.policy_review_event",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "guard_policy_revision_r3",
+      "timing": "before",
+      "events": "insert or update or delete",
+      "table": "app.policy_revision",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "guard_professional_review_event_r3",
+      "timing": "before",
+      "events": "update or delete",
+      "table": "app.professional_review_event",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "guard_review_audit_r3",
+      "timing": "before",
+      "events": "update or delete",
+      "table": "app.review_audit",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "guard_selection_candidate_parameter_r3",
+      "timing": "before",
+      "events": "insert or update or delete",
+      "table": "app.selection_candidate_parameter",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "guard_selection_candidate_price_r3",
+      "timing": "before",
+      "events": "insert or update or delete",
+      "table": "app.selection_candidate_price",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "guard_selection_candidate_r3",
+      "timing": "before",
+      "events": "insert or update or delete",
+      "table": "app.selection_candidate",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "guard_selection_candidate_result_r3",
+      "timing": "before",
+      "events": "insert or update or delete",
+      "table": "app.selection_candidate_result",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "guard_selection_catalog_review_sealed",
+      "timing": "before",
+      "events": "insert or update or delete",
+      "table": "app.selection_catalog_review_result",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "guard_selection_missing_sealed",
+      "timing": "before",
+      "events": "insert or update or delete",
+      "table": "app.selection_missing_field_result",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "guard_selection_professional_review_sealed",
+      "timing": "before",
+      "events": "insert or update or delete",
+      "table": "app.selection_professional_review_result",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "guard_selection_requirement_sealed",
+      "timing": "before",
+      "events": "insert or update or delete",
+      "table": "app.selection_requirement_field",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "guard_selection_run_event_r3",
+      "timing": "before",
+      "events": "update or delete",
+      "table": "app.selection_run_event",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "guard_selection_run_r3",
+      "timing": "before",
+      "events": "update or delete",
+      "table": "app.selection_run",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "guard_selection_run_seal_r3",
+      "timing": "before",
+      "events": "insert or update or delete",
+      "table": "app.selection_run_seal",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "guard_selection_source_sealed",
+      "timing": "before",
+      "events": "insert or update or delete",
+      "table": "app.selection_source_result",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "guard_selection_warning_sealed",
+      "timing": "before",
+      "events": "insert or update or delete",
+      "table": "app.selection_warning_result",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "guard_session_audit_r3",
+      "timing": "before",
+      "events": "update or delete",
+      "table": "app.session_audit",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "guard_session_binding_audit_r3",
+      "timing": "before",
+      "events": "update or delete",
+      "table": "app.session_binding_audit",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "guard_session_role_registry_r3",
+      "timing": "before",
+      "events": "update or delete",
+      "table": "app.session_role_registry",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "guard_snapshot_basis_metadata_r3",
+      "timing": "before",
+      "events": "insert or update or delete",
+      "table": "app.snapshot_basis_metadata_r3",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "guard_snapshot_basis_record_r3",
+      "timing": "before",
+      "events": "insert or update or delete",
+      "table": "app.sales_snapshot_basis_record_r3",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "guard_snapshot_candidate_r3",
+      "timing": "before",
+      "events": "insert or update or delete",
+      "table": "app.sales_snapshot_candidate_r3",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "guard_snapshot_catalog_review_r3",
+      "timing": "before",
+      "events": "insert or update or delete",
+      "table": "app.sales_snapshot_catalog_review_r3",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "guard_snapshot_header_r3",
+      "timing": "before",
+      "events": "update or delete",
+      "table": "app.sales_handoff_snapshot_r3",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "guard_snapshot_missing_field_r3",
+      "timing": "before",
+      "events": "insert or update or delete",
+      "table": "app.sales_snapshot_missing_field_r3",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "guard_snapshot_parameter_r3",
+      "timing": "before",
+      "events": "insert or update or delete",
+      "table": "app.sales_snapshot_parameter_r3",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "guard_snapshot_price_r3",
+      "timing": "before",
+      "events": "insert or update or delete",
+      "table": "app.sales_snapshot_price_r3",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "guard_snapshot_professional_review_r3",
+      "timing": "before",
+      "events": "insert or update or delete",
+      "table": "app.sales_snapshot_professional_review_r3",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "guard_snapshot_requirement_field_r3",
+      "timing": "before",
+      "events": "insert or update or delete",
+      "table": "app.sales_snapshot_requirement_field_r3",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "guard_snapshot_source_r3",
+      "timing": "before",
+      "events": "insert or update or delete",
+      "table": "app.sales_snapshot_source_r3",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "guard_snapshot_warning_r3",
+      "timing": "before",
+      "events": "insert or update or delete",
+      "table": "app.sales_snapshot_warning_r3",
+      "constraint": false,
+      "deferrable": false
+    },
+    {
+      "name": "validate_snapshot_basis_metadata_r3",
+      "timing": "after",
+      "events": "insert or update or delete",
+      "table": "app.snapshot_basis_metadata_r3",
+      "constraint": true,
+      "deferrable": true
+    },
+    {
+      "name": "validate_snapshot_basis_record_r3",
+      "timing": "after",
+      "events": "insert or update or delete",
+      "table": "app.sales_snapshot_basis_record_r3",
+      "constraint": true,
+      "deferrable": true
+    },
+    {
+      "name": "validate_snapshot_candidate_r3",
+      "timing": "after",
+      "events": "insert or update or delete",
+      "table": "app.sales_snapshot_candidate_r3",
+      "constraint": true,
+      "deferrable": true
+    },
+    {
+      "name": "validate_snapshot_catalog_review_r3",
+      "timing": "after",
+      "events": "insert or update or delete",
+      "table": "app.sales_snapshot_catalog_review_r3",
+      "constraint": true,
+      "deferrable": true
+    },
+    {
+      "name": "validate_snapshot_header_r3",
+      "timing": "after",
+      "events": "insert or update or delete",
+      "table": "app.sales_handoff_snapshot_r3",
+      "constraint": true,
+      "deferrable": true
+    },
+    {
+      "name": "validate_snapshot_missing_field_r3",
+      "timing": "after",
+      "events": "insert or update or delete",
+      "table": "app.sales_snapshot_missing_field_r3",
+      "constraint": true,
+      "deferrable": true
+    },
+    {
+      "name": "validate_snapshot_parameter_r3",
+      "timing": "after",
+      "events": "insert or update or delete",
+      "table": "app.sales_snapshot_parameter_r3",
+      "constraint": true,
+      "deferrable": true
+    },
+    {
+      "name": "validate_snapshot_price_r3",
+      "timing": "after",
+      "events": "insert or update or delete",
+      "table": "app.sales_snapshot_price_r3",
+      "constraint": true,
+      "deferrable": true
+    },
+    {
+      "name": "validate_snapshot_professional_review_r3",
+      "timing": "after",
+      "events": "insert or update or delete",
+      "table": "app.sales_snapshot_professional_review_r3",
+      "constraint": true,
+      "deferrable": true
+    },
+    {
+      "name": "validate_snapshot_requirement_field_r3",
+      "timing": "after",
+      "events": "insert or update or delete",
+      "table": "app.sales_snapshot_requirement_field_r3",
+      "constraint": true,
+      "deferrable": true
+    },
+    {
+      "name": "validate_snapshot_source_r3",
+      "timing": "after",
+      "events": "insert or update or delete",
+      "table": "app.sales_snapshot_source_r3",
+      "constraint": true,
+      "deferrable": true
+    },
+    {
+      "name": "validate_snapshot_warning_r3",
+      "timing": "after",
+      "events": "insert or update or delete",
+      "table": "app.sales_snapshot_warning_r3",
+      "constraint": true,
+      "deferrable": true
+    }
+  ],
+  "truncate_guarded_tables": [
+    "app.authority_grant",
+    "app.command_request",
+    "app.policy_current",
+    "app.policy_review_event",
+    "app.policy_revision",
+    "app.professional_review_event",
+    "app.review_audit",
+    "app.sales_handoff_snapshot_r3",
+    "app.sales_snapshot_basis_record_r3",
+    "app.sales_snapshot_candidate_r3",
+    "app.sales_snapshot_catalog_review_r3",
+    "app.sales_snapshot_missing_field_r3",
+    "app.sales_snapshot_parameter_r3",
+    "app.sales_snapshot_price_r3",
+    "app.sales_snapshot_professional_review_r3",
+    "app.sales_snapshot_requirement_field_r3",
+    "app.sales_snapshot_source_r3",
+    "app.sales_snapshot_warning_r3",
+    "app.selection_candidate",
+    "app.selection_candidate_parameter",
+    "app.selection_candidate_price",
+    "app.selection_candidate_result",
+    "app.selection_catalog_review_result",
+    "app.selection_missing_field_result",
+    "app.selection_professional_review_result",
+    "app.selection_requirement_field",
+    "app.selection_run",
+    "app.selection_run_event",
+    "app.selection_run_seal",
+    "app.selection_source_result",
+    "app.selection_warning_result",
+    "app.session_audit",
+    "app.session_binding_audit",
+    "app.session_role_registry",
+    "app.snapshot_basis_metadata_r3"
+  ]
+}

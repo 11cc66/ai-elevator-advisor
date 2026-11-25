@@ -23,7 +23,6 @@ import {
   parsePdfInWorker,
   PdfParserError,
 } from "../../../worker/src/pdf-parser-client";
-import { createWorkerStorage } from "../../../worker/src/storage";
 import { loadActor, type Actor } from "../../src/modules/access/actor";
 import {
   completeUpload,
@@ -36,7 +35,6 @@ const prisma = new PrismaClient();
 const storage = new LocalPrivateStorage(
   process.env.PRIVATE_STORAGE_ROOT!,
 );
-const workerStorage = createWorkerStorage(readWorkerEnv());
 const pdfBytes = createTestPdf([
   "Lease renewal page one",
   "Lease renewal page two",
@@ -129,14 +127,13 @@ afterAll(async () => {
   await prisma.$disconnect();
 });
 
-it("renews maintenance leases beyond the initial window and blocks takeover", async () => {
+it("renews maintenance leases without granting legacy delete authority", async () => {
   const orphanPath = await createOldOrphan("long-maintenance");
   const entered = deferred();
   const gate = deferred();
   const first = runFileMaintenance({
     prisma,
     boss: fakeBoss(),
-    storage: workerStorage,
     env: readWorkerEnv(),
     leasePolicy: { leaseMs: 600, renewIntervalMs: 100 },
     testHooks: {
@@ -152,7 +149,6 @@ it("renews maintenance leases beyond the initial window and blocks takeover", as
   const second = await runFileMaintenance({
     prisma,
     boss: fakeBoss(),
-    storage: workerStorage,
     env: readWorkerEnv(),
     leasePolicy: { leaseMs: 600, renewIntervalMs: 100 },
   });
@@ -162,11 +158,10 @@ it("renews maintenance leases beyond the initial window and blocks takeover", as
   gate.resolve();
   const firstResult = await first;
   expect(firstResult.leaseLost).toBe(false);
-  expect(firstResult.removedOrphanObjects).toBeGreaterThanOrEqual(1);
-  await expect(fs.access(orphanPath)).rejects.toBeDefined();
+  await expect(fs.access(orphanPath)).resolves.toBeUndefined();
 });
 
-it("stops an expired maintainer before cleanup and allows only the new owner to delete", async () => {
+it("transfers lease ownership without transferring legacy delete authority", async () => {
   const orphanPath = await createOldOrphan("expired-maintainer");
   const entered = deferred();
   const invalidated = deferred();
@@ -175,7 +170,6 @@ it("stops an expired maintainer before cleanup and allows only the new owner to 
   const stale = runFileMaintenance({
     prisma,
     boss: fakeBoss(),
-    storage: workerStorage,
     env: readWorkerEnv(),
     leasePolicy: { leaseMs: 600, renewIntervalMs: 100 },
     testHooks: {
@@ -209,13 +203,11 @@ it("stops an expired maintainer before cleanup and allows only the new owner to 
   const takeover = await runFileMaintenance({
     prisma,
     boss: fakeBoss(),
-    storage: workerStorage,
     env: readWorkerEnv(),
     leasePolicy: { leaseMs: 600, renewIntervalMs: 100 },
   });
   expect(takeover.leaseLost).toBe(false);
-  expect(takeover.removedOrphanObjects).toBeGreaterThanOrEqual(1);
-  await expect(fs.access(orphanPath)).rejects.toBeDefined();
+  await expect(fs.access(orphanPath)).resolves.toBeUndefined();
 
   gate.resolve();
   const staleResult = await stale;

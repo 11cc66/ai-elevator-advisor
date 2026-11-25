@@ -1,0 +1,53 @@
+{
+  "review": "FULL-MVP-REMEDIATION-REVIEW-R3-C8",
+  "overall": "FAIL — DESIGN CORRECTIONS REQUIRED",
+  "counts": {
+    "p0": 0,
+    "p1": 4,
+    "p2": 4,
+    "p3": 3
+  },
+  "inputs": {
+    "c8_manifest_sha256": "672D6206D06E4282F7C8684A3811654EEDDA72E52C55B6EDF2C324B5C131E853",
+    "c8_manifest_result": "PASS",
+    "c8_files": 23,
+    "c7_design_manifest_result": "PASS",
+    "c7_review_manifest_result": "PASS"
+  },
+  "independent_evidence": {
+    "c6_snap_01": "PASS",
+    "c6_records": 15,
+    "c6_bytes": 4036,
+    "c6_sha256": "7D3CAC885F839594006650CC500FEF8A59D22AD151E6CB21567008D0D19519EB",
+    "node_c6_encoding": "PASS",
+    "scalar_vectors": "23/23 PASS",
+    "resource_vectors": "14/14 PASS",
+    "sql_r6_static_alignment": "PASS",
+    "tables": 50,
+    "unique_views": 9,
+    "unique_functions": 78,
+    "foreign_keys": 64,
+    "exact_fk_target_findings": 0,
+    "roles": 16,
+    "triggers": 103,
+    "deferred_constraint_triggers": 12,
+    "truncate_guarded_tables": 35,
+    "registry_signature_owner_audit": "PASS",
+    "open_decisions": "57/57 REVIEWED, 0 APPROVED, 57 OPEN"
+  },
+  "blocking_findings": [
+    "REV-R3-C8-P1-01",
+    "REV-R3-C8-P1-02",
+    "REV-R3-C8-P1-03",
+    "REV-R3-C8-P1-04"
+  ],
+  "postgresql_sql_grammar": "NOT VERIFIED — NO COMPATIBLE OFFLINE PARSER",
+  "postgresql_compilation": "NOT VERIFIED — DATABASE NOT AUTHORIZED",
+  "catalog_introspection": "NOT VERIFIED — DATABASE NOT AUTHORIZED",
+  "runtime_concurrency": "NOT VERIFIED — RUNTIME NOT AUTHORIZED",
+  "database": "NOT ACCESSED",
+  "storage": "NOT ACCESSED",
+  "runtime": "NOT EXECUTED",
+  "production": "NOT AUTHORIZED",
+  "git_writes": "NONE"
+}

@@ -1,0 +1,32 @@
+{
+  "protocol": "R3-BASIS-1-R6",
+  "vectors": [
+    {"id":"SC-TXT-01","type":"TEXT","valueClass":"4000_scalars","expected":"ACCEPT"},
+    {"id":"SC-TXT-02","type":"TEXT","valueClass":"4001_scalars","expected":"REJECT","reason":"TEXT_LENGTH"},
+    {"id":"SC-TXT-03","type":"TEXT","valueClass":"contains_nul","expected":"REJECT","reason":"TEXT_NUL"},
+    {"id":"SC-DEC-01","type":"DECIMAL","value":"1.75","expected":"ACCEPT"},
+    {"id":"SC-DEC-02","type":"DECIMAL","value":"1e3","expected":"REJECT","reason":"DECIMAL_GRAMMAR"},
+    {"id":"SC-DEC-03","type":"DECIMAL","value":"1.750000","expected":"REJECT","reason":"DECIMAL_NOT_CANONICAL"},
+    {"id":"SC-DEC-04","type":"DECIMAL","value":"1234567890123456789","expected":"REJECT","reason":"DECIMAL_PRECISION"},
+    {"id":"SC-BOOL-01","type":"BOOLEAN","value":true,"expected":"ACCEPT"},
+    {"id":"SC-BOOL-02","type":"BOOLEAN","value":"true","expected":"REJECT","reason":"BOOLEAN_TYPE"},
+    {"id":"SC-BOOL-03","type":"BOOLEAN","value":1,"expected":"REJECT","reason":"BOOLEAN_TYPE"},
+    {"id":"SC-INT-01","type":"INTEGER","value":"-9223372036854775808","expected":"ACCEPT"},
+    {"id":"SC-INT-02","type":"INTEGER","value":"9223372036854775808","expected":"REJECT","reason":"INTEGER_RANGE"},
+    {"id":"SC-BYTE-01","type":"BYTES","valueClass":"512_bytes","expected":"ACCEPT"},
+    {"id":"SC-BYTE-02","type":"BYTES","valueClass":"513_bytes","expected":"REJECT","reason":"BYTES_LENGTH"},
+    {"id":"SC-AUX-01","type":"SOURCE_AUX","value":"café","expected":"ACCEPT"},
+    {"id":"SC-AUX-02","type":"SOURCE_AUX","valueClass":"control_character","expected":"REJECT","reason":"SOURCE_AUX_CONTROL"},
+    {"id":"SC-AUX-03","type":"SOURCE_AUX","value":"","expected":"REJECT","reason":"SOURCE_AUX_EMPTY"}
+  ],
+  "sourceKeyBoundaries": [
+    {"id":"SC-SRC-01","bytes":361,"expected":"ACCEPT"},
+    {"id":"SC-SRC-02","bytes":362,"expected":"ACCEPT"},
+    {"id":"SC-SRC-03","bytes":363,"expected":"REJECT","reason":"SOURCE_KEY_LENGTH"},
+    {"id":"SC-SRC-04","case":"component_max_plus_one","expected":"REJECT"},
+    {"id":"SC-SRC-05","case":"aux_null","expected":"ACCEPT"},
+    {"id":"SC-SRC-06","case":"aux_empty_present","expected":"REJECT"},
+    {"id":"SC-SRC-07","case":"aux_multibyte_128_bytes","expected":"ACCEPT"},
+    {"id":"SC-SRC-08","case":"aux_multibyte_129_bytes","expected":"REJECT"}
+  ]
+}

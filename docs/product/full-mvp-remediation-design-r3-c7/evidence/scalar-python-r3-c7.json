@@ -1,0 +1,240 @@
+{
+  "runtime": "python",
+  "version": "3.15.1",
+  "total": 23,
+  "accepted": 6,
+  "rejected": 17,
+  "failed": 0,
+  "results": [
+    {
+      "id": "SC-TXT-01",
+      "inputSummary": "TEXT:repeat(4000)",
+      "expected": "ACCEPT",
+      "observed": "ACCEPT",
+      "reason": "TAG_4_PRESENCE_1",
+      "outputBytes": 4000,
+      "partialBasisProduced": false,
+      "result": "PASS"
+    },
+    {
+      "id": "SC-TXT-02",
+      "inputSummary": "TEXT:repeat(4001)",
+      "expected": "REJECT",
+      "observed": "REJECT",
+      "reason": "TEXT_LENGTH",
+      "outputBytes": 0,
+      "partialBasisProduced": false,
+      "result": "PASS"
+    },
+    {
+      "id": "SC-TXT-03",
+      "inputSummary": "TEXT:ab\u0000cd",
+      "expected": "REJECT",
+      "observed": "REJECT",
+      "reason": "TEXT_NUL",
+      "outputBytes": 0,
+      "partialBasisProduced": false,
+      "result": "PASS"
+    },
+    {
+      "id": "SC-DEC-01",
+      "inputSummary": "DECIMAL:1.75",
+      "expected": "ACCEPT",
+      "observed": "ACCEPT",
+      "reason": "TAG_3_PRESENCE_1",
+      "outputBytes": 4,
+      "partialBasisProduced": false,
+      "result": "PASS"
+    },
+    {
+      "id": "SC-DEC-02",
+      "inputSummary": "DECIMAL:1e3",
+      "expected": "REJECT",
+      "observed": "REJECT",
+      "reason": "DECIMAL_GRAMMAR",
+      "outputBytes": 0,
+      "partialBasisProduced": false,
+      "result": "PASS"
+    },
+    {
+      "id": "SC-DEC-03",
+      "inputSummary": "DECIMAL:1.750000",
+      "expected": "REJECT",
+      "observed": "REJECT",
+      "reason": "DECIMAL_NOT_CANONICAL",
+      "outputBytes": 0,
+      "partialBasisProduced": false,
+      "result": "PASS"
+    },
+    {
+      "id": "SC-DEC-04",
+      "inputSummary": "DECIMAL:1234567890123456789",
+      "expected": "REJECT",
+      "observed": "REJECT",
+      "reason": "DECIMAL_PRECISION",
+      "outputBytes": 0,
+      "partialBasisProduced": false,
+      "result": "PASS"
+    },
+    {
+      "id": "SC-BOOL-01",
+      "inputSummary": "BOOLEAN:True",
+      "expected": "ACCEPT",
+      "observed": "ACCEPT",
+      "reason": "TAG_1_PRESENCE_1",
+      "outputBytes": 1,
+      "partialBasisProduced": false,
+      "result": "PASS"
+    },
+    {
+      "id": "SC-BOOL-02",
+      "inputSummary": "BOOLEAN:true",
+      "expected": "REJECT",
+      "observed": "REJECT",
+      "reason": "BOOLEAN_TYPE",
+      "outputBytes": 0,
+      "partialBasisProduced": false,
+      "result": "PASS"
+    },
+    {
+      "id": "SC-BOOL-03",
+      "inputSummary": "BOOLEAN:1",
+      "expected": "REJECT",
+      "observed": "REJECT",
+      "reason": "BOOLEAN_TYPE",
+      "outputBytes": 0,
+      "partialBasisProduced": false,
+      "result": "PASS"
+    },
+    {
+      "id": "SC-INT-01",
+      "inputSummary": "INTEGER:-9223372036854775808",
+      "expected": "ACCEPT",
+      "observed": "ACCEPT",
+      "reason": "TAG_2_PRESENCE_1",
+      "outputBytes": 8,
+      "partialBasisProduced": false,
+      "result": "PASS"
+    },
+    {
+      "id": "SC-INT-02",
+      "inputSummary": "INTEGER:9223372036854775808",
+      "expected": "REJECT",
+      "observed": "REJECT",
+      "reason": "INTEGER_RANGE",
+      "outputBytes": 0,
+      "partialBasisProduced": false,
+      "result": "PASS"
+    },
+    {
+      "id": "SC-BYTE-01",
+      "inputSummary": "BYTES:bytes(512)",
+      "expected": "ACCEPT",
+      "observed": "ACCEPT",
+      "reason": "TAG_8_PRESENCE_1",
+      "outputBytes": 512,
+      "partialBasisProduced": false,
+      "result": "PASS"
+    },
+    {
+      "id": "SC-BYTE-02",
+      "inputSummary": "BYTES:bytes(513)",
+      "expected": "REJECT",
+      "observed": "REJECT",
+      "reason": "BYTES_LENGTH",
+      "outputBytes": 0,
+      "partialBasisProduced": false,
+      "result": "PASS"
+    },
+    {
+      "id": "SC-AUX-01",
+      "inputSummary": "SOURCE_AUX:café",
+      "expected": "ACCEPT",
+      "observed": "ACCEPT",
+      "reason": "SOURCE_AUX_ACCEPT",
+      "outputBytes": 5,
+      "partialBasisProduced": false,
+      "result": "PASS"
+    },
+    {
+      "id": "SC-AUX-02",
+      "inputSummary": "SOURCE_AUX:a\u0001b",
+      "expected": "REJECT",
+      "observed": "REJECT",
+      "reason": "SOURCE_AUX_CONTROL",
+      "outputBytes": 0,
+      "partialBasisProduced": false,
+      "result": "PASS"
+    },
+    {
+      "id": "SC-AUX-03",
+      "inputSummary": "SOURCE_AUX:",
+      "expected": "REJECT",
+      "observed": "REJECT",
+      "reason": "SOURCE_AUX_EMPTY",
+      "outputBytes": 0,
+      "partialBasisProduced": false,
+      "result": "PASS"
+    },
+    {
+      "id": "C7-DEC-NEG-ZERO",
+      "inputSummary": "DECIMAL:-0.00",
+      "expected": "REJECT",
+      "observed": "REJECT",
+      "reason": "DECIMAL_NEGATIVE_ZERO",
+      "outputBytes": 0,
+      "partialBasisProduced": false,
+      "result": "PASS"
+    },
+    {
+      "id": "C7-BOOL-NULL",
+      "inputSummary": "BOOLEAN:None",
+      "expected": "REJECT",
+      "observed": "REJECT",
+      "reason": "BOOLEAN_TYPE",
+      "outputBytes": 0,
+      "partialBasisProduced": false,
+      "result": "PASS"
+    },
+    {
+      "id": "C7-TEXT-NFD",
+      "inputSummary": "TEXT:café",
+      "expected": "REJECT",
+      "observed": "REJECT",
+      "reason": "TEXT_NOT_NFC",
+      "outputBytes": 0,
+      "partialBasisProduced": false,
+      "result": "PASS"
+    },
+    {
+      "id": "C7-ENUM-65",
+      "inputSummary": "ENUM:repeat(65)",
+      "expected": "REJECT",
+      "observed": "REJECT",
+      "reason": "ASCII_LENGTH",
+      "outputBytes": 0,
+      "partialBasisProduced": false,
+      "result": "PASS"
+    },
+    {
+      "id": "C7-BYTES-EMPTY",
+      "inputSummary": "BYTES:bytes(0)",
+      "expected": "REJECT",
+      "observed": "REJECT",
+      "reason": "BYTES_EMPTY",
+      "outputBytes": 0,
+      "partialBasisProduced": false,
+      "result": "PASS"
+    },
+    {
+      "id": "C7-UNKNOWN-TYPE",
+      "inputSummary": "FLOAT:1",
+      "expected": "REJECT",
+      "observed": "REJECT",
+      "reason": "SCALAR_TYPE",
+      "outputBytes": 0,
+      "partialBasisProduced": false,
+      "result": "PASS"
+    }
+  ]
+}

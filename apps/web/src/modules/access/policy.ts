@@ -10,6 +10,18 @@ export function hasGlobalPermission(
   return actor.globalPermissions.has(permission);
 }
 
+export function hasPermissionInAnyScope(
+  actor: Actor,
+  permission: PermissionCode,
+): boolean {
+  return (
+    hasGlobalPermission(actor, permission) ||
+    [...actor.projectPermissions.values()].some((permissions) =>
+      permissions.has(permission),
+    )
+  );
+}
+
 export function canAccessProject(
   actor: Actor,
   projectId: string,

@@ -1,0 +1,7 @@
+interface:
+  display_name: "Project Architecture"
+  short_description: "Review module boundaries and architecture decisions"
+  default_prompt: "Use $project-architecture to assess this change against the project architecture."
+
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,124 @@
+import "wtypes.idl";
+
+const unsigned long P13_PROTOCOL_VERSION_2 = 2;
+const unsigned long P13_MAX_PAYLOAD_BYTES = 16384;
+const unsigned long P13_MAX_MESSAGE_CHARS = 256;
+const unsigned long P13_MAX_RELEASE_DIGEST_BYTES = 32;
+const unsigned long P13_MAX_REQUEST_DIGEST_BYTES = 32;
+const unsigned long P13_MAX_RPC_WIRE_BYTES = 24576;
+
+typedef [v1_enum] enum _P13AuthorityOperation
+{
+    P13_AUTH_SESSION_REGISTER = 0x0001,
+    P13_AUTH_SESSION_HEARTBEAT = 0x0002,
+    P13_AUTH_SESSION_CLOSE = 0x0003,
+    P13_AUTH_OPERATION_REQUEST_GRANT = 0x0004,
+    P13_AUTH_OPERATION_STATUS_READ = 0x0005,
+    P13_AUTH_OPERATION_CANCEL_BEFORE_GRANT = 0x0006,
+    P13_AUTH_HELPER_REGISTER = 0x0007,
+    P13_AUTH_HELPER_HEARTBEAT = 0x0008,
+    P13_AUTH_HELPER_EFFECT_COMMITTED = 0x0009,
+    P13_AUTH_HELPER_EXIT_NOTICE = 0x000A,
+    P13_AUTH_GRANT_STATUS_READ = 0x000B,
+    P13_AUTH_AUTHORITY_EPOCH_READ = 0x000C,
+    P13_AUTH_PROCESS_STATE_READ = 0x000D
+} P13AuthorityOperation;
+
+typedef [v1_enum] enum _P13LaunchOperation
+{
+    P13_LAUNCH_SESSION_REGISTER = 0x1000,
+    P13_LAUNCH_PREPARE = 0x1001,
+    P13_LAUNCH_COMMIT = 0x1002,
+    P13_LAUNCH_ABORT = 0x1003,
+    P13_LAUNCH_STATUS_READ = 0x1004,
+    P13_LAUNCH_SESSION_CLOSE = 0x1005
+} P13LaunchOperation;
+
+typedef [v1_enum] enum _P13Action
+{
+    P13_ACTION_NONE = 0,
+    P13_ACTION_STAGING_WRITE = 1,
+    P13_ACTION_PUBLISH = 2,
+    P13_ACTION_SEAL = 3,
+    P13_ACTION_CLEANUP_STAGING = 4
+} P13Action;
+
+typedef struct _P13AuthorityEnvelope
+{
+    unsigned long protocolVersion;
+    P13AuthorityOperation operation;
+    GUID requestId;
+    GUID authorityId;
+    GUID sessionId;
+    GUID operationId;
+    GUID grantId;
+    GUID launchSessionId;
+    GUID launchTicketId;
+    P13Action action;
+    hyper authorityEpoch;
+    hyper generation;
+    hyper clientSequence;
+    unsigned long payloadLength;
+    [size_is(payloadLength)] byte *payload;
+    byte requestDigest[P13_MAX_REQUEST_DIGEST_BYTES];
+} P13AuthorityEnvelope;
+
+typedef struct _P13LaunchEnvelope
+{
+    unsigned long protocolVersion;
+    P13LaunchOperation operation;
+    GUID requestId;
+    GUID launchAuthorityId;
+    GUID launchSessionId;
+    GUID launchTicketId;
+    GUID operationId;
+    GUID grantId;
+    P13Action action;
+    hyper authorityEpoch;
+    hyper generation;
+    hyper clientSequence;
+    byte expectedReleaseDigest[P13_MAX_RELEASE_DIGEST_BYTES];
+    unsigned long payloadLength;
+    [size_is(payloadLength)] byte *payload;
+    byte requestDigest[P13_MAX_REQUEST_DIGEST_BYTES];
+} P13LaunchEnvelope;
+
+typedef struct _P13Response
+{
+    unsigned long protocolVersion;
+    unsigned long status;
+    GUID sessionId;
+    GUID evidenceId;
+    hyper serverEpoch;
+    hyper serverSequence;
+    unsigned long retryAfterMs;
+    unsigned long messageLength;
+    wchar_t message[P13_MAX_MESSAGE_CHARS];
+} P13Response;
+
+[
+    uuid(4F8ED476-EC87-4257-A9DA-589E31FA4BC8),
+    version(1.0),
+    pointer_default(unique)
+]
+interface P13Authority
+{
+    error_status_t P13Invoke(
+        [in] const P13AuthorityEnvelope *request,
+        [out] P13Response *response
+    );
+}
+
+[
+    uuid(B2D9E41C-34D5-4046-96B6-9E14AA9D533E),
+    version(1.0),
+    pointer_default(unique)
+]
+interface P13Launch
+{
+    error_status_t P13LaunchInvoke(
+        [in] const P13LaunchEnvelope *request,
+        [out] P13Response *response
+    );
+}
+

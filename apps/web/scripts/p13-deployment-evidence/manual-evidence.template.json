@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 2,
+  "bundleId": "REPLACE-WITH-BUNDLE-ID",
+  "createdAt": "REPLACE-WITH-ISO-8601-TIMESTAMP",
+  "coverage": {
+    "hostInventoryComplete": false,
+    "instanceInventoryComplete": false,
+    "schedulerInventoryComplete": false,
+    "watchdogInventoryComplete": false,
+    "autoRestartInventoryComplete": false,
+    "artifactInventoryComplete": false,
+    "sourceEvidenceId": "REPLACE-WITH-EVIDENCE-ID",
+    "collectedAt": "REPLACE-WITH-ISO-8601-TIMESTAMP"
+  },
+  "hosts": [],
+  "processes": [],
+  "services": [],
+  "schedulers": [],
+  "watchdogs": [],
+  "instances": [],
+  "artifacts": [],
+  "trustRoots": [],
+  "releaseRoots": [],
+  "runtimeIdentities": [],
+  "storageAcls": [],
+  "queueSnapshots": [],
+  "runningJobs": [],
+  "networkDependencies": [],
+  "approvals": [],
+  "integrity": {
+    "algorithm": "sha256",
+    "digest": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "signature": null
+}

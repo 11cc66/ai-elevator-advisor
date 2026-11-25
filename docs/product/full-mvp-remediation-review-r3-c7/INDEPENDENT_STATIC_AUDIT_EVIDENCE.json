@@ -1,0 +1,111 @@
+{
+  "manifest": {
+    "sha256": "160A2BB8F93F473063225A2DBE04C8F807E456E1B50C4DF0D82B861B84BF3094",
+    "bytes": 10482,
+    "lines": 64,
+    "records": 64,
+    "unique_paths": 64,
+    "coverage_matches": true
+  },
+  "ddl_sha256": "61F51B163C6DBE9E1D2A84A6A7E2EA2269EB43B7C4524619882EE41A04C17F7E",
+  "ddl_bytes": 149237,
+  "functions_in_ddl": 44,
+  "functions_in_registry": 44,
+  "schema_usage_roles": [
+    "elevator_policy_author",
+    "elevator_policy_reviewer",
+    "elevator_professional_reviewer",
+    "elevator_readonly_auditor",
+    "elevator_reporting_readonly",
+    "elevator_runtime_web",
+    "elevator_runtime_worker",
+    "elevator_security_admin"
+  ],
+  "trigger_tables": [
+    "app.policy_review_event",
+    "app.policy_revision",
+    "app.professional_review_event",
+    "app.review_audit",
+    "app.sales_handoff_snapshot_r3",
+    "app.sales_snapshot_basis_record_r3",
+    "app.sales_snapshot_candidate_r3",
+    "app.sales_snapshot_catalog_review_r3",
+    "app.sales_snapshot_missing_field_r3",
+    "app.sales_snapshot_parameter_r3",
+    "app.sales_snapshot_price_r3",
+    "app.sales_snapshot_professional_review_r3",
+    "app.sales_snapshot_requirement_field_r3",
+    "app.sales_snapshot_source_r3",
+    "app.sales_snapshot_warning_r3",
+    "app.selection_candidate",
+    "app.selection_candidate_parameter",
+    "app.selection_candidate_price",
+    "app.selection_candidate_result",
+    "app.selection_run",
+    "app.selection_run_seal",
+    "app.session_audit",
+    "app.snapshot_basis_metadata_r3"
+  ],
+  "create_paths": {
+    "selection_run_insert": false,
+    "selection_candidate_insert": false,
+    "selection_result_insert": false,
+    "professional_review_insert": false,
+    "professional_initial_event_insert": false
+  },
+  "findings": [
+    {
+      "type": "OWNER_ROLE_MISSING_SCHEMA_USAGE",
+      "roles": [
+        "elevator_review_function_owner",
+        "elevator_table_owner"
+      ]
+    },
+    {
+      "type": "SECURITY_DEFINER_OWNER_LACKS_EXPLICIT_TABLE_PRIVILEGE_GRANTS",
+      "role": "elevator_review_function_owner"
+    },
+    {
+      "type": "BROKER_MISSING_SCHEMA_USAGE",
+      "role": "elevator_identity_broker"
+    },
+    {
+      "type": "SHARED_LOGIN_ROLE_ACCEPTED_AS_TRUSTED_SESSION_ROLE",
+      "detail": "Only rolcanlogin, not superuser, and not bypassrls are checked."
+    },
+    {
+      "type": "SNAPSHOT_CANDIDATE_PROVENANCE_FK_IS_PARTIAL",
+      "missing_columns": [
+        "product_id",
+        "product_revision_digest",
+        "product_revision_id",
+        "rule_set_content_digest",
+        "rule_set_revision_id",
+        "specification_revision_digest",
+        "specification_revision_id"
+      ]
+    },
+    {
+      "type": "NO_CONTROLLED_SELECTION_CREATION_PATH",
+      "detail": {
+        "selection_run_insert": false,
+        "selection_candidate_insert": false,
+        "selection_result_insert": false,
+        "professional_review_insert": false,
+        "professional_initial_event_insert": false
+      }
+    },
+    {
+      "type": "NO_CONTROLLED_PROFESSIONAL_REVIEW_CREATION_PATH",
+      "detail": {
+        "selection_run_insert": false,
+        "selection_candidate_insert": false,
+        "selection_result_insert": false,
+        "professional_review_insert": false,
+        "professional_initial_event_insert": false
+      }
+    }
+  ],
+  "result": "FAIL",
+  "scope": "INDEPENDENT STATIC ANALYSIS ONLY; NO POSTGRESQL EXECUTION OR INTROSPECTION"
+}

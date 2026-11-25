@@ -3,8 +3,9 @@ import Link from "next/link";
 import {
   PERMISSIONS,
 } from "@/modules/access/permissions";
+import { loadActor } from "@/modules/access/actor";
 import { hasGlobalPermission } from "@/modules/access/policy";
-import { requireAdminPermission } from "@/modules/auth/page-session";
+import { requirePageSession } from "@/modules/auth/page-session";
 import {
   listCustomers,
   listProjects,
@@ -15,17 +16,14 @@ import { ProjectForm } from "./project-form";
 export const dynamic = "force-dynamic";
 
 export default async function ProjectsPage() {
-  const { actor } = await requireAdminPermission(
-    PERMISSIONS.PROJECT_READ,
-  );
-  const [projects, customers] = await Promise.all([
-    listProjects(actor),
-    listCustomers(),
-  ]);
+  const session = await requirePageSession("/admin/projects");
+  const actor = await loadActor(session.user.id);
   const canManage = hasGlobalPermission(
     actor,
     PERMISSIONS.PROJECT_MANAGE,
   );
+  const projects = await listProjects(actor);
+  const customers = canManage ? await listCustomers() : [];
 
   return (
     <div className="space-y-6">

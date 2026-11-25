@@ -11,6 +11,8 @@ import {
 import type { TestEnvironment } from "./env.js";
 
 const CUSTOMER_ROLE = "CUSTOMER";
+const CUSTOMER_ACCOUNT_ROLE = "CUSTOMER_ACCOUNT";
+const SALES_ROLE = "SALES";
 const TEST_CUSTOMER_ID = "phase3_test_customer";
 const TEST_PROJECT_ID = "phase3_test_project";
 const TEST_BUILDING_ID = "phase3_test_building";
@@ -124,6 +126,33 @@ export async function seedTestDatabase(
         });
       }
 
+      const customerAccountRole = await tx.role.upsert({
+        where: { code: CUSTOMER_ACCOUNT_ROLE },
+        create: {
+          code: CUSTOMER_ACCOUNT_ROLE,
+          name: "测试客户账户",
+          description: "允许客户创建自己的 DEMO 项目。",
+          isSystem: true,
+        },
+        update: {
+          name: "测试客户账户",
+          isSystem: true,
+        },
+      });
+      await tx.rolePermission.upsert({
+        where: {
+          roleId_permissionCode: {
+            roleId: customerAccountRole.id,
+            permissionCode: PERMISSIONS.PROJECT_CREATE,
+          },
+        },
+        create: {
+          roleId: customerAccountRole.id,
+          permissionCode: PERMISSIONS.PROJECT_CREATE,
+        },
+        update: {},
+      });
+
       const customerRole = await tx.role.upsert({
         where: { code: CUSTOMER_ROLE },
         create: {
@@ -158,6 +187,10 @@ export async function seedTestDatabase(
         PERMISSIONS.FILE_UPLOAD,
         PERMISSIONS.FILE_CONFIRM,
         PERMISSIONS.FILE_UNSCANNED_TEST_ACCESS,
+        PERMISSIONS.ADVISOR_USE,
+        PERMISSIONS.CATALOG_READ,
+        PERMISSIONS.SELECTION_RUN,
+        PERMISSIONS.SALES_HANDOFF_CREATE,
       ]) {
         await tx.rolePermission.upsert({
           where: {
@@ -168,6 +201,40 @@ export async function seedTestDatabase(
           },
           create: {
             roleId: customerRole.id,
+            permissionCode,
+          },
+          update: {},
+        });
+      }
+
+      const salesRole = await tx.role.upsert({
+        where: { code: SALES_ROLE },
+        create: {
+          code: SALES_ROLE,
+          name: "测试销售",
+          description: "仅能处理已分配项目的销售交接。",
+          isSystem: true,
+        },
+        update: {
+          name: "测试销售",
+          isSystem: true,
+        },
+      });
+      for (const permissionCode of [
+        PERMISSIONS.PROJECT_READ,
+        PERMISSIONS.CATALOG_READ,
+        PERMISSIONS.SELECTION_RUN,
+        PERMISSIONS.SALES_MANAGE,
+      ]) {
+        await tx.rolePermission.upsert({
+          where: {
+            roleId_permissionCode: {
+              roleId: salesRole.id,
+              permissionCode,
+            },
+          },
+          create: {
+            roleId: salesRole.id,
             permissionCode,
           },
           update: {},
@@ -228,6 +295,25 @@ export async function seedTestDatabase(
         },
       });
 
+      const salesUsername = env.TEST_SALES_USERNAME.toLowerCase();
+      const salesUser = await tx.user.upsert({
+        where: { email: `${salesUsername}@test.invalid` },
+        create: {
+          id: randomUUID(),
+          name: env.TEST_SALES_NAME,
+          email: `${salesUsername}@test.invalid`,
+          emailVerified: true,
+          username: salesUsername,
+          displayUsername: env.TEST_SALES_USERNAME,
+        },
+        update: {
+          name: env.TEST_SALES_NAME,
+          username: salesUsername,
+          displayUsername: env.TEST_SALES_USERNAME,
+          emailVerified: true,
+        },
+      });
+
       await ensureCredentialAccount(
         tx as PrismaClient,
         admin.id,
@@ -241,6 +327,11 @@ export async function seedTestDatabase(
       await ensureCredentialAccount(
         tx as PrismaClient,
         customer2User.id,
+        env.TEST_CUSTOMER_PASSWORD,
+      );
+      await ensureCredentialAccount(
+        tx as PrismaClient,
+        salesUser.id,
         env.TEST_CUSTOMER_PASSWORD,
       );
 
@@ -433,6 +524,26 @@ export async function seedTestDatabase(
         });
       }
 
+      for (const customerUserId of [customerUser.id, customer2User.id]) {
+        const accountAssignment = await tx.userRole.findFirst({
+          where: {
+            userId: customerUserId,
+            roleId: customerAccountRole.id,
+            scope: "GLOBAL",
+            projectId: null,
+          },
+        });
+        if (!accountAssignment) {
+          await tx.userRole.create({
+            data: {
+              userId: customerUserId,
+              roleId: customerAccountRole.id,
+              scope: "GLOBAL",
+            },
+          });
+        }
+      }
+
       const customer2Assignment = await tx.userRole.findFirst({
         where: {
           userId: customer2User.id,
@@ -449,6 +560,25 @@ export async function seedTestDatabase(
             roleId: customerRole.id,
             scope: "PROJECT",
             projectId: project2.id,
+          },
+        });
+      }
+
+      const salesAssignment = await tx.userRole.findFirst({
+        where: {
+          userId: salesUser.id,
+          roleId: salesRole.id,
+          scope: "PROJECT",
+          projectId: project.id,
+        },
+      });
+      if (!salesAssignment) {
+        await tx.userRole.create({
+          data: {
+            userId: salesUser.id,
+            roleId: salesRole.id,
+            scope: "PROJECT",
+            projectId: project.id,
           },
         });
       }

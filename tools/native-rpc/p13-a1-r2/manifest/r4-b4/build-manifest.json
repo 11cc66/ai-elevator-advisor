@@ -1,0 +1,346 @@
+{
+  "schemaVersion": 2,
+  "status": "B4 BUILD-ONLY / NATIVE RUNTIME NOT EXECUTED",
+  "generatedAtUtc": "2026-11-21T16:39:06.4098811Z",
+  "buildOnly": true,
+  "runtimeExecuted": false,
+  "target": "x64",
+  "maxRpcWireBytes": 24576,
+  "sources": [
+    {
+      "path": "idl/p13_authority.idl",
+      "length": 3317,
+      "sha256": "BBD1F448BACA827648A149232ABB0F83312DF8F91ED6418148A25D5C525D1640"
+    },
+    {
+      "path": "include/common/p13_types.h",
+      "length": 12889,
+      "sha256": "3A757203A35C0EBB009D40EFF17F37D4E10A6F4E45E0C8074DE5229BEFFBAB37"
+    },
+    {
+      "path": "include/authority/p13_operation_policy.h",
+      "length": 2945,
+      "sha256": "93C640739790CBBE5873789CCADBD142E03A303FB836E639699193F4CE122CBB"
+    },
+    {
+      "path": "include/authority/p13_authority_components.h",
+      "length": 4780,
+      "sha256": "E8D7C01D6A866528849CAF8F42175BC17AF64201B65BF29B88CF21C5EE0EA651"
+    },
+    {
+      "path": "include/authority/p13_authority_service.h",
+      "length": 2082,
+      "sha256": "3C1F311ECF40DC467E94EC04CB6C0601960AC6FCF61340C59DE10E9D64D4396A"
+    },
+    {
+      "path": "include/identity/p13_identity_adapter.h",
+      "length": 1160,
+      "sha256": "F4F48089510016446E0CCD0A76440EDDADDA0CE7FBD2730F510345CE4A390B52"
+    },
+    {
+      "path": "include/launch/p13_launch_components.h",
+      "length": 1957,
+      "sha256": "C3FE33C3E1D582D4991C2293BE62E8238030C1E6A36C76509074D463B179775D"
+    },
+    {
+      "path": "include/lifecycle/p13_lifecycle_adapters.h",
+      "length": 3237,
+      "sha256": "4B4DA68AF6F9BE46523EBD541ADDADB3993400865A9FCDA2392C82A8F0E6169A"
+    },
+    {
+      "path": "include/server/p13_server_runtime.h",
+      "length": 451,
+      "sha256": "9776DE9CDDAAA4FBCFCD1ECECEE22D0152B9366ED0F65E02D2B84E1E5C4801DD"
+    },
+    {
+      "path": "src/common/p13_types.cpp",
+      "length": 9852,
+      "sha256": "D0FD86286BAA8DE0F6CDA9A3B4DB5EC49918536E12037B7D7705BCE473E51D64"
+    },
+    {
+      "path": "src/identity/windows_identity_adapter.cpp",
+      "length": 14437,
+      "sha256": "E40D345399FF73ADD01CCD26CB3237E4CB56C5658899DA1EC9AFDD4FE2810334"
+    },
+    {
+      "path": "src/authority/p13_operation_policy.cpp",
+      "length": 7227,
+      "sha256": "F251288BF3B39F332B9935172A323C6C7939EC168B650A8DE8FE66555BD4F31C"
+    },
+    {
+      "path": "src/authority/p13_authority_components.cpp",
+      "length": 23262,
+      "sha256": "B3325792B1007FBF8B2C7FB7D7C0B83245904538DC8B4CA1DD9CE673022DE4B7"
+    },
+    {
+      "path": "src/launch/p13_launch_components.cpp",
+      "length": 10014,
+      "sha256": "A3F6B6EE4F049A87C5F64DE730EE39A591577BC56C7F9B23DCF93C6B59242DC0"
+    },
+    {
+      "path": "src/authority/p13_authority_service.cpp",
+      "length": 33243,
+      "sha256": "CBE598D2497520909FBC28FB8712F94C268150F91D5D0A8BD1C9F6A85F7972B4"
+    },
+    {
+      "path": "src/lifecycle/job_lifecycle_adapter.cpp",
+      "length": 13289,
+      "sha256": "F2B120CAC868905B3482FF68B584CC14E40469ECE7C42FD61A2E224717E80BF5"
+    },
+    {
+      "path": "src/lifecycle/sealed_adapter.cpp",
+      "length": 8091,
+      "sha256": "11BAF8029F03AA030AB95DBC6A128E0475C2E90023F6094757E84D30ABE849C3"
+    },
+    {
+      "path": "src/server/p13_managers.cpp",
+      "length": 4202,
+      "sha256": "5BFBB21FD7D23A0C7AD1B5DF57A3D2C135004172F7D9C65A92F5DBE6ACF0FC05"
+    },
+    {
+      "path": "src/server/p13_server_runtime.cpp",
+      "length": 3664,
+      "sha256": "64F1E511057831ACF142A7D5A3F032C73D28FD8235E42FD172269BA4AC135E74"
+    },
+    {
+      "path": "src/server/p13_server_main.cpp",
+      "length": 2062,
+      "sha256": "36F6194618531728B5AFF294BA0CE952E51094FCA0E95AE5AA488C726C76B588"
+    },
+    {
+      "path": "src/client/p13_client_runtime.cpp",
+      "length": 4492,
+      "sha256": "AC36E6D39B37D540B672E0E65C3F290A1844164A4B94E2C7A2AE7F8FE62E6EB5"
+    },
+    {
+      "path": "src/client/p13_client_main.cpp",
+      "length": 553,
+      "sha256": "9B16DE418E02EFE95665086130C293C7655A88CF5748030D841C943F8F2D4291"
+    },
+    {
+      "path": "tests/b4/native_test_sources.cpp",
+      "length": 10138,
+      "sha256": "BF62AF627C9CAEECD378B5EA35E865470C2DD1F113CA46F2064701D4131ABA84"
+    },
+    {
+      "path": "build-b4.ps1",
+      "length": 14928,
+      "sha256": "FCAF8812D4DA12C13085CFC0313139C98C09648FC632D1C7097DA8C402180677"
+    },
+    {
+      "path": "verify-static-b4.ps1",
+      "length": 8642,
+      "sha256": "6EE65CFB2D722BA7AE457E15C19734FBDF6825CE8EBEED32C2B2BA4CEDE62D5B"
+    },
+    {
+      "path": "README-B4.md",
+      "length": 809,
+      "sha256": "1B1BF808621830906DEDF1F040A6E0745A7CC416E83DFB5FA353AE043820A1F9"
+    },
+    {
+      "path": "manifest/r4-b4/operation-policy.json",
+      "length": 3870,
+      "sha256": "0E2466B2CE9D2138B16AD9F51CD3CE7C96F18E4306BBEEAFDF0434C6FB9D4A53"
+    },
+    {
+      "path": "manifest/r4-b4/test-traceability.json",
+      "length": 3980,
+      "sha256": "5F3D314132F19B70D336B16BC109E22924D6235B885C3C78819C73624CD6EAD5"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "bin/r4-b4/x64/p13_native_rpc_client.exe",
+      "length": 194560,
+      "sha256": "D7BFF66F519B3B3544D8D0CC3858567B1B4CE64BCEFC1C5DFB7DFFEC6BEBCD49"
+    },
+    {
+      "path": "bin/r4-b4/x64/p13_native_rpc_server.exe",
+      "length": 465920,
+      "sha256": "324D1C06BB5452FCE982119E3985AE5AB5B5A41A2D06013A709ECCD2266EEFB3"
+    },
+    {
+      "path": "bin/r4-b4/x64/p13_native_tests.exe",
+      "length": 591872,
+      "sha256": "AA2636BE8B53E26E79131E2C17FC863A6792D99976C01ED3A76EA7B5AF7EF3FA"
+    },
+    {
+      "path": "generated/r4-b4/x64/p13_authority_c.c",
+      "length": 17801,
+      "sha256": "CBD6EE7323010C378928A8F376D8EDC0EEC33DF6402D88DC45785DAA68BFC8E5"
+    },
+    {
+      "path": "generated/r4-b4/x64/p13_authority_s.c",
+      "length": 18102,
+      "sha256": "DB704D304CF37F7CC526720AF27B2A82CC86694B2020C57B67CBD7F15B8E7ECE"
+    },
+    {
+      "path": "generated/r4-b4/x64/p13_authority.h",
+      "length": 5646,
+      "sha256": "93A9A20AF3228F648D47B7CD8E56A33A09FAABE1ABEB26B9B513D8B35BB0D0CD"
+    },
+    {
+      "path": "logs/r4-b4/build/compile.log",
+      "length": 15135,
+      "sha256": "A9C35A705E7791C7D9066CDFC1415E84AC45C59A1DCDADC1E9BD9528D016788B"
+    },
+    {
+      "path": "logs/r4-b4/build/link.log",
+      "length": 3619,
+      "sha256": "1A8DEF6AF552756E6F41163BAD3CF9447A9F479F67CA08E8C6160B6632A7972B"
+    },
+    {
+      "path": "logs/r4-b4/build/midl.log",
+      "length": 1366,
+      "sha256": "B3BD5B012EFD47158E1A7D364C00DD97C4EA3D8AC7561D38EC5AA255511A4D92"
+    },
+    {
+      "path": "logs/r4-b4/static-review/binary-inspection.log",
+      "length": 47259,
+      "sha256": "F1EFFC6BC046EC0509E0195FDCD5B069A90255408490B38143F83BE603E91F10"
+    },
+    {
+      "path": "obj/r4-b4/x64/client_p13_client_main.obj",
+      "length": 57431,
+      "sha256": "A75E2F9F756C0189D336163727BE44BC3C379B68078EED76C097DBC89E746C71"
+    },
+    {
+      "path": "obj/r4-b4/x64/client_p13_client_runtime.obj",
+      "length": 78394,
+      "sha256": "13207FF79FDA71437734CEF94D97626026104E7587A4155C88AC516D842C7466"
+    },
+    {
+      "path": "obj/r4-b4/x64/client_p13_types.obj",
+      "length": 198912,
+      "sha256": "1EE8ACEF0532BCA6743CB69C72264D3189C4E5C8537684E8FD43F67DD2761978"
+    },
+    {
+      "path": "obj/r4-b4/x64/job_lifecycle_adapter.obj",
+      "length": 176910,
+      "sha256": "97153941D760D19633A0A158BC32FC33EA6D1AACE0583C8F91B34CEEEAB12450"
+    },
+    {
+      "path": "obj/r4-b4/x64/p13_authority_c.obj",
+      "length": 3368,
+      "sha256": "E6F4A91D46DC5CE9D748AD6E34DCC021D671E1B68F235264BF211983B740D0D1"
+    },
+    {
+      "path": "obj/r4-b4/x64/p13_authority_components.obj",
+      "length": 1579659,
+      "sha256": "186BAFEB9C4E81A50C87795BD664A6EC7B886C9722EC9B999A24D22B804FF2E3"
+    },
+    {
+      "path": "obj/r4-b4/x64/p13_authority_s.obj",
+      "length": 3147,
+      "sha256": "4428728A9E5983030CBED34CA1B6E88EDE59FF86F8723D2862341BB9D61B7DA4"
+    },
+    {
+      "path": "obj/r4-b4/x64/p13_authority_service.obj",
+      "length": 1161809,
+      "sha256": "51577D36B00682D643B56DDAA5E67E6D6BAA7EB1B36A7E4121C05D65551D8A72"
+    },
+    {
+      "path": "obj/r4-b4/x64/p13_launch_components.obj",
+      "length": 610557,
+      "sha256": "5998BECD1167030D23CE5504EDDACB40E57C026FD6789B4A92033B78D3C9077E"
+    },
+    {
+      "path": "obj/r4-b4/x64/p13_managers.obj",
+      "length": 122096,
+      "sha256": "864DFA409AABC97F0648011D47A2536A192F4C86950953C4099150BAA462D675"
+    },
+    {
+      "path": "obj/r4-b4/x64/p13_operation_policy.obj",
+      "length": 157417,
+      "sha256": "1B9AEA0296AD9B1473D5A13E26B13D49BDDDBE22D92F1FBCFE535D39E27CE09A"
+    },
+    {
+      "path": "obj/r4-b4/x64/p13_server_main.obj",
+      "length": 61545,
+      "sha256": "32119BAD3293D0AAC5631B5D3BAD17E2E4975E157B5CC25990E063D370F9F007"
+    },
+    {
+      "path": "obj/r4-b4/x64/p13_server_runtime.obj",
+      "length": 63507,
+      "sha256": "F36D3C98AD961329CC406089AD1F6D4633CFB98870F2738B919808F9D9E46605"
+    },
+    {
+      "path": "obj/r4-b4/x64/p13_types.obj",
+      "length": 198904,
+      "sha256": "1C0053F1A48984FF25E0DEACEC9996627F7F5C73CA2D949B86412AF007B45A6B"
+    },
+    {
+      "path": "obj/r4-b4/x64/sealed_adapter.obj",
+      "length": 110092,
+      "sha256": "25A22E966E09A7FD6CA19BEFA46098A56DDE4F59538D54713BF89E1E4F8AC21F"
+    },
+    {
+      "path": "obj/r4-b4/x64/test_job_lifecycle_adapter.obj",
+      "length": 176914,
+      "sha256": "24D9636ECC2FDA2BBFF41A3A9D8D90D3C545DB1F7A04CC74B406E61BF62B433D"
+    },
+    {
+      "path": "obj/r4-b4/x64/test_native_test_sources.obj",
+      "length": 872249,
+      "sha256": "23CC2F789C79293A36BF606653329736132E380364F14690EF152163FD980B10"
+    },
+    {
+      "path": "obj/r4-b4/x64/test_p13_authority_components.obj",
+      "length": 1579663,
+      "sha256": "E6FF92737E3856F4A4C55DC8EA2DF35B527E48C6878D5C2E2CB6C1C2B8706E13"
+    },
+    {
+      "path": "obj/r4-b4/x64/test_p13_authority_service.obj",
+      "length": 1161813,
+      "sha256": "5658AB4198CEDCC754850B3EABC557D7720155C741BA582740CEB7BECFD3C677"
+    },
+    {
+      "path": "obj/r4-b4/x64/test_p13_launch_components.obj",
+      "length": 610561,
+      "sha256": "909DE4C80435582A8D01EFC8D0447178CB3A58A36DD515231A38D8FD5F7B883B"
+    },
+    {
+      "path": "obj/r4-b4/x64/test_p13_operation_policy.obj",
+      "length": 157421,
+      "sha256": "F667C56A5B40A14166ED214194DD1CED2CEADF75795720F72A015AECBC805477"
+    },
+    {
+      "path": "obj/r4-b4/x64/test_p13_types.obj",
+      "length": 198908,
+      "sha256": "81B88E13CC0928420E391130A17C53FF8245D646D42DC942CA5E48FA4C4DE988"
+    },
+    {
+      "path": "obj/r4-b4/x64/test_sealed_adapter.obj",
+      "length": 110096,
+      "sha256": "F8099D02AAEA184C031462115CDE195174EC7009E372B237467F5E1117B4A357"
+    },
+    {
+      "path": "obj/r4-b4/x64/test_windows_identity_adapter.obj",
+      "length": 281865,
+      "sha256": "5D76FDF7CECFAEBF36DCC533660876E9C18D82D2C25B70EDB68E1F399BD3FAAE"
+    },
+    {
+      "path": "obj/r4-b4/x64/windows_identity_adapter.obj",
+      "length": 281861,
+      "sha256": "51188CDCF8044A8D5080E8A3F250500F4BD41081AC46FA146607D88004693C50"
+    }
+  ],
+  "pfr": {
+    "beforeCount": 46,
+    "beforeSha256": "0FF69EDFED875BA6310D27382562D1221C0E4EFD9B29625D4035FC06A2DFC1EC",
+    "afterCount": 46,
+    "afterSha256": "0FF69EDFED875BA6310D27382562D1221C0E4EFD9B29625D4035FC06A2DFC1EC",
+    "stable": true
+  },
+  "toolchain": {
+    "midlPath": "C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.26100.0\\x64\\midl.exe",
+    "clPath": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+    "linkPath": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\link.exe",
+    "dumpbinPath": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\dumpbin.exe",
+    "midlVersion": "8.01.0628 / 10.0.26100.9457",
+    "msvc": "14.44.35207",
+    "compiler": "19.44.35230.0",
+    "linker": "14.44.35230.0",
+    "sdk": "10.0.26100.0"
+  }
+}

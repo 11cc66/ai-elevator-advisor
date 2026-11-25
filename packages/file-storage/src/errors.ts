@@ -8,3 +8,10 @@ export class PrivateStorageError extends Error {
     this.name = "PrivateStorageError";
   }
 }
+
+export class LegacyStorageCleanupDisabledError extends Error {
+  constructor(public readonly operation: string) {
+    super("Legacy storage cleanup is disabled pending P13 cleanup proof.");
+    this.name = "LegacyStorageCleanupDisabledError";
+  }
+}

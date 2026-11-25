@@ -5,14 +5,26 @@ export {
   type AllowedDetectedFileType,
   type AllowedFileMimeType,
 } from "./file-type.js";
-export { PrivateStorageError } from "./errors.js";
+export {
+  LegacyStorageCleanupDisabledError,
+  PrivateStorageError,
+} from "./errors.js";
 export { sanitizeDisplayFilename } from "./filename.js";
 export {
-  LocalPrivateStorage,
+  createStorageReadCapability,
+  createStorageRuntimeCapability,
+  createStorageUploadWriteCapability,
   type IntegrityCheck,
-  type LocalPrivateStorageHooks,
-  type PrivateStorageAdapter,
+  type LegacyStorageCleanupCapability,
   type ReadVerifiedObjectInput,
+  type StorageReadCapability,
+  type StorageRuntimeCapability,
+  type StorageUploadWriteCapability,
   type VerifiedObjectRead,
   type WrittenUpload,
+} from "./capabilities.js";
+export {
+  LocalPrivateStorage,
+  type LocalPrivateStorageHooks,
 } from "./local-private-storage.js";
+export { QuarantinedLegacyStorageCleanup } from "./legacy-cleanup.js";

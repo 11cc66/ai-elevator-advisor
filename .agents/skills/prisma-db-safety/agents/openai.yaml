@@ -1,0 +1,7 @@
+interface:
+  display_name: "Prisma DB Safety"
+  short_description: "Design safe Prisma and PostgreSQL changes"
+  default_prompt: "Use $prisma-db-safety to design and verify this database change safely."
+
+policy:
+  allow_implicit_invocation: true

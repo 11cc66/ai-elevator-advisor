@@ -1,0 +1,18 @@
+{
+  "vectors": [
+    {"id":"LIM-REC-4096","input":{"recordCount":4096,"totalFields":0,"fieldsPerRecord":0,"recordBytes":0,"fieldBytes":0,"bodyBytes":0,"basisBytes":28},"expected":"ACCEPT"},
+    {"id":"LIM-REC-4097","input":{"recordCount":4097,"totalFields":0,"fieldsPerRecord":0,"recordBytes":0,"fieldBytes":0,"bodyBytes":0,"basisBytes":28},"expected":"REJECT","reason":"BASIS_RECORD_COUNT"},
+    {"id":"LIM-FIELD-65536","input":{"recordCount":0,"totalFields":65536,"fieldsPerRecord":0,"recordBytes":0,"fieldBytes":0,"bodyBytes":0,"basisBytes":28},"expected":"ACCEPT"},
+    {"id":"LIM-FIELD-65537","input":{"recordCount":0,"totalFields":65537,"fieldsPerRecord":0,"recordBytes":0,"fieldBytes":0,"bodyBytes":0,"basisBytes":28},"expected":"REJECT","reason":"BASIS_FIELD_COUNT"},
+    {"id":"LIM-RECORD-FIELDS-32","input":{"recordCount":0,"totalFields":0,"fieldsPerRecord":32,"recordBytes":0,"fieldBytes":0,"bodyBytes":0,"basisBytes":28},"expected":"ACCEPT"},
+    {"id":"LIM-RECORD-FIELDS-33","input":{"recordCount":0,"totalFields":0,"fieldsPerRecord":33,"recordBytes":0,"fieldBytes":0,"bodyBytes":0,"basisBytes":28},"expected":"REJECT","reason":"RECORD_FIELD_COUNT"},
+    {"id":"LIM-RECORD-BYTES-16874","input":{"recordCount":0,"totalFields":0,"fieldsPerRecord":0,"recordBytes":16874,"fieldBytes":0,"bodyBytes":0,"basisBytes":28},"expected":"ACCEPT"},
+    {"id":"LIM-RECORD-BYTES-16875","input":{"recordCount":0,"totalFields":0,"fieldsPerRecord":0,"recordBytes":16875,"fieldBytes":0,"bodyBytes":0,"basisBytes":28},"expected":"REJECT","reason":"RECORD_BYTES"},
+    {"id":"LIM-FIELD-BYTES-520","input":{"recordCount":0,"totalFields":0,"fieldsPerRecord":0,"recordBytes":0,"fieldBytes":520,"bodyBytes":0,"basisBytes":28},"expected":"ACCEPT"},
+    {"id":"LIM-FIELD-BYTES-521","input":{"recordCount":0,"totalFields":0,"fieldsPerRecord":0,"recordBytes":0,"fieldBytes":521,"bodyBytes":0,"basisBytes":28},"expected":"REJECT","reason":"FIELD_BYTES"},
+    {"id":"LIM-BODY-16777216","input":{"recordCount":0,"totalFields":0,"fieldsPerRecord":0,"recordBytes":0,"fieldBytes":0,"bodyBytes":16777216,"basisBytes":16777244},"expected":"ACCEPT"},
+    {"id":"LIM-BODY-16777217","input":{"recordCount":0,"totalFields":0,"fieldsPerRecord":0,"recordBytes":0,"fieldBytes":0,"bodyBytes":16777217,"basisBytes":16777245},"expected":"REJECT","reason":"BASIS_BODY_BYTES"},
+    {"id":"LIM-BASIS-16777244","input":{"recordCount":0,"totalFields":0,"fieldsPerRecord":0,"recordBytes":0,"fieldBytes":0,"bodyBytes":16777216,"basisBytes":16777244},"expected":"ACCEPT"},
+    {"id":"LIM-BASIS-16777245","input":{"recordCount":0,"totalFields":0,"fieldsPerRecord":0,"recordBytes":0,"fieldBytes":0,"bodyBytes":16777216,"basisBytes":16777245},"expected":"REJECT","reason":"BASIS_TOTAL_BYTES"}
+  ]
+}

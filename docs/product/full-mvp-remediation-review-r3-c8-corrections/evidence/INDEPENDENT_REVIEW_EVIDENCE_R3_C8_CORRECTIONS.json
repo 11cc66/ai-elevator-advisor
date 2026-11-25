@@ -1,0 +1,162 @@
+{
+  "review": "FULL-MVP-REMEDIATION-REVIEW-R3-C8-CORRECTIONS",
+  "scope": "INDEPENDENT STATIC REVIEW; CORRECTIONS TOOL NOT EXECUTED",
+  "manifest": {
+    "sha256": "0ACBBB3A4CB5F0439302E7F7109F0ECFDCFDE50843D74941E232F830ECE552A2",
+    "records": 24,
+    "unique_paths": 24,
+    "mismatches": 0,
+    "coverage_differences": 0
+  },
+  "checks": {
+    "manifest_hash": true,
+    "manifest_records_24": true,
+    "manifest_unique_paths_24": true,
+    "manifest_no_mismatch": true,
+    "manifest_coverage": true,
+    "price_canonical_complete": true,
+    "price_row_payload_complete": true,
+    "price_fact_fk": true,
+    "snapshot_price_fact_fk": true,
+    "requirement_assertion_fk": true,
+    "requirement_value_fk": true,
+    "catalog_event_fk": true,
+    "catalog_source_target_binding": false,
+    "professional_result_fk": true,
+    "professional_event_fk": true,
+    "professional_decision_mapping": true,
+    "professional_basis_digest": true,
+    "role_attributes": true,
+    "recursive_role_closure": true,
+    "membership_options": true,
+    "direct_connect": true,
+    "database_owner_rejected": false,
+    "protected_owner_closure_rejected": false,
+    "bootstrap_markers": true,
+    "bootstrap_root_principal_binding": false,
+    "bootstrap_recovery": false,
+    "request_epoch": true,
+    "request_replay_audit": true,
+    "request_session_branch": true,
+    "request_original_session_state_checked": true,
+    "professional_review_truncate": true,
+    "trusted_session_truncate": true,
+    "source_aux_pre_seal": true,
+    "source_aux_seal_call": true,
+    "grant_revoke_found_check": true,
+    "grant_active_scope_unique": true,
+    "c6_marker": true
+  },
+  "failed_checks": [
+    "catalog_source_target_binding",
+    "database_owner_rejected",
+    "protected_owner_closure_rejected",
+    "bootstrap_root_principal_binding",
+    "bootstrap_recovery"
+  ],
+  "foreign_key_count": 87,
+  "fk_arity_errors": [],
+  "object_inventory": {
+    "tables": 58,
+    "foreign_keys": 87,
+    "functions": 118,
+    "triggers": 137,
+    "roles": 26
+  },
+  "mutations": {
+    "price_canonical_amount_removed": {
+      "target_check": "price_canonical_complete",
+      "detected": true,
+      "new_failures": [
+        "price_canonical_complete"
+      ]
+    },
+    "price_row_amount_removed": {
+      "target_check": "price_row_payload_complete",
+      "detected": true,
+      "new_failures": [
+        "price_row_payload_complete"
+      ]
+    },
+    "requirement_assertion_fk_removed": {
+      "target_check": "requirement_assertion_fk",
+      "detected": true,
+      "new_failures": [
+        "requirement_assertion_fk"
+      ]
+    },
+    "requirement_value_fk_removed": {
+      "target_check": "requirement_value_fk",
+      "detected": true,
+      "new_failures": [
+        "requirement_value_fk"
+      ]
+    },
+    "catalog_event_fk_removed": {
+      "target_check": "catalog_event_fk",
+      "detected": true,
+      "new_failures": [
+        "catalog_event_fk"
+      ]
+    },
+    "professional_event_fk_removed": {
+      "target_check": "professional_event_fk",
+      "detected": true,
+      "new_failures": [
+        "professional_event_fk"
+      ]
+    },
+    "role_recursion_removed": {
+      "target_check": "recursive_role_closure",
+      "detected": true,
+      "new_failures": [
+        "recursive_role_closure"
+      ]
+    },
+    "direct_connect_check_removed": {
+      "target_check": "direct_connect",
+      "detected": true,
+      "new_failures": [
+        "direct_connect"
+      ]
+    },
+    "request_epoch_removed": {
+      "target_check": "request_epoch",
+      "detected": true,
+      "new_failures": [
+        "request_epoch"
+      ]
+    },
+    "professional_truncate_removed": {
+      "target_check": "professional_review_truncate",
+      "detected": true,
+      "new_failures": [
+        "professional_review_truncate"
+      ]
+    },
+    "trusted_session_truncate_removed": {
+      "target_check": "trusted_session_truncate",
+      "detected": true,
+      "new_failures": [
+        "trusted_session_truncate"
+      ]
+    },
+    "source_aux_call_removed": {
+      "target_check": "source_aux_seal_call",
+      "detected": true,
+      "new_failures": [
+        "source_aux_seal_call"
+      ]
+    },
+    "grant_missing_check_removed": {
+      "target_check": "grant_revoke_found_check",
+      "detected": true,
+      "new_failures": [
+        "grant_revoke_found_check"
+      ]
+    }
+  },
+  "all_mutations_detected": true,
+  "postgresql_grammar": "NOT VERIFIED \u2014 NO COMPATIBLE OFFLINE PARSER",
+  "postgresql_execution": "NOT EXECUTED \u2014 DATABASE NOT AUTHORIZED"
+}

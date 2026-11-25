@@ -1,0 +1,401 @@
+{
+  "scope": "INDEPENDENT STATIC REVIEW; NO DATABASE OR RUNTIME",
+  "guard": {
+    "python_parent_pid": 15976,
+    "python_parent_path": "C:\\Program Files\\WindowsApps\\OpenAI.CodexPrimaryRuntime.v26-1119-907-0_26.1119.907.0_x64__3k8sg7r9htsxt\\dependencies\\native\\powershell\\pwsh.exe",
+    "python_parent_creation_100ns": "134400024831375268",
+    "guard_token": "2bdb4349febc43f1823e553ae5e574d9"
+  },
+  "input_manifest": {
+    "records": 33,
+    "unique_paths": 33,
+    "actual_files_including_manifest": 34,
+    "covered_bytes": 935143,
+    "covered_lines": 22906,
+    "errors": [],
+    "coverage_differences": []
+  },
+  "manifest_hash": "45331850C8DB01CC4AE1DC58825AFFB9E5187259CD28F0B68D6BE32F9F6422E8",
+  "manifest_hash_expected": "45331850C8DB01CC4AE1DC58825AFFB9E5187259CD28F0B68D6BE32F9F6422E8",
+  "key_hashes": {
+    "P1_PRODUCT_REMEDIATION_DESIGN_R3_C8_CORRECTIONS_R2.md": "82D1E0977AF8F9BDE7EF09F28B3B856E9850A1D87EA27EEDBE62E441258CCB2B",
+    "DATABASE_COMPLETE_DDL_DESIGN_R3_C8_CORRECTIONS_R2.sql": "BC626FA93A13D9D2096B3213554AA1C6FFF256D9B66929AC0018BD7D62597E1D",
+    "DATABASE_FINAL_STATE_OVERLAY_R3_C8_CORRECTIONS_R2.sql": "A2A8E061F54041431C379E41A9CF7B8232EE7F70F52BF3E7BEEEAA447614FA9C",
+    "DATABASE_FUNCTION_SIGNATURE_REGISTRY_R3_C8_CORRECTIONS_R2.json": "1DB91C894349FACFE134A1D4237E58048D6A3337F8C0CBED3F96AE61AAADC8F0"
+  },
+  "key_hashes_expected": {
+    "P1_PRODUCT_REMEDIATION_DESIGN_R3_C8_CORRECTIONS_R2.md": "82D1E0977AF8F9BDE7EF09F28B3B856E9850A1D87EA27EEDBE62E441258CCB2B",
+    "DATABASE_COMPLETE_DDL_DESIGN_R3_C8_CORRECTIONS_R2.sql": "BC626FA93A13D9D2096B3213554AA1C6FFF256D9B66929AC0018BD7D62597E1D",
+    "DATABASE_FINAL_STATE_OVERLAY_R3_C8_CORRECTIONS_R2.sql": "A2A8E061F54041431C379E41A9CF7B8232EE7F70F52BF3E7BEEEAA447614FA9C",
+    "DATABASE_FUNCTION_SIGNATURE_REGISTRY_R3_C8_CORRECTIONS_R2.json": "1DB91C894349FACFE134A1D4237E58048D6A3337F8C0CBED3F96AE61AAADC8F0"
+  },
+  "key_hashes_match": true,
+  "object_inventory": {
+    "tables": 71,
+    "foreign_keys": 119,
+    "functions": 145,
+    "triggers": 169,
+    "roles": 26
+  },
+  "registry": {
+    "declared_count": 145,
+    "parsed_count": 145,
+    "missing_from_registry": [],
+    "extra_in_registry": [],
+    "owner_mismatches": [],
+    "return_mismatches": [],
+    "security_mismatches": [],
+    "registry_claims_no_missing_owners": true,
+    "registry_claims_no_unresolved_calls": true
+  },
+  "fk_errors": [
+    {
+      "source_table": "app.catalog_source_target_binding_r2",
+      "source_columns": [
+        "source_revision_id",
+        "source_evidence_object_id",
+        "source_content_digest"
+      ],
+      "target_table": "app.catalog_source_revision",
+      "target_columns": [
+        "id",
+        "evidence_object_id",
+        "raw_content_digest"
+      ],
+      "definition_kind": "create",
+      "line": 12464,
+      "reason": "target_not_unique_or_missing"
+    },
+    {
+      "source_table": "app.selection_professional_review_result",
+      "source_columns": [
+        "selection_candidate_result_id",
+        "candidate_id",
+        "result_row_digest"
+      ],
+      "target_table": "app.selection_candidate_result",
+      "target_columns": [
+        "id",
+        "candidate_id",
+        "row_digest"
+      ],
+      "definition_kind": "alter",
+      "line": 9719,
+      "reason": "missing_source_columns",
+      "columns": [
+        "candidate_id"
+      ]
+    },
+    {
+      "source_table": "app.sales_snapshot_professional_review_r3",
+      "source_columns": [
+        "selection_candidate_result_id",
+        "candidate_id",
+        "result_row_digest"
+      ],
+      "target_table": "app.selection_candidate_result",
+      "target_columns": [
+        "id",
+        "candidate_id",
+        "row_digest"
+      ],
+      "definition_kind": "alter",
+      "line": 9817,
+      "reason": "missing_source_columns",
+      "columns": [
+        "candidate_id"
+      ]
+    },
+    {
+      "source_table": "app.bootstrap_root_session_r2",
+      "source_columns": [
+        "bootstrap_id",
+        "bootstrap_generation",
+        "root_session_id",
+        "root_principal_id",
+        "root_role_name"
+      ],
+      "target_table": "app.bootstrap_lifecycle_r2",
+      "target_columns": [
+        "bootstrap_id",
+        "bootstrap_generation",
+        "root_session_id",
+        "root_principal_id",
+        "root_role_name"
+      ],
+      "definition_kind": "alter",
+      "line": 11284,
+      "reason": "missing_source_columns",
+      "columns": [
+        "root_session_id"
+      ]
+    },
+    {
+      "source_table": "app.catalog_review_event_r3",
+      "source_columns": [
+        "source_target_binding_id",
+        "source_target_binding_digest",
+        "source_revision_id",
+        "target_kind",
+        "product_id",
+        "product_revision_id",
+        "product_revision_digest",
+        "specification_revision_id",
+        "specification_revision_digest",
+        "price_revision_id",
+        "price_fact_digest",
+        "project_id"
+      ],
+      "target_table": "app.catalog_source_target_binding_r2",
+      "target_columns": [
+        "id",
+        "binding_digest",
+        "source_revision_id",
+        "target_kind",
+        "product_id",
+        "product_revision_id",
+        "product_revision_digest",
+        "specification_revision_id",
+        "specification_revision_digest",
+        "price_revision_id",
+        "price_fact_digest",
+        "project_id"
+      ],
+      "definition_kind": "alter",
+      "line": 12687,
+      "reason": "target_not_unique_or_missing"
+    }
+  ],
+  "trigger_errors": [],
+  "r2_function_count": 40,
+  "explicit_public_revoke_lines": [
+    "REVOKE ALL ON TABLE app.bootstrap_generation_r2 FROM PUBLIC;",
+    "REVOKE ALL ON TABLE app.bootstrap_lifecycle_r2 FROM PUBLIC;",
+    "REVOKE ALL ON TABLE app.bootstrap_request_ledger_r2 FROM PUBLIC;",
+    "REVOKE ALL ON TABLE app.bootstrap_approval_r2 FROM PUBLIC;",
+    "REVOKE ALL ON TABLE app.bootstrap_root_session_r2 FROM PUBLIC;",
+    "REVOKE ALL ON TABLE app.bootstrap_root_grant_r2 FROM PUBLIC;",
+    "REVOKE ALL ON TABLE app.bootstrap_event_r2 FROM PUBLIC;",
+    "REVOKE ALL ON TABLE app.bootstrap_recovery_r2 FROM PUBLIC;",
+    "REVOKE ALL ON TABLE app.bootstrap_recovery_approval_r2 FROM PUBLIC;",
+    "REVOKE ALL ON TABLE app.catalog_source_target_binding_r2 FROM PUBLIC;",
+    "REVOKE ALL ON TABLE app.session_termination_audit_r2 FROM PUBLIC;",
+    "REVOKE ALL ON TABLE app.command_result_recovery_r2 FROM PUBLIC;",
+    "REVOKE ALL ON TABLE app.command_result_recovery_approval_r2 FROM PUBLIC;",
+    "REVOKE ALL ON FUNCTION app_private.owner_closure_digest_r2(text) FROM PUBLIC;"
+  ],
+  "dangerous_new_functions_without_identity_or_public_revoke": [
+    {
+      "signature": "app.bootstrap_complete_root_r3(boolean, text)",
+      "line": 13869,
+      "risk": "SECURITY DEFINER with no internal caller identity check; PUBLIC EXECUTE must be explicitly revoked"
+    },
+    {
+      "signature": "app.revoke_trusted_session(text, text)",
+      "line": 13109,
+      "risk": "SECURITY DEFINER with no internal caller identity check; PUBLIC EXECUTE must be explicitly revoked"
+    },
+    {
+      "signature": "app_private.append_bootstrap_event_r2(text, boolean, bigint, text, text, text, text)",
+      "line": 11492,
+      "risk": "SECURITY DEFINER with no internal caller identity check; PUBLIC EXECUTE must be explicitly revoked"
+    },
+    {
+      "signature": "app_private.assert_protected_owner_closure_r2(text)",
+      "line": 10941,
+      "risk": "SECURITY DEFINER with no internal caller identity check; PUBLIC EXECUTE must be explicitly revoked"
+    },
+    {
+      "signature": "app_private.claim_bootstrap_request_r2(text, text, text, boolean, bigint, text, text, text)",
+      "line": 11424,
+      "risk": "SECURITY DEFINER with no internal caller identity check; PUBLIC EXECUTE must be explicitly revoked"
+    },
+    {
+      "signature": "app_private.complete_bootstrap_request_r2(text, text, text)",
+      "line": 11473,
+      "risk": "SECURITY DEFINER with no internal caller identity check; PUBLIC EXECUTE must be explicitly revoked"
+    },
+    {
+      "signature": "app_private.owner_closure_digest_r2(text)",
+      "line": 10869,
+      "risk": "SECURITY DEFINER with no internal caller identity check; PUBLIC EXECUTE must be explicitly revoked"
+    }
+  ],
+  "bootstrap_lifecycle_mutability_errors": [
+    {
+      "object": "bootstrap_approval_r2",
+      "line": 11200,
+      "reason": "historical approval references mutable current lifecycle row"
+    },
+    {
+      "object": "bootstrap_root_session_r2",
+      "line": 11284,
+      "reason": "historical root session references mutable current lifecycle row"
+    }
+  ],
+  "principal_activation_gaps": [
+    "bootstrap_complete_root_r3 does not verify the root Principal is ACTIVE"
+  ],
+  "recovery_idempotency_errors": [
+    {
+      "function": "approve_result_recovery",
+      "line": 13297,
+      "reason": "terminal state is checked before Request Ledger replay"
+    },
+    {
+      "function": "execute_result_recovery",
+      "line": 13375,
+      "reason": "terminal state is checked before Request Ledger replay"
+    },
+    {
+      "function": "bootstrap_execute_root_change_r2",
+      "line": 12220,
+      "reason": "old generation lookup occurs before Request Ledger replay"
+    }
+  ],
+  "one_time_result_recovery_constraint": false,
+  "owner_advisory_lock_present": false,
+  "owner_document_claims_advisory_lock": true,
+  "catalog_binding_actor_grant_fk": false,
+  "root_change_retry_state_gap": true,
+  "bootstrap_recovery_expiry_fields": [],
+  "self_validator_limitations": {
+    "mutation_count": 12,
+    "uses_text_markers": true,
+    "has_sql_parser": false,
+    "checks_public_explain": false
+  },
+  "open_decision_ids": {
+    "count": 57,
+    "unique": 57,
+    "ids": [
+      "OD-R2-01",
+      "OD-R2-02",
+      "OD-R2-03",
+      "OD-R2-04",
+      "OD-R2-05",
+      "OD-R2-06",
+      "OD-R2-07",
+      "OD-R2-08",
+      "OD-R2-09",
+      "OD-R2-10",
+      "OD-R2-11",
+      "OD-R2-12",
+      "OD-R2-13",
+      "OD-R2-14",
+      "OD-R2-15",
+      "OD-R2-16",
+      "OD-R2-17",
+      "OD-R2-18",
+      "OD-R2-19",
+      "OD-R2-20",
+      "OD-R3-01",
+      "OD-R3-02",
+      "OD-R3-03",
+      "OD-R3-04",
+      "OD-R3-05",
+      "OD-R3-06",
+      "OD-R3-07",
+      "OD-R3-08",
+      "OD-R3-09",
+      "OD-R3-C2-01",
+      "OD-R3-C2-02",
+      "OD-R3-C2-03",
+      "OD-R3-C2-04",
+      "OD-R3-C3-01",
+      "OD-R3-C3-02",
+      "OD-R3-C3-03",
+      "OD-R3-C3-04",
+      "OD-R3-C4-01",
+      "OD-R3-C4-02",
+      "OD-R3-C4-03",
+      "OD-R3-C4-04",
+      "OD-R3-C5-01",
+      "OD-R3-C5-02",
+      "OD-R3-C5-03",
+      "OD-R3-C5-04",
+      "OD-R3-C5-05",
+      "OD-R3-C6-01",
+      "OD-R3-C6-02",
+      "OD-R3-C6-03",
+      "OD-R3-C6-04",
+      "OD-R3-C6-05",
+      "OD-R3-C7-01",
+      "OD-R3-C7-02",
+      "OD-R3-C7-03",
+      "OD-R3-C7-04",
+      "OD-R3-C7-05",
+      "OD-R3-C7-06"
+    ]
+  },
+  "historical_manifests": {
+    "c8_design": {
+      "actual": "672D6206D06E4282F7C8684A3811654EEDDA72E52C55B6EDF2C324B5C131E853",
+      "expected": "672D6206D06E4282F7C8684A3811654EEDDA72E52C55B6EDF2C324B5C131E853",
+      "match": true
+    },
+    "c8_review": {
+      "actual": "2E895560FB3EDEEE938395E2626D0ECBE4939EA18D4A4A573FE159960E1BE611",
+      "expected": "2E895560FB3EDEEE938395E2626D0ECBE4939EA18D4A4A573FE159960E1BE611",
+      "match": true
+    },
+    "corrections_r1_design": {
+      "actual": "0ACBBB3A4CB5F0439302E7F7109F0ECFDCFDE50843D74941E232F830ECE552A2",
+      "expected": "0ACBBB3A4CB5F0439302E7F7109F0ECFDCFDE50843D74941E232F830ECE552A2",
+      "match": true
+    },
+    "corrections_r1_review": {
+      "actual": "E71FA990581B70357F3D4103C1BF29E442665DD695459C524CC723D41DA63465",
+      "expected": "E71FA990581B70357F3D4103C1BF29E442665DD695459C524CC723D41DA63465",
+      "match": true
+    },
+    "c7_design": {
+      "actual": "160A2BB8F93F473063225A2DBE04C8F807E456E1B50C4DF0D82B861B84BF3094",
+      "expected": "160A2BB8F93F473063225A2DBE04C8F807E456E1B50C4DF0D82B861B84BF3094",
+      "match": true
+    },
+    "c7_review": {
+      "actual": "5254758B8B47AEBB8E591CBB380F371398EE59035D48D239D02331E09FFCC118",
+      "expected": "5254758B8B47AEBB8E591CBB380F371398EE59035D48D239D02331E09FFCC118",
+      "match": true
+    }
+  },
+  "c6_snap_01": {
+    "records": 15,
+    "types": [
+      0,
+      1,
+      1,
+      2,
+      2,
+      3,
+      3,
+      4,
+      4,
+      5,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "bytes": 4036,
+    "sha256": "7D3CAC885F839594006650CC500FEF8A59D22AD151E6CB21567008D0D19519EB",
+    "hex_match": true,
+    "source_key_max_bytes": 362,
+    "basis_max_bytes": 512,
+    "sk_r2_registry_code": 3,
+    "pass": true
+  },
+  "r6_vector_evidence": {
+    "scalar": 23,
+    "scalar_total": 23,
+    "resource": 14,
+    "resource_total": 14,
+    "all_case_matrices_pass": true
+  },
+  "postgresql_grammar": "NOT VERIFIED \u2014 NO COMPATIBLE OFFLINE PARSER",
+  "postgresql_compilation": "NOT VERIFIED \u2014 DATABASE NOT AUTHORIZED",
+  "catalog_introspection": "NOT VERIFIED \u2014 DATABASE NOT AUTHORIZED",
+  "runtime": "NOT EXECUTED"
+}

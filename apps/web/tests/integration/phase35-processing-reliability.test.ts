@@ -30,7 +30,6 @@ import {
   PdfParserError,
 } from "../../../worker/src/pdf-parser-client";
 import { readWorkerEnv } from "../../../worker/src/config";
-import { createWorkerStorage } from "../../../worker/src/storage";
 import { loadActor, type Actor } from "../../src/modules/access/actor";
 import {
   completeUpload,
@@ -666,7 +665,7 @@ it("rechecks malware policy when recovering an expired task", async () => {
   expect(version.recognitionStatus).toBe("BLOCKED");
 });
 
-it("serializes maintenance and preserves objects referenced by active files", async () => {
+it("serializes maintenance without deleting referenced or orphan objects", async () => {
   const active = await upload(validPdf, "active-maintenance.pdf");
   const orphanStagingKey = `staging/maintenance-lock-${randomUUID()}.part`;
   const orphanObjectKey = `objects/maintenance-lock-${randomUUID()}.pdf`;
@@ -692,11 +691,9 @@ it("serializes maintenance and preserves objects referenced by active files", as
     send: vi.fn(async () => "job-id"),
     sendAfter: vi.fn(async () => "job-id"),
   } as unknown as PgBoss;
-  const workerStorage = createWorkerStorage(readWorkerEnv());
   const first = runFileMaintenance({
     prisma,
     boss: fakeBoss,
-    storage: workerStorage,
     env: readWorkerEnv(),
     testHooks: {
       afterLease: async () => {
@@ -711,7 +708,6 @@ it("serializes maintenance and preserves objects referenced by active files", as
     runFileMaintenance({
       prisma,
       boss: fakeBoss,
-      storage: workerStorage,
       env: readWorkerEnv(),
     }),
   ).resolves.toMatchObject({ skipped: true });
@@ -719,9 +715,7 @@ it("serializes maintenance and preserves objects referenced by active files", as
   gate.resolve();
   const result = await first;
   expect(result.skipped).toBe(false);
-  expect(result.removedOrphanObjects).toBeGreaterThanOrEqual(1);
-  expect(result.cleanupFailures).toBe(0);
-  await expect(fs.access(orphanPath)).rejects.toBeDefined();
+  await expect(fs.access(orphanPath)).resolves.toBeUndefined();
 
   const activeVersion = await prisma.fileVersion.findUniqueOrThrow({
     where: { id: active.version.id },

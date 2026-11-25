@@ -1,0 +1,44 @@
+{
+  "design": "FULL-MVP-REMEDIATION-DESIGN-R3-C8-CORRECTIONS",
+  "overall": "DESIGN COMPLETE — READY FOR INDEPENDENT REVIEW",
+  "counts": {
+    "p1_design_addressed": 4,
+    "p1_total": 4,
+    "p2_design_addressed": 4,
+    "p2_total": 4,
+    "p3_design_addressed": 3,
+    "p3_total": 3
+  },
+  "input": {
+    "c8_design_manifest": "672D6206D06E4282F7C8684A3811654EEDDA72E52C55B6EDF2C324B5C131E853",
+    "c8_review_manifest": "2E895560FB3EDEEE938395E2626D0ECBE4939EA18D4A4A573FE159960E1BE611",
+    "c8_manifest_result": "PASS",
+    "c8_review_manifest_result": "PASS"
+  },
+  "offline_validation": {
+    "invariants": "28/28 PASS",
+    "mutation_fixtures": "13/13 detected",
+    "tables": 58,
+    "foreign_keys": 87,
+    "functions": 118,
+    "roles": 26,
+    "triggers": 137,
+    "c6_records": 15,
+    "c6_bytes": 4036,
+    "c6_sha256": "7D3CAC885F839594006650CC500FEF8A59D22AD151E6CB21567008D0D19519EB",
+    "sql_grammar": "NOT VERIFIED"
+  },
+  "open_decisions": {
+    "classified": 57,
+    "approved": 0,
+    "still_open": 57
+  },
+  "postgresql_compilation": "NOT VERIFIED — DATABASE NOT AUTHORIZED",
+  "catalog_introspection": "NOT VERIFIED — DATABASE NOT AUTHORIZED",
+  "runtime_concurrency": "NOT VERIFIED — RUNTIME NOT AUTHORIZED",
+  "database": "NOT ACCESSED",
+  "storage": "NOT ACCESSED",
+  "runtime": "NOT EXECUTED",
+  "production": "NOT AUTHORIZED",
+  "git_writes": "NONE"
+}

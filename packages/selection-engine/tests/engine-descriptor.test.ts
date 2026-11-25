@@ -10,7 +10,7 @@ describe("selection engine package boundary", () => {
     expect(describeSelectionEngine()).toEqual({
       name: "deterministic-selection-engine",
       version: SELECTION_ENGINE_VERSION,
-      implemented: false,
+      implemented: true,
     });
   });
 });

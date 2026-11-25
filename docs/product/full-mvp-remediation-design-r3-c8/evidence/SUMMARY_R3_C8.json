@@ -1,0 +1,68 @@
+{
+  "c6": {
+    "records": 15,
+    "record_types": [
+      0,
+      1,
+      1,
+      2,
+      2,
+      3,
+      3,
+      4,
+      4,
+      5,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "bytes": 4036,
+    "sha256": "7D3CAC885F839594006650CC500FEF8A59D22AD151E6CB21567008D0D19519EB",
+    "hex_match": true,
+    "expected_record_types": [
+      0,
+      1,
+      1,
+      2,
+      2,
+      3,
+      3,
+      4,
+      4,
+      5,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "expected_bytes": 4036,
+    "expected_sha256": "7D3CAC885F839594006650CC500FEF8A59D22AD151E6CB21567008D0D19519EB",
+    "result": "PASS"
+  },
+  "r6": {
+    "scalar_total": 23,
+    "scalar_failed": 0,
+    "basis_limit_total": 14,
+    "basis_limit_failed": 0,
+    "result": "PASS"
+  },
+  "ddl": {
+    "tables": 50,
+    "functions": 78,
+    "roles": 16,
+    "foreign_keys": 64,
+    "required_digest_foreign_keys": 9,
+    "table_owner_assignments": 50,
+    "truncate_guarded_tables": 35,
+    "function_call_targets": 32,
+    "missing_business_functions": [],
+    "missing_digest_triggers": [],
+    "findings": [],
+    "result": "PASS",
+    "scope": "STATIC TEXT CONSISTENCY ONLY; NO SQL PARSER OR DATABASE EXECUTION"
+  },
+  "result": "PASS"
+}

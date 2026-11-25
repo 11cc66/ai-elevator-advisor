@@ -41,7 +41,7 @@ async function startWorker(
   const workerDirectory = path.join(workspaceRoot, "apps", "worker");
   const child = spawn(
     process.execPath,
-    ["--import", "tsx", "src/index.ts"],
+    ["--import", "tsx", "tests/test-worker-entry.ts"],
     {
       cwd: workerDirectory,
       env: {

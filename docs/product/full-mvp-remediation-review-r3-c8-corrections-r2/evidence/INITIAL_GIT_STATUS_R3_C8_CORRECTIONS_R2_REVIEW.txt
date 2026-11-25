@@ -1,0 +1,113 @@
+## feature/p1-3-storage-lifecycle-schema
+ M AGENTS.md
+ M apps/web/next-env.d.ts
+ M apps/web/next.config.ts
+ M apps/web/package.json
+ M apps/web/playwright.config.ts
+ M apps/web/scripts/test-db/env.ts
+ M apps/web/scripts/test-db/seed.ts
+ M apps/web/src/app/admin/layout.tsx
+ M apps/web/src/app/admin/projects/page.tsx
+ M apps/web/src/app/admin/projects/project-form.tsx
+ M apps/web/src/app/page.tsx
+ M apps/web/src/modules/access/permissions.ts
+ M apps/web/src/modules/access/policy.ts
+ M apps/web/src/modules/files/download-service.ts
+ M apps/web/src/modules/files/upload-service.ts
+ M apps/web/src/modules/projects/service.ts
+ M apps/web/src/server/files/storage.ts
+ M apps/web/tests/e2e/global-setup.ts
+ M apps/web/tests/e2e/phase3-test-account.spec.ts
+ M apps/web/tests/integration/phase32-upload-service.test.ts
+ M apps/web/tests/integration/phase34-file-processing.test.ts
+ M apps/web/tests/integration/phase35-lease-renewal.test.ts
+ M apps/web/tests/integration/phase35-processing-reliability.test.ts
+ M apps/worker/package.json
+ M apps/worker/src/config.ts
+ M apps/worker/src/file-maintenance.ts
+ M apps/worker/src/file-processing.ts
+ M apps/worker/src/index.ts
+ M apps/worker/src/storage.ts
+ M apps/worker/tsconfig.json
+ M package.json
+ M packages/contracts/src/index.ts
+ M packages/contracts/tests/project-contracts.test.ts
+ M packages/file-storage/src/errors.ts
+ M packages/file-storage/src/index.ts
+ M packages/file-storage/src/local-private-storage.ts
+ M packages/file-storage/tests/local-private-storage.test.ts
+ M packages/selection-engine/src/index.ts
+ M packages/selection-engine/tests/engine-descriptor.test.ts
+ M pnpm-lock.yaml
+ M prisma/schema.prisma
+?? $null
+?? .agents/
+?? apps/web/scripts/build-secure.ts
+?? apps/web/scripts/p13-build-audit/
+?? apps/web/scripts/p13-db-tests/
+?? apps/web/scripts/p13-deployment-evidence/
+?? apps/web/scripts/p13-startup-security/
+?? apps/web/scripts/p13-storage-delete-audit/
+?? apps/web/scripts/p13-storage-inventory/
+?? apps/web/scripts/seed-mvp-roles.ts
+?? apps/web/scripts/start-secure.mjs
+?? apps/web/src/app/admin/products/
+?? apps/web/src/app/admin/sales/
+?? apps/web/src/app/api/admin/catalog/
+?? apps/web/src/app/api/admin/sales/
+?? apps/web/src/app/api/catalog/
+?? apps/web/src/app/api/projects/[projectId]/advisor/
+?? apps/web/src/app/api/projects/[projectId]/requirements/
+?? apps/web/src/app/api/projects/[projectId]/sales-handoff/
+?? apps/web/src/app/api/projects/[projectId]/selection-runs/
+?? apps/web/src/app/api/projects/route.ts
+?? apps/web/src/app/catalog/
+?? apps/web/src/app/projects/[projectId]/advisor/
+?? apps/web/src/app/projects/[projectId]/page.tsx
+?? apps/web/src/app/projects/[projectId]/project-actions.tsx
+?? apps/web/src/app/projects/new/
+?? apps/web/src/app/projects/page.tsx
+?? apps/web/src/instrumentation.ts
+?? apps/web/src/modules/advisor/
+?? apps/web/src/modules/mvp/
+?? apps/web/src/modules/selection/
+?? apps/web/src/server/security/
+?? apps/web/tests/advisor-missing-fields.test.ts
+?? apps/web/tests/advisor-mock-provider.test.ts
+?? apps/web/tests/e2e/full-mvp-flow.spec.ts
+?? apps/web/tests/e2e/mvp-catalog-sales.spec.ts
+?? apps/web/tests/e2e/mvp-scenarios.spec.ts
+?? apps/web/tests/e2e/mvp-ui-routes.spec.ts
+?? apps/web/tests/legacy-cleanup-shutdown.test.ts
+?? apps/web/tests/mvp-project-access.test.ts
+?? apps/web/tests/p13-a-migration.test.ts
+?? apps/web/tests/p13-b-migration.test.ts
+?? apps/web/tests/p13-build-audit.test.ts
+?? apps/web/tests/p13-db-tooling.test.ts
+?? apps/web/tests/p13-deployment-evidence-bundle.test.ts
+?? apps/web/tests/p13-deployment-evidence.test.ts
+?? apps/web/tests/p13-release-security.test.ts
+?? apps/web/tests/p13-startup-powershell-resolver.test.ts
+?? apps/web/tests/p13-startup-preflight.test.ts
+?? apps/web/tests/p13-storage-delete-audit.test.ts
+?? apps/web/tests/p13-storage-inventory.test.ts
+?? apps/worker/scripts/
+?? apps/worker/src/bootstrap.ts
+?? apps/worker/src/security/
+?? apps/worker/src/worker-entry.ts
+?? apps/worker/tests/legacy-cleanup-shutdown.test.ts
+?? apps/worker/tests/storage-capability.test.ts
+?? apps/worker/tests/test-worker-entry.ts
+?? docs/architecture/
+?? docs/product/
+?? packages/authority-core/
+?? packages/build-integrity/
+?? packages/file-storage/src/capabilities.ts
+?? packages/file-storage/src/legacy-cleanup.ts
+?? packages/file-storage/tests/capabilities.test.ts
+?? packages/selection-engine/tests/selection-engine.test.ts
+?? prisma/migrations/20261117120000_phase37_p13_storage_lifecycle_schema/
+?? prisma/migrations/20261117130000_phase37_p13_lifecycle_insert_guard/
+?? prisma/migrations/20261117140000_phase37_p13_lifecycle_initial_state_guard/
+?? prisma/migrations/20261123130000_full_mvp_domain/
+?? tools/

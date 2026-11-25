@@ -1,0 +1,69 @@
+{
+  "guard": {
+    "verified": true,
+    "parent_pid": 3764,
+    "parent_path": "C:\\Program Files\\WindowsApps\\OpenAI.CodexPrimaryRuntime.v26-1119-907-0_26.1119.907.0_x64__3k8sg7r9htsxt\\dependencies\\native\\powershell\\pwsh.exe"
+  },
+  "manifest": {
+    "records": 28,
+    "unique": 28,
+    "actual_including_manifest": 29,
+    "coverage_differences": [],
+    "errors": []
+  },
+  "manifest_hash": "C5611B8807D50E3E02286A63B5C9E39F9F745684793C2FD5525DCA4537A71825",
+  "key_hashes": {
+    "P1_PRODUCT_REMEDIATION_DESIGN_R3_C8_CORRECTIONS_R3.md": "D7D96DEEDDB4AC3BE7E25ED72ADBC00DA878A7F3685F8B2E6CD4B267C60C4F0F",
+    "DATABASE_COMPLETE_DDL_DESIGN_R3_C8_CORRECTIONS_R3.sql": "C899D5F7C433F6936617033E76161FB0D33ACED85B6CFF004073FB0B012C67ED",
+    "DATABASE_FINAL_STATE_OVERLAY_R3_C8_CORRECTIONS_R3.sql": "8EC1CE0F6174225629F1A8EDD88CF7CDB77C0D296F6E3002C9418D5D655E4CEB",
+    "DATABASE_FUNCTION_SIGNATURE_REGISTRY_R3_C8_CORRECTIONS_R3.json": "CC08248DABE2B4301D05A3D14F93374F0E6913F572F6A0FB24A1EC584874A56E"
+  },
+  "key_hashes_match": true,
+  "objects": {
+    "tables": 72,
+    "foreign_keys": 123,
+    "unique_function_names": 153,
+    "triggers": 174,
+    "roles": 26
+  },
+  "registry": {
+    "signature_count": 154,
+    "missing_owners": [],
+    "unresolved_calls": []
+  },
+  "submitted_validation": {
+    "result": "PASS",
+    "formal_mutations_detected": 29,
+    "formal_mutations_total": 29,
+    "r2_mutations_detected": 12,
+    "r2_mutations_total": 12
+  },
+  "fk_errors": [],
+  "checks": {
+    "bootstrap_history_immutable": true,
+    "bootstrap_lifecycle_deferrable": true,
+    "issuance_attempt": true,
+    "approval_expiry_defined": true,
+    "approval_expiry_persists_state": false,
+    "catalog_source_pk": true,
+    "catalog_event_binding_pk": true,
+    "catalog_binding_triggers": true,
+    "professional_candidate_columns": true,
+    "professional_candidate_not_null": false,
+    "professional_candidate_triggers": true,
+    "final_public_revoke_after_functions": true,
+    "owner_advisory_lock": true,
+    "owner_validation_uses_r3": true,
+    "root_active_recheck": true,
+    "recovery_single_request": true,
+    "result_recovery_replay_first": true,
+    "catalog_actor_grant_fk": true
+  },
+  "postgresql_grammar": "NOT VERIFIED \u2014 NO COMPATIBLE OFFLINE PARSER",
+  "postgresql_compilation": "NOT VERIFIED \u2014 DATABASE NOT AUTHORIZED",
+  "runtime": "NOT EXECUTED",
+  "failed_checks": [
+    "approval_expiry_persists_state",
+    "professional_candidate_not_null"
+  ]
+}

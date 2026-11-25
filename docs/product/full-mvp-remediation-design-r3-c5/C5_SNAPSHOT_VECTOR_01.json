@@ -1,0 +1,340 @@
+{
+  "fixtureId": "C5-SNAP-01",
+  "registryVersion": "SNAPSHOT-R2",
+  "protocolVersion": "R3-BASIS-1-R5",
+  "stableKeyEncodingVersion": "SK-R2",
+  "recordTypeDefinitions": {
+    "0": {
+      "name": "HEADER",
+      "tuple": [
+        ["snapshotId", "ASCII_ID"]
+      ]
+    },
+    "1": {
+      "name": "REQUIREMENT_FIELD",
+      "tuple": [
+        ["requirementVersionId", "ASCII_ID"],
+        ["fieldKey", "ASCII_KEY"]
+      ]
+    },
+    "2": {
+      "name": "CANDIDATE",
+      "tuple": [
+        ["candidateId", "ASCII_ID"]
+      ]
+    },
+    "3": {
+      "name": "PARAMETER",
+      "tuple": [
+        ["candidateId", "ASCII_ID"],
+        ["parameterKey", "ASCII_KEY"]
+      ]
+    },
+    "4": {
+      "name": "PRICE",
+      "tuple": [
+        ["candidateId", "ASCII_ID"],
+        ["priceRevisionId", "ASCII_ID"]
+      ]
+    },
+    "5": {
+      "name": "SOURCE_REVISION",
+      "tuple": [
+        ["sourceRevisionId", "ASCII_ID"]
+      ]
+    },
+    "6": {
+      "name": "CATALOG_REVIEW",
+      "tuple": [
+        ["catalogReviewId", "ASCII_ID"]
+      ]
+    },
+    "7": {
+      "name": "PROFESSIONAL_REVIEW",
+      "tuple": [
+        ["professionalReviewId", "ASCII_ID"],
+        ["eventSequence", "INT64"]
+      ]
+    },
+    "8": {
+      "name": "WARNING",
+      "tuple": [
+        ["candidateId", "ASCII_ID"],
+        ["warningSequence", "INT64"]
+      ]
+    },
+    "9": {
+      "name": "MISSING_FIELD",
+      "tuple": [
+        ["candidateId", "ASCII_ID"],
+        ["fieldKey", "ASCII_KEY"]
+      ]
+    }
+  },
+  "records": [
+    {
+      "recordType": 0,
+      "rowId": "header-1",
+      "stableKeyTuple": [
+        ["snapshotId", "ASCII_ID", "snapshot-1"]
+      ],
+      "fields": [
+        {"tag": 1, "name": "snapshotId", "type": "CANONICAL_ID", "value": "snapshot-1"},
+        {"tag": 2, "name": "caseId", "type": "CANONICAL_ID", "value": "case-1"},
+        {"tag": 3, "name": "projectId", "type": "CANONICAL_ID", "value": "project-1"},
+        {"tag": 4, "name": "requirementId", "type": "CANONICAL_ID", "value": "requirement-1"},
+        {"tag": 5, "name": "requirementVersionId", "type": "CANONICAL_ID", "value": "reqver-1"},
+        {"tag": 6, "name": "selectionRunId", "type": "CANONICAL_ID", "value": "run-1"},
+        {"tag": 7, "name": "registryRevision", "type": "ENUM", "value": "SNAPSHOT-R2"},
+        {"tag": 8, "name": "protocolRevision", "type": "ENUM", "value": "R3-BASIS-1-R5"},
+        {"tag": 9, "name": "stableKeyEncoding", "type": "ENUM", "value": "SK-R2"}
+      ]
+    },
+    {
+      "recordType": 1,
+      "rowId": "rf-1",
+      "stableKeyTuple": [
+        ["requirementVersionId", "ASCII_ID", "reqver-1"],
+        ["fieldKey", "ASCII_KEY", "floorCount"]
+      ],
+      "fields": [
+        {"tag": 1, "name": "fieldKey", "type": "TEXT", "value": "floorCount"},
+        {"tag": 2, "name": "valueType", "type": "ENUM", "value": "INTEGER"},
+        {"tag": 3, "name": "value", "type": "INTEGER", "value": 8},
+        {"tag": 4, "name": "unit", "type": "TEXT", "value": "floor"},
+        {"tag": 5, "name": "fieldStatus", "type": "ENUM", "value": "CONFIRMED"},
+        {"tag": 6, "name": "sourceFieldValueId", "type": "CANONICAL_ID", "value": "fv-floor-1"},
+        {"tag": 7, "name": "sourceKind", "type": "ENUM", "value": "USER_ASSERTION"},
+        {"tag": 8, "name": "sourceEntityType", "type": "ENUM", "value": "REQUIREMENT_FIELD_ASSERTION"},
+        {"tag": 9, "name": "sourceEntityId", "type": "CANONICAL_ID", "value": "assertion-1"},
+        {"tag": 10, "name": "sourceAuxId", "type": "NULL", "value": null},
+        {
+          "tag": 11,
+          "name": "sourceKey",
+          "type": "BYTES",
+          "derive": "SOURCE_KEY_R3",
+          "sourceComponents": [
+            ["sourceKind", "ASCII", "USER_ASSERTION"],
+            ["sourceEntityType", "ASCII", "REQUIREMENT_FIELD_ASSERTION"],
+            ["sourceEntityId", "ASCII", "assertion-1"],
+            ["sourceAuxId", "UTF8_NULLABLE", null]
+          ]
+        }
+      ]
+    },
+    {
+      "recordType": 1,
+      "rowId": "rf-2",
+      "stableKeyTuple": [
+        ["requirementVersionId", "ASCII_ID", "reqver-1"],
+        ["fieldKey", "ASCII_KEY", "budgetMax"]
+      ],
+      "fields": [
+        {"tag": 1, "name": "fieldKey", "type": "TEXT", "value": "budgetMax"},
+        {"tag": 2, "name": "valueType", "type": "ENUM", "value": "INTEGER"},
+        {"tag": 3, "name": "value", "type": "INTEGER", "value": 500000},
+        {"tag": 4, "name": "unit", "type": "TEXT", "value": "CNY"},
+        {"tag": 5, "name": "fieldStatus", "type": "ENUM", "value": "CONFIRMED"},
+        {"tag": 6, "name": "sourceFieldValueId", "type": "CANONICAL_ID", "value": "fv-budget-1"},
+        {"tag": 7, "name": "sourceKind", "type": "ENUM", "value": "USER_ASSERTION"},
+        {"tag": 8, "name": "sourceEntityType", "type": "ENUM", "value": "REQUIREMENT_FIELD_ASSERTION"},
+        {"tag": 9, "name": "sourceEntityId", "type": "CANONICAL_ID", "value": "assertion-2"},
+        {"tag": 10, "name": "sourceAuxId", "type": "NULL", "value": null},
+        {
+          "tag": 11,
+          "name": "sourceKey",
+          "type": "BYTES",
+          "derive": "SOURCE_KEY_R3",
+          "sourceComponents": [
+            ["sourceKind", "ASCII", "USER_ASSERTION"],
+            ["sourceEntityType", "ASCII", "REQUIREMENT_FIELD_ASSERTION"],
+            ["sourceEntityId", "ASCII", "assertion-2"],
+            ["sourceAuxId", "UTF8_NULLABLE", null]
+          ]
+        }
+      ]
+    },
+    {
+      "recordType": 2,
+      "rowId": "cand-1",
+      "stableKeyTuple": [
+        ["candidateId", "ASCII_ID", "candidate-1"]
+      ],
+      "fields": [
+        {"tag": 1, "name": "candidateId", "type": "CANONICAL_ID", "value": "candidate-1"},
+        {"tag": 2, "name": "productRevisionId", "type": "CANONICAL_ID", "value": "product-rev-1"},
+        {"tag": 3, "name": "specificationRevisionId", "type": "CANONICAL_ID", "value": "spec-rev-1"},
+        {"tag": 4, "name": "priceRevisionId", "type": "CANONICAL_ID", "value": "price-rev-1"},
+        {"tag": 5, "name": "technicalStatus", "type": "ENUM", "value": "TECHNICALLY_ELIGIBLE"},
+        {"tag": 6, "name": "commercialStatus", "type": "ENUM", "value": "PRICE_VALID"},
+        {"tag": 7, "name": "trustStatus", "type": "ENUM", "value": "TRUSTED"},
+        {"tag": 8, "name": "professionalReviewStatus", "type": "ENUM", "value": "APPROVED"},
+        {"tag": 9, "name": "overallStatus", "type": "ENUM", "value": "OPERATIONAL"}
+      ]
+    },
+    {
+      "recordType": 2,
+      "rowId": "cand-2",
+      "stableKeyTuple": [
+        ["candidateId", "ASCII_ID", "candidate-2"]
+      ],
+      "fields": [
+        {"tag": 1, "name": "candidateId", "type": "CANONICAL_ID", "value": "candidate-2"},
+        {"tag": 2, "name": "productRevisionId", "type": "CANONICAL_ID", "value": "product-rev-2"},
+        {"tag": 3, "name": "specificationRevisionId", "type": "CANONICAL_ID", "value": "spec-rev-2"},
+        {"tag": 4, "name": "priceRevisionId", "type": "CANONICAL_ID", "value": "price-rev-2"},
+        {"tag": 5, "name": "technicalStatus", "type": "ENUM", "value": "TECHNICALLY_ELIGIBLE"},
+        {"tag": 6, "name": "commercialStatus", "type": "ENUM", "value": "PRICE_EXPIRED"},
+        {"tag": 7, "name": "trustStatus", "type": "ENUM", "value": "TRUSTED"},
+        {"tag": 8, "name": "professionalReviewStatus", "type": "ENUM", "value": "APPROVED"},
+        {"tag": 9, "name": "overallStatus", "type": "ENUM", "value": "REQUIRES_QUOTE"}
+      ]
+    },
+    {
+      "recordType": 3,
+      "rowId": "param-1",
+      "stableKeyTuple": [
+        ["candidateId", "ASCII_ID", "candidate-1"],
+        ["parameterKey", "ASCII_KEY", "capacityKg"]
+      ],
+      "fields": [
+        {"tag": 1, "name": "candidateId", "type": "CANONICAL_ID", "value": "candidate-1"},
+        {"tag": 2, "name": "parameterKey", "type": "TEXT", "value": "capacityKg"},
+        {"tag": 3, "name": "valueType", "type": "ENUM", "value": "INTEGER"},
+        {"tag": 4, "name": "value", "type": "INTEGER", "value": 1000},
+        {"tag": 5, "name": "unit", "type": "TEXT", "value": "kg"},
+        {"tag": 6, "name": "sourceRevisionId", "type": "CANONICAL_ID", "value": "source-rev-1"}
+      ]
+    },
+    {
+      "recordType": 3,
+      "rowId": "param-2",
+      "stableKeyTuple": [
+        ["candidateId", "ASCII_ID", "candidate-1"],
+        ["parameterKey", "ASCII_KEY", "speedMps"]
+      ],
+      "fields": [
+        {"tag": 1, "name": "candidateId", "type": "CANONICAL_ID", "value": "candidate-1"},
+        {"tag": 2, "name": "parameterKey", "type": "TEXT", "value": "speedMps"},
+        {"tag": 3, "name": "valueType", "type": "ENUM", "value": "DECIMAL"},
+        {"tag": 4, "name": "value", "type": "DECIMAL", "value": "1.75"},
+        {"tag": 5, "name": "unit", "type": "TEXT", "value": "m/s"},
+        {"tag": 6, "name": "sourceRevisionId", "type": "CANONICAL_ID", "value": "source-rev-1"}
+      ]
+    },
+    {
+      "recordType": 4,
+      "rowId": "price-1",
+      "stableKeyTuple": [
+        ["candidateId", "ASCII_ID", "candidate-1"],
+        ["priceRevisionId", "ASCII_ID", "price-rev-1"]
+      ],
+      "fields": [
+        {"tag": 1, "name": "candidateId", "type": "CANONICAL_ID", "value": "candidate-1"},
+        {"tag": 2, "name": "priceRevisionId", "type": "CANONICAL_ID", "value": "price-rev-1"},
+        {"tag": 3, "name": "amountMinor", "type": "INTEGER", "value": 420000},
+        {"tag": 4, "name": "currency", "type": "ENUM", "value": "CNY"},
+        {"tag": 5, "name": "taxBasis", "type": "ENUM", "value": "INCLUDED"},
+        {"tag": 6, "name": "applicability", "type": "ENUM", "value": "REGION_DEMO"}
+      ]
+    },
+    {
+      "recordType": 4,
+      "rowId": "price-2",
+      "stableKeyTuple": [
+        ["candidateId", "ASCII_ID", "candidate-2"],
+        ["priceRevisionId", "ASCII_ID", "price-rev-2"]
+      ],
+      "fields": [
+        {"tag": 1, "name": "candidateId", "type": "CANONICAL_ID", "value": "candidate-2"},
+        {"tag": 2, "name": "priceRevisionId", "type": "CANONICAL_ID", "value": "price-rev-2"},
+        {"tag": 3, "name": "amountMinor", "type": "INTEGER", "value": 580000},
+        {"tag": 4, "name": "currency", "type": "ENUM", "value": "CNY"},
+        {"tag": 5, "name": "taxBasis", "type": "ENUM", "value": "INCLUDED"},
+        {"tag": 6, "name": "applicability", "type": "ENUM", "value": "REGION_DEMO"}
+      ]
+    },
+    {
+      "recordType": 5,
+      "rowId": "src-1",
+      "stableKeyTuple": [
+        ["sourceRevisionId", "ASCII_ID", "source-rev-1"]
+      ],
+      "fields": [
+        {"tag": 1, "name": "sourceRevisionId", "type": "CANONICAL_ID", "value": "source-rev-1"},
+        {"tag": 2, "name": "evidenceObjectId", "type": "CANONICAL_ID", "value": "evidence-1"},
+        {"tag": 3, "name": "rawContentDigest", "type": "TEXT", "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"},
+        {"tag": 4, "name": "sourceKind", "type": "ENUM", "value": "PRODUCT_DOCUMENT"}
+      ]
+    },
+    {
+      "recordType": 5,
+      "rowId": "src-2",
+      "stableKeyTuple": [
+        ["sourceRevisionId", "ASCII_ID", "source-rev-2"]
+      ],
+      "fields": [
+        {"tag": 1, "name": "sourceRevisionId", "type": "CANONICAL_ID", "value": "source-rev-2"},
+        {"tag": 2, "name": "evidenceObjectId", "type": "CANONICAL_ID", "value": "evidence-2"},
+        {"tag": 3, "name": "rawContentDigest", "type": "TEXT", "value": "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"},
+        {"tag": 4, "name": "sourceKind", "type": "ENUM", "value": "PRICE_SHEET"}
+      ]
+    },
+    {
+      "recordType": 6,
+      "rowId": "crev-1",
+      "stableKeyTuple": [
+        ["catalogReviewId", "ASCII_ID", "creview-1"]
+      ],
+      "fields": [
+        {"tag": 1, "name": "catalogReviewId", "type": "CANONICAL_ID", "value": "creview-1"},
+        {"tag": 2, "name": "targetRevisionId", "type": "CANONICAL_ID", "value": "spec-rev-1"},
+        {"tag": 3, "name": "policyRevisionId", "type": "CANONICAL_ID", "value": "catalog-policy-1"},
+        {"tag": 4, "name": "decision", "type": "ENUM", "value": "APPROVE"},
+        {"tag": 5, "name": "reviewedAt", "type": "TIMESTAMP", "value": 1763942400000}
+      ]
+    },
+    {
+      "recordType": 7,
+      "rowId": "prev-1",
+      "stableKeyTuple": [
+        ["professionalReviewId", "ASCII_ID", "review-1"],
+        ["eventSequence", "INT64", 1]
+      ],
+      "fields": [
+        {"tag": 1, "name": "professionalReviewEventId", "type": "CANONICAL_ID", "value": "event-1"},
+        {"tag": 2, "name": "professionalReviewId", "type": "CANONICAL_ID", "value": "review-1"},
+        {"tag": 3, "name": "policyRevisionId", "type": "CANONICAL_ID", "value": "professional-policy-1"},
+        {"tag": 4, "name": "decision", "type": "ENUM", "value": "APPROVED"},
+        {"tag": 5, "name": "basisDigest", "type": "TEXT", "value": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC"}
+      ]
+    },
+    {
+      "recordType": 8,
+      "rowId": "warn-1",
+      "stableKeyTuple": [
+        ["candidateId", "ASCII_ID", "candidate-1"],
+        ["warningSequence", "INT64", 1]
+      ],
+      "fields": [
+        {"tag": 1, "name": "candidateId", "type": "CANONICAL_ID", "value": "candidate-1"},
+        {"tag": 2, "name": "warningSequence", "type": "INTEGER", "value": 1},
+        {"tag": 3, "name": "warningCode", "type": "ENUM", "value": "BUDGET_REFERENCE"},
+        {"tag": 4, "name": "warningText", "type": "TEXT", "value": "预算为参考值"}
+      ]
+    },
+    {
+      "recordType": 9,
+      "rowId": "missing-1",
+      "stableKeyTuple": [
+        ["candidateId", "ASCII_ID", "candidate-1"],
+        ["fieldKey", "ASCII_KEY", "pitDepthMm"]
+      ],
+      "fields": [
+        {"tag": 1, "name": "candidateId", "type": "CANONICAL_ID", "value": "candidate-1"},
+        {"tag": 2, "name": "fieldKey", "type": "TEXT", "value": "pitDepthMm"},
+        {"tag": 3, "name": "reasonCode", "type": "ENUM", "value": "INSUFFICIENT_DATA"}
+      ]
+    }
+  ]
+}

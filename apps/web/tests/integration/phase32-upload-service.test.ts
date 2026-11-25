@@ -3,9 +3,12 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { Readable } from "node:stream";
 
-import { LocalPrivateStorage } from "@elevator/file-storage";
+import {
+  LegacyStorageCleanupDisabledError,
+  LocalPrivateStorage,
+} from "@elevator/file-storage";
 import { PrismaClient } from "@prisma/client";
-import { afterAll, beforeAll, expect, it } from "vitest";
+import { afterAll, beforeAll, expect, it, vi } from "vitest";
 
 import { loadActor, type Actor } from "../../src/modules/access/actor";
 import {
@@ -79,7 +82,7 @@ it("completes a streamed upload into immutable private storage", async () => {
   expect(integrity.valid).toBe(true);
 });
 
-it("cleans staging files for expired upload intents", async () => {
+it("fails closed for expired upload intents without deleting staging", async () => {
   const stagingKey = `staging/expired-${randomUUID()}.part`;
   await storage.writeToStaging(
     stagingKey,
@@ -104,21 +107,24 @@ it("cleans staging files for expired upload intents", async () => {
     },
   });
 
-  const cleaned = await cleanupExpiredUploadIntents(storage);
-  expect(cleaned).toBeGreaterThan(0);
+  await expect(
+    cleanupExpiredUploadIntents(storage),
+  ).rejects.toBeInstanceOf(LegacyStorageCleanupDisabledError);
 
-  const expired = await prisma.fileUploadIntent.findUniqueOrThrow({
+  const retained = await prisma.fileUploadIntent.findUniqueOrThrow({
     where: { id: intent.id },
   });
-  expect(expired.status).toBe("EXPIRED");
+  expect(retained.status).toBe("PENDING");
   await expect(
     fs.access(
       path.join(process.env.PRIVATE_STORAGE_ROOT!, stagingKey),
     ),
-  ).rejects.toBeDefined();
+  ).resolves.toBeUndefined();
+  expect("removeStaging" in storage).toBe(false);
+  expect("removeObject" in storage).toBe(false);
 });
 
-it("cleans an orphan object after an interrupted completion", async () => {
+it("fails closed for interrupted completion and preserves the object", async () => {
   const stagingKey = `staging/interrupted-${randomUUID()}.part`;
   const objectKey = `objects/interrupted-${randomUUID()}.bin`;
   await storage.writeToStaging(
@@ -155,15 +161,19 @@ it("cleans an orphan object after an interrupted completion", async () => {
     ),
   ).resolves.toBeUndefined();
 
-  await cleanupExpiredUploadIntents(storage);
+  await expect(
+    cleanupExpiredUploadIntents(storage),
+  ).rejects.toBeInstanceOf(LegacyStorageCleanupDisabledError);
 
-  const expired = await prisma.fileUploadIntent.findUniqueOrThrow({
+  const retained = await prisma.fileUploadIntent.findUniqueOrThrow({
     where: { id: intent.id },
   });
-  expect(expired.status).toBe("EXPIRED");
+  expect(retained.status).toBe("UPLOADING");
   await expect(
     fs.access(
       path.join(process.env.PRIVATE_STORAGE_ROOT!, objectKey),
     ),
-  ).rejects.toBeDefined();
+  ).resolves.toBeUndefined();
+  expect("removeStaging" in storage).toBe(false);
+  expect("removeObject" in storage).toBe(false);
 });

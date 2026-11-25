@@ -1,0 +1,15 @@
+{
+  "name": "@elevator/build-integrity",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "typescript": "5.9.3"
+  },
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "import": "./src/index.mjs"
+    }
+  }
+}

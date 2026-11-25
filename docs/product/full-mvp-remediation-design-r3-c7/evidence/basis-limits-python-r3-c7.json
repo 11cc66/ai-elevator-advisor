@@ -1,0 +1,105 @@
+{
+  "runtime": "python",
+  "total": 14,
+  "failed": 0,
+  "results": [
+    {
+      "id": "LIM-REC-4096",
+      "expected": "ACCEPT",
+      "observed": "ACCEPT",
+      "reason": "OK",
+      "result": "PASS"
+    },
+    {
+      "id": "LIM-REC-4097",
+      "expected": "REJECT",
+      "observed": "REJECT",
+      "reason": "BASIS_RECORD_COUNT",
+      "result": "PASS"
+    },
+    {
+      "id": "LIM-FIELD-65536",
+      "expected": "ACCEPT",
+      "observed": "ACCEPT",
+      "reason": "OK",
+      "result": "PASS"
+    },
+    {
+      "id": "LIM-FIELD-65537",
+      "expected": "REJECT",
+      "observed": "REJECT",
+      "reason": "BASIS_FIELD_COUNT",
+      "result": "PASS"
+    },
+    {
+      "id": "LIM-RECORD-FIELDS-32",
+      "expected": "ACCEPT",
+      "observed": "ACCEPT",
+      "reason": "OK",
+      "result": "PASS"
+    },
+    {
+      "id": "LIM-RECORD-FIELDS-33",
+      "expected": "REJECT",
+      "observed": "REJECT",
+      "reason": "RECORD_FIELD_COUNT",
+      "result": "PASS"
+    },
+    {
+      "id": "LIM-RECORD-BYTES-16874",
+      "expected": "ACCEPT",
+      "observed": "ACCEPT",
+      "reason": "OK",
+      "result": "PASS"
+    },
+    {
+      "id": "LIM-RECORD-BYTES-16875",
+      "expected": "REJECT",
+      "observed": "REJECT",
+      "reason": "RECORD_BYTES",
+      "result": "PASS"
+    },
+    {
+      "id": "LIM-FIELD-BYTES-520",
+      "expected": "ACCEPT",
+      "observed": "ACCEPT",
+      "reason": "OK",
+      "result": "PASS"
+    },
+    {
+      "id": "LIM-FIELD-BYTES-521",
+      "expected": "REJECT",
+      "observed": "REJECT",
+      "reason": "FIELD_BYTES",
+      "result": "PASS"
+    },
+    {
+      "id": "LIM-BODY-16777216",
+      "expected": "ACCEPT",
+      "observed": "ACCEPT",
+      "reason": "OK",
+      "result": "PASS"
+    },
+    {
+      "id": "LIM-BODY-16777217",
+      "expected": "REJECT",
+      "observed": "REJECT",
+      "reason": "BASIS_BODY_BYTES",
+      "result": "PASS"
+    },
+    {
+      "id": "LIM-BASIS-16777244",
+      "expected": "ACCEPT",
+      "observed": "ACCEPT",
+      "reason": "OK",
+      "result": "PASS"
+    },
+    {
+      "id": "LIM-BASIS-16777245",
+      "expected": "REJECT",
+      "observed": "REJECT",
+      "reason": "BASIS_TOTAL_BYTES",
+      "result": "PASS"
+    }
+  ]
+}

@@ -5,10 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "tsx scripts/build-secure.ts",
     "db:seed": "tsx scripts/seed.ts",
     "db:seed:permissions": "tsx scripts/seed-permissions.ts",
-    "start": "next start",
+    "db:seed:mvp-roles": "tsx scripts/seed-mvp-roles.ts",
+    "start": "node scripts/start-secure.mjs",
+    "p13:evidence:validate": "tsx scripts/p13-deployment-evidence/cli.ts",
+    "p13:startup-security": "tsx scripts/p13-startup-security/cli.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:db:init": "tsx scripts/test-db/cli.ts init",
@@ -21,6 +24,7 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
+    "@elevator/build-integrity": "workspace:*",
     "@elevator/contracts": "workspace:*",
     "@elevator/file-storage": "workspace:*",
     "@elevator/shared-ui": "workspace:*",

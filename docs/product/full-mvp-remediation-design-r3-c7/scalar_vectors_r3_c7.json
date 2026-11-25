@@ -1,0 +1,30 @@
+{
+  "protocol": "R3-BASIS-1-R6",
+  "vectors": [
+    {"id":"SC-TXT-01","field":{"type":"TEXT","repeat":{"char":"a","count":4000}},"expected":"ACCEPT"},
+    {"id":"SC-TXT-02","field":{"type":"TEXT","repeat":{"char":"a","count":4001}},"expected":"REJECT","reason":"TEXT_LENGTH"},
+    {"id":"SC-TXT-03","field":{"type":"TEXT","value":"ab\u0000cd"},"expected":"REJECT","reason":"TEXT_NUL"},
+    {"id":"SC-DEC-01","field":{"type":"DECIMAL","value":"1.75"},"expected":"ACCEPT"},
+    {"id":"SC-DEC-02","field":{"type":"DECIMAL","value":"1e3"},"expected":"REJECT","reason":"DECIMAL_GRAMMAR"},
+    {"id":"SC-DEC-03","field":{"type":"DECIMAL","value":"1.750000"},"expected":"REJECT","reason":"DECIMAL_NOT_CANONICAL"},
+    {"id":"SC-DEC-04","field":{"type":"DECIMAL","value":"1234567890123456789"},"expected":"REJECT","reason":"DECIMAL_PRECISION"},
+    {"id":"SC-BOOL-01","field":{"type":"BOOLEAN","value":true},"expected":"ACCEPT"},
+    {"id":"SC-BOOL-02","field":{"type":"BOOLEAN","value":"true"},"expected":"REJECT","reason":"BOOLEAN_TYPE"},
+    {"id":"SC-BOOL-03","field":{"type":"BOOLEAN","value":1},"expected":"REJECT","reason":"BOOLEAN_TYPE"},
+    {"id":"SC-INT-01","field":{"type":"INTEGER","value":"-9223372036854775808"},"expected":"ACCEPT"},
+    {"id":"SC-INT-02","field":{"type":"INTEGER","value":"9223372036854775808"},"expected":"REJECT","reason":"INTEGER_RANGE"},
+    {"id":"SC-BYTE-01","field":{"type":"BYTES","bytesLength":512},"expected":"ACCEPT"},
+    {"id":"SC-BYTE-02","field":{"type":"BYTES","bytesLength":513},"expected":"REJECT","reason":"BYTES_LENGTH"},
+    {"id":"SC-AUX-01","field":{"type":"SOURCE_AUX","value":"café"},"expected":"ACCEPT"},
+    {"id":"SC-AUX-02","field":{"type":"SOURCE_AUX","value":"a\u0001b"},"expected":"REJECT","reason":"SOURCE_AUX_CONTROL"},
+    {"id":"SC-AUX-03","field":{"type":"SOURCE_AUX","value":""},"expected":"REJECT","reason":"SOURCE_AUX_EMPTY"}
+  ],
+  "additionalVectors": [
+    {"id":"C7-DEC-NEG-ZERO","field":{"type":"DECIMAL","value":"-0.00"},"expected":"REJECT","reason":"DECIMAL_NEGATIVE_ZERO"},
+    {"id":"C7-BOOL-NULL","field":{"type":"BOOLEAN","value":null},"expected":"REJECT","reason":"BOOLEAN_TYPE"},
+    {"id":"C7-TEXT-NFD","field":{"type":"TEXT","value":"cafe\u0301"},"expected":"REJECT","reason":"TEXT_NOT_NFC"},
+    {"id":"C7-ENUM-65","field":{"type":"ENUM","repeat":{"char":"a","count":65}},"expected":"REJECT","reason":"ASCII_LENGTH"},
+    {"id":"C7-BYTES-EMPTY","field":{"type":"BYTES","bytesLength":0},"expected":"REJECT","reason":"BYTES_EMPTY"},
+    {"id":"C7-UNKNOWN-TYPE","field":{"type":"FLOAT","value":1},"expected":"REJECT","reason":"SCALAR_TYPE"}
+  ]
+}

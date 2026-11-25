@@ -1,0 +1,8 @@
+{
+  "signerPublicKeys": {
+    "REPLACE-WITH-EVIDENCE-SIGNER-KEY-ID": "-----BEGIN PUBLIC KEY-----\nREPLACE-WITH-PUBLIC-KEY\n-----END PUBLIC KEY-----\n"
+  },
+  "trustedCollectorIdentities": [
+    "REPLACE-WITH-TRUSTED-COLLECTOR-ID"
+  ]
+}

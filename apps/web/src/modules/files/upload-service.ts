@@ -4,9 +4,10 @@ import type { UploadIntentInput } from "@elevator/contracts";
 import {
   detectAllowedFileType,
   filenameMatchesMimeType,
+  LegacyStorageCleanupDisabledError,
   sanitizeDisplayFilename,
   PrivateStorageError,
-  type PrivateStorageAdapter,
+  type StorageUploadWriteCapability,
 } from "@elevator/file-storage";
 import { Prisma } from "@prisma/client";
 import type { Readable } from "node:stream";
@@ -20,7 +21,6 @@ import { prisma } from "@/server/prisma";
 
 const MAX_FILE_SIZE_BYTES = 20n * 1024n * 1024n;
 const UPLOAD_INTENT_TTL_MS = 30 * 60 * 1000;
-const STALE_UPLOAD_MS = 15 * 60 * 1000;
 
 interface UploadTarget {
   customerId: string;
@@ -145,56 +145,11 @@ async function validateUploadTarget(
 }
 
 export async function cleanupExpiredUploadIntents(
-  storage: PrivateStorageAdapter,
+  _storage: StorageUploadWriteCapability,
 ): Promise<number> {
-  const now = new Date();
-  const staleClaim = new Date(now.getTime() - STALE_UPLOAD_MS);
-  const expired = await prisma.fileUploadIntent.findMany({
-    where: {
-      OR: [
-        {
-          status: { in: ["PENDING", "FAILED"] },
-          expiresAt: { lt: now },
-        },
-        {
-          status: "UPLOADING",
-          claimedAt: { lt: staleClaim },
-        },
-      ],
-    },
-    orderBy: { expiresAt: "asc" },
-    take: 50,
-    select: {
-      id: true,
-      stagingKey: true,
-      objectStorageKey: true,
-      completedFileVersionId: true,
-    },
-  });
-
-  for (const intent of expired) {
-    await storage.removeStaging(intent.stagingKey).catch(() => undefined);
-    if (
-      !intent.completedFileVersionId &&
-      intent.objectStorageKey
-    ) {
-      await storage
-        .removeObject(intent.objectStorageKey)
-        .catch(() => undefined);
-    }
-    await prisma.fileUploadIntent.updateMany({
-      where: {
-        id: intent.id,
-        status: { in: ["PENDING", "UPLOADING", "FAILED"] },
-      },
-      data: {
-        status: "EXPIRED",
-        failureCode: "UPLOAD_INTENT_EXPIRED",
-      },
-    });
-  }
-
-  return expired.length;
+  throw new LegacyStorageCleanupDisabledError(
+    "cleanupExpiredUploadIntents",
+  );
 }
 
 export async function createUploadIntent(
@@ -202,7 +157,7 @@ export async function createUploadIntent(
   projectId: string,
   requestKey: string,
   input: UploadIntentInput,
-  storage: PrivateStorageAdapter,
+  _storage: StorageUploadWriteCapability,
 ) {
   const target = await validateUploadTarget(projectId, input);
   const sanitizedFilename = sanitizeDisplayFilename(
@@ -216,8 +171,6 @@ export async function createUploadIntent(
       400,
     );
   }
-
-  await cleanupExpiredUploadIntents(storage);
 
   const fingerprint = requestFingerprint(projectId, input);
   const existing = await prisma.fileUploadIntent.findUnique({
@@ -292,7 +245,7 @@ interface CompleteUploadInput {
   requestMimeType: string | null;
   source: Readable;
   requestId: string;
-  storage: PrivateStorageAdapter;
+  storage: StorageUploadWriteCapability;
 }
 
 async function markIntentFailed(
@@ -425,7 +378,6 @@ export async function completeUpload(
     );
   }
 
-  let stagingCleanup = true;
   let objectKey: string | null = null;
 
   try {
@@ -487,7 +439,6 @@ export async function completeUpload(
     }
 
     await input.storage.finalize(intent.stagingKey, objectKey);
-    stagingCleanup = false;
 
     const completed = await prisma.$transaction(
       async (tx) => {
@@ -639,15 +590,6 @@ export async function completeUpload(
 
     return completed;
   } catch (error) {
-    if (objectKey) {
-      await input.storage.removeObject(objectKey).catch(() => undefined);
-    }
-    if (stagingCleanup) {
-      await input.storage
-        .removeStaging(intent.stagingKey)
-        .catch(() => undefined);
-    }
-
     const code =
       error instanceof AppError
         ? error.code
@@ -655,6 +597,17 @@ export async function completeUpload(
           ? error.code
           : "UPLOAD_FAILED";
     await markIntentFailed(intent.id, code).catch(() => undefined);
+
+    logger.error(
+      {
+        event: "file.upload_failed_artifacts_retained",
+        intentId: intent.id,
+        requestId: input.requestId,
+        canonicalObjectFinalized: objectKey !== null,
+        recoveryRequired: true,
+      },
+      "File upload failed; physical artifacts were retained",
+    );
 
     if (error instanceof AppError) {
       throw error;

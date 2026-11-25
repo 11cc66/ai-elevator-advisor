@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 2,
+  "status": "COMPILE VERIFIED / NATIVE EXECUTION NOT AUTHORIZED",
+  "source": "tests/b4/native_test_sources.cpp",
+  "tests": [
+    {"id":"T01","name":"valid-client-policy","p1":["P1-01","P1-02","P1-05"],"p2":["P2-04","P2-06","P2-13"],"execution":"COMPILE VERIFIED / NOT EXECUTED"},
+    {"id":"T02","name":"wrong-pid","p1":["P1-05"],"p2":["P2-05"],"execution":"COMPILE VERIFIED / NOT EXECUTED"},
+    {"id":"T03","name":"wrong-creation-time","p1":["P1-05"],"p2":["P2-05"],"execution":"COMPILE VERIFIED / NOT EXECUTED"},
+    {"id":"T04","name":"wrong-token-sid","p1":["P1-05"],"p2":["P2-05"],"execution":"COMPILE VERIFIED / NOT EXECUTED"},
+    {"id":"T05","name":"wrong-principal","p1":["P1-05"],"p2":["P2-05"],"execution":"COMPILE VERIFIED / NOT EXECUTED"},
+    {"id":"T06","name":"expired-session","p1":["P1-01"],"p2":["P2-08"],"execution":"COMPILE VERIFIED / NOT EXECUTED"},
+    {"id":"T07","name":"wrong-epoch","p1":["P1-01"],"p2":["P2-08"],"execution":"COMPILE VERIFIED / NOT EXECUTED"},
+    {"id":"T08","name":"replayed-request","p1":["P1-01","P1-02"],"p2":["P2-08"],"execution":"COMPILE VERIFIED / NOT EXECUTED"},
+    {"id":"T09","name":"conflicting-request","p1":["P1-01","P1-02"],"p2":["P2-08"],"execution":"COMPILE VERIFIED / NOT EXECUTED"},
+    {"id":"T10","name":"cross-authority","p1":["P1-01"],"p2":["P2-04","P2-07"],"execution":"COMPILE VERIFIED / NOT EXECUTED"},
+    {"id":"T11","name":"client-exit","p1":["P1-05"],"p2":["P2-05","P2-09"],"execution":"COMPILE VERIFIED / NOT EXECUTED"},
+    {"id":"T12","name":"pid-reuse","p1":["P1-05"],"p2":["P2-05","P2-09"],"execution":"COMPILE VERIFIED / NOT EXECUTED"},
+    {"id":"T13","name":"unauthorized-caller","p1":["P1-01"],"p2":["P2-04"],"execution":"COMPILE VERIFIED / NOT EXECUTED"},
+    {"id":"T14","name":"helper-revoke","p1":["P1-03","P1-04"],"p2":["P2-09","P2-10"],"execution":"COMPILE VERIFIED / NOT EXECUTED"},
+    {"id":"T15","name":"job-close","p1":["P1-04"],"p2":["P2-03","P2-09"],"execution":"COMPILE VERIFIED / NOT EXECUTED"},
+    {"id":"T16","name":"terminate-fallback","p1":["P1-04"],"p2":["P2-03","P2-09"],"execution":"COMPILE VERIFIED / NOT EXECUTED"},
+    {"id":"T17","name":"stale-process-handle","p1":["P1-05"],"p2":["P2-05","P2-09"],"execution":"COMPILE VERIFIED / NOT EXECUTED"},
+    {"id":"T18","name":"unauthorized-manager-entry","p1":["P1-01"],"p2":["P2-04"],"execution":"COMPILE VERIFIED / NOT EXECUTED"},
+    {"id":"T19","name":"in-flight-revoke-race","p1":["P1-03","P1-04"],"p2":["P2-08","P2-09"],"execution":"COMPILE VERIFIED / NOT EXECUTED"},
+    {"id":"T20","name":"launch-ticket-reuse","p1":["P1-02"],"p2":["P2-07","P2-08"],"execution":"COMPILE VERIFIED / NOT EXECUTED"},
+    {"id":"T21","name":"restricted-sid-mismatch","p1":["P1-05"],"p2":["P2-05"],"execution":"COMPILE VERIFIED / NOT EXECUTED"},
+    {"id":"T22","name":"normal-sid-missing","p1":["P1-05"],"p2":["P2-05"],"execution":"COMPILE VERIFIED / NOT EXECUTED"},
+    {"id":"T23","name":"credential-reference","p1":["P1-01","P1-05"],"p2":["P2-04","P2-07"],"execution":"COMPILE VERIFIED / NOT EXECUTED"},
+    {"id":"T24","name":"job-assignment-failure","p1":["P1-04"],"p2":["P2-03","P2-09"],"execution":"COMPILE VERIFIED / NOT EXECUTED"},
+    {"id":"T25","name":"resume-failure","p1":["P1-04"],"p2":["P2-03"],"execution":"COMPILE VERIFIED / NOT EXECUTED"},
+    {"id":"T26","name":"terminate-fallback","p1":["P1-04"],"p2":["P2-03","P2-09"],"execution":"COMPILE VERIFIED / NOT EXECUTED"},
+    {"id":"T27","name":"wait-timeout","p1":["P1-04"],"p2":["P2-03","P2-09"],"execution":"COMPILE VERIFIED / NOT EXECUTED"},
+    {"id":"T28","name":"sealer-evidence-mismatch","p1":["P1-04"],"p2":["P2-10"],"execution":"COMPILE VERIFIED / NOT EXECUTED"},
+    {"id":"T29","name":"old-write-handle","p1":["P1-04"],"p2":["P2-10"],"execution":"COMPILE VERIFIED / NOT EXECUTED"},
+    {"id":"T30","name":"unknown-not-closed","p1":["P1-03","P1-04"],"p2":["P2-08","P2-09","P2-10"],"execution":"COMPILE VERIFIED / NOT EXECUTED"}
+  ]
+}
+

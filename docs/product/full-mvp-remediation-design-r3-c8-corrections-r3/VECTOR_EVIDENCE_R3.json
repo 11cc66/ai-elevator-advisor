@@ -1,0 +1,93 @@
+{
+  "scope": "OFFLINE C6/R6/CASE VECTORS; NOT SQL EXECUTION",
+  "c6": {
+    "records": 15,
+    "types": [
+      0,
+      1,
+      1,
+      2,
+      2,
+      3,
+      3,
+      4,
+      4,
+      5,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "bytes": 4036,
+    "sha256": "7D3CAC885F839594006650CC500FEF8A59D22AD151E6CB21567008D0D19519EB",
+    "pass": true
+  },
+  "r6": {
+    "scalar": "23/23",
+    "resource": "14/14"
+  },
+  "cases": [
+    {
+      "id": "root_positive",
+      "expected": "ACCEPT",
+      "actual": "ACCEPT",
+      "pass": true
+    },
+    {
+      "id": "root_cross_principal",
+      "expected": "REJECT",
+      "actual": "REJECT",
+      "pass": true
+    },
+    {
+      "id": "owner_database",
+      "expected": "REJECT",
+      "actual": "REJECT",
+      "pass": true
+    },
+    {
+      "id": "owner_set_role",
+      "expected": "REJECT",
+      "actual": "REJECT",
+      "pass": true
+    },
+    {
+      "id": "catalog_cross_target",
+      "expected": "REJECT",
+      "actual": "REJECT",
+      "pass": true
+    },
+    {
+      "id": "catalog_wrong_digest",
+      "expected": "REJECT",
+      "actual": "REJECT",
+      "pass": true
+    },
+    {
+      "id": "bootstrap_lost_response",
+      "expected": "REPLAY",
+      "actual": "REPLAY",
+      "pass": true
+    },
+    {
+      "id": "bootstrap_failed_issuance",
+      "expected": "LOCKED_RECOVERY",
+      "actual": "LOCKED_RECOVERY",
+      "pass": true
+    },
+    {
+      "id": "ledger_security_revoke",
+      "expected": "DENY",
+      "actual": "DENY",
+      "pass": true
+    },
+    {
+      "id": "ledger_controlled_recovery",
+      "expected": "RECOVER_ONCE",
+      "actual": "RECOVER_ONCE",
+      "pass": true
+    }
+  ],
+  "result": "PASS"
+}

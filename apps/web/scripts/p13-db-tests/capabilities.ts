@@ -1,0 +1,17 @@
+export const P13_TEST_CAPABILITIES = {
+  fixtureBuilder: "IMPLEMENTED",
+  databaseTestHarness: "IMPLEMENTED",
+  sqlstateCapture: "IMPLEMENTED",
+  statementContextCapture: "IMPLEMENTED",
+  transactionDiagnostics: "IMPLEMENTED",
+  commitUnknownClassification: "IMPLEMENTED",
+  inProcessConnectionBarrier: "IMPLEMENTED",
+  barrierTimeoutAndAbort: "IMPLEMENTED",
+  crossProcessConnectionBarrier: "NOT_IMPLEMENTED",
+  databaseExecutionAdapter: "NOT_IMPLEMENTED",
+  generationCas: "NOT_IMPLEMENTED",
+  storageKeyLockOrdering: "NOT_IMPLEMENTED",
+  recoveryScanner: "NOT_IMPLEMENTED",
+  filesystemFencing: "NOT_IMPLEMENTED",
+  realDatabaseFixtureExecution: "NOT_AUTHORIZED",
+} as const;

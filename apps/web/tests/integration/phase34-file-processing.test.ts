@@ -15,7 +15,6 @@ import { afterAll, beforeAll, expect, it, vi } from "vitest";
 import { runFileMaintenance } from "../../../worker/src/file-maintenance";
 import { processFileRecognitionJob } from "../../../worker/src/file-processing";
 import { readWorkerEnv } from "../../../worker/src/config";
-import { createWorkerStorage } from "../../../worker/src/storage";
 import { loadActor, type Actor } from "../../src/modules/access/actor";
 import {
   completeUpload,
@@ -217,7 +216,7 @@ it("does not let an older extraction overwrite a newer recognition state", async
   ).toBe("COMPLETED");
 });
 
-it("recovers stale processing jobs and cleans temporary upload artifacts safely", async () => {
+it("recovers stale processing jobs without executing legacy physical cleanup", async () => {
   const completed = await upload(
     pdfBytes,
     "maintenance.pdf",
@@ -320,18 +319,13 @@ it("recovers stale processing jobs and cleans temporary upload artifacts safely"
       return "job-id";
     }),
   } as unknown as PgBoss;
-  const workerStorage = createWorkerStorage(readWorkerEnv());
   const result = await runFileMaintenance({
     prisma,
     boss: fakeBoss,
-    storage: workerStorage,
     env: readWorkerEnv(),
   });
 
   expect(result.recoveredProcessing).toBeGreaterThanOrEqual(1);
-  expect(result.expiredIntents).toBeGreaterThanOrEqual(1);
-  expect(result.removedOrphanObjects).toBeGreaterThanOrEqual(1);
-  expect(result.removedTempEntries).toBeGreaterThanOrEqual(1);
   expect(
     sent.some((job) => job.extractionId === stale.extractionId),
   ).toBe(true);
@@ -358,9 +352,9 @@ it("recovers stale processing jobs and cleans temporary upload artifacts safely"
         select: { status: true },
       })
     ).status,
-  ).toBe("EXPIRED");
-  await expect(fs.access(orphanObjectPath)).rejects.toBeDefined();
-  await expect(fs.access(oldTempDirectory)).rejects.toBeDefined();
+  ).toBe("PENDING");
+  await expect(fs.access(orphanObjectPath)).resolves.toBeUndefined();
+  await expect(fs.access(oldTempDirectory)).resolves.toBeUndefined();
 
   const completedVersion = await prisma.fileVersion.findUniqueOrThrow({
     where: { id: completed.version.id },

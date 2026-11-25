@@ -14,6 +14,7 @@
     "build": "pnpm -r build",
     "typecheck": "pnpm -r typecheck",
     "test": "pnpm -r --if-present test",
+    "security:startup": "pnpm --filter @elevator/web p13:startup-security",
     "test:e2e": "pnpm --filter @elevator/web test:e2e",
     "test:db:init": "pnpm --filter @elevator/web test:db:init",
     "test:db:reset": "pnpm --filter @elevator/web test:db:reset",

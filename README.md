@@ -1,183 +1,252 @@
-# AI 电梯选型顾问 V1.0
+# AI 电梯选型顾问
 
-本仓库当前已完成 **Phase 3.6：客户资料字段确认**。现有产品文档是设计和业务规则基线，不应把当前资料处理能力理解为已经具备完整选型能力。
+面向旧楼加装、旧梯改造和新楼安装场景的 AI 电梯选型顾问 Demo。
 
-## 当前能力
+项目目标是把客户沟通、建筑需求整理、电梯产品比较、确定性初步选型、
+客户确认和销售跟进串成一条可审计的业务链路。它不是自动工程设计软件，
+也不能替代现场勘察、结构核查、法定检验或专业人员审核。
 
-- Next.js + TypeScript Web 应用
-- PostgreSQL + Prisma 数据访问
-- 独立 pg-boss Worker
-- 共享 contracts、deterministic selection engine 和 shared UI 包
-- Zod 环境与接口契约校验
-- Pino 结构化日志及敏感字段脱敏
-- 统一 API 错误模型
-- Web 与数据库健康检查
-- Better Auth 用户名密码登录与数据库 Session
-- HttpOnly / SameSite Cookie、服务端登录状态检查
-- RBAC 权限和项目范围访问控制
-- 单管理员开发 Seed、登录和退出
-- 客户、项目、建筑、安装单元基础 DEMO 管理
-- 业务创建审计记录及数据库只追加保护
-- 文件处理执行租约、并发抢占、有限退避重试和崩溃恢复
-- 客户查看结构化识别字段，确认普通资料并提交专业字段修正建议
-- Vitest 单元测试和 Playwright 请求级烟雾测试
+## 当前状态
 
-尚未实现用户注册、OCR、AI 图像理解、真实 AI 模型、勘察、产品库、正式选型规则、审核、报价或真实业务数据。
+```text
+Mock AI / DEMO_MOCK 产品闭环：MVP COMPLETE — DEMO-READY
+仓库级生产就绪度：PARTIAL / NOT VERIFIED
+真实 AI 模型：NOT IMPLEMENTED
+真实厂家产品与价格：NOT PRESENT
+生产部署：NOT AUTHORIZED
+```
 
-Phase 3.1 已建立文件、文件版本、提取结果、文字块、字段、确认历史和安全事件的
-数据模型与数据库约束，但尚未提供上传、存储、下载或 PDF 解析接口。
+当前可演示的范围包括：
 
-Phase 3.2 已提供两阶段私有上传：创建上传意图和流式上传原始字节。文件保存在
-`storage/private` 或测试环境 `storage/private-test`，不提供公开静态 URL。
+- 用户名密码登录、数据库 Session、服务端 RBAC 和项目范围授权；
+- 确定性的 `MockAIProvider` 多轮需求收集，不调用任何外部模型；
+- 旧楼加装、旧梯改造、新楼安装三类需求与缺失字段追问；
+- 需求修订历史、客户确认、初步推荐历史和候选产品对比；
+- 版本化 `DEMO_MOCK` 产品、技术参数、参考价格和来源记录；
+- 纯函数确定性选型引擎，输出硬约束、预算状态、理由和风险提示；
+- 管理员产品维护、客户项目页面、销售交接和跟进备注；
+- Phase 3 的私有文件上传/下载/处理基础代码与字段确认流程。
 
-Phase 3.3 已提供授权项目文件列表、文件详情、完整版本历史和受控下载。
-生产环境在病毒扫描状态不是 `CLEAN` 时始终拒绝下载；隔离测试环境可在验证
-数据库身份和专用权限后访问 `SCAN_UNAVAILABLE` 文件。
+## 重要边界
 
-Phase 3.4 已提供 pg-boss 文件处理队列、隔离 PDF Worker Thread、逐页文字提取、
-图片元数据读取和定期文件维护。图片不执行 OCR 或图像理解。
+- 所有产品参数、价格和推荐结果均为 `DEMO_MOCK`，不得用于采购、报价或
+  工程决策。
+- AI 能力仅为浏览器内确定性文本解析，没有接入 OpenRouter、OpenAI、
+  Anthropic 或其他真实模型 API。
+- 客户确认需求不等于专业确认；Demo 中的选型结果始终要求专业复核和现场
+  勘察。
+- 当前旧上传服务与 P1-3 Upload Attempt / Lifecycle 状态机尚未完成集成。
+  旧路径被安全 Trigger 拒绝，相关类型检查和集成测试仍失败。
+- 文件生命周期、Native RPC 等安全设计包含大量仍未通过 PostgreSQL 实机、
+  Catalog ACL、Migration Lock 或 Runtime 并发验证的内容。
 
-Phase 3.5 已增加数据库执行租约、随机处理令牌、有限退避重试、逐次失败审计、
-Worker 崩溃恢复和并发维护互斥。详细配置见
-`docs/PHASE3_5_PROCESSING_RELIABILITY.md`。
+## 产品流程
 
-Phase 3.6 已允许客户查看已有结构化识别字段，确认、更正或拒绝普通资料字段，
-并对专业工程字段提交保持“待专业核实”的修正建议。当前不会把 PDF 文字自动
-转换成结构化字段；没有字段时页面显示明确空状态。详情见
-`docs/PHASE3_6_FIELD_CONFIRMATION.md`。
+```text
+客户登录
+-> 创建 DEMO 项目
+-> Mock AI 多轮收集建筑需求
+-> 结构化需求修订与缺失字段提示
+-> 客户确认需求
+-> 确定性选型引擎匹配 DEMO 产品
+-> 展示推荐、风险、预算和来源
+-> 创建销售交接
+-> 销售查看需求/推荐并记录跟进
+```
 
-## 环境要求
+当前流程止于 Demo 销售交接。勘察、专业确认、正式审核、报价、合同、
+施工、交付和维保仍是后续能力。
 
-- Node.js 24
-- pnpm 11
-- PostgreSQL 18（本机服务端口 `5432`）
+## 系统架构
 
-本项目当前使用本机 PostgreSQL，不依赖 Docker。
+```text
+apps/web
+  Next.js App Router
+  Better Auth + PostgreSQL Session
+  服务端 RBAC / 项目范围授权
+  客户与管理员页面
+  REST Route Handlers
+  Mock AI Advisor
+  DEMO 产品目录与销售交接
+  私有文件访问基础设施
 
-## 安装
+apps/worker
+  pg-boss Worker
+  文件处理队列
+  PDF 文字提取与图片元数据
+  租约、fencing、重试和崩溃恢复
+
+packages/contracts
+  Zod API 与领域契约
+
+packages/selection-engine
+  纯函数、确定性初步选型
+
+packages/file-storage
+  私有本地存储、MIME 和安全能力边界
+
+packages/build-integrity
+  发布清单、脚本安全和 Startup Gate
+
+packages/authority-core
+  原生权限/身份研究代码，不属于当前 Demo 产品主流程
+```
+
+## 技术栈
+
+- Node.js 24、pnpm 11、TypeScript 5.9
+- Next.js 16 App Router、React 19
+- PostgreSQL 18、Prisma 6
+- Better Auth 1.x、数据库 Session
+- pg-boss Worker
+- Zod 4
+- Pino 结构化日志
+- Vitest、Playwright 请求级测试
+- Tailwind CSS 4
+
+依赖版本以各 `package.json` 和 `pnpm-lock.yaml` 为准。
+
+## 主要目录
+
+```text
+apps/web/                    Web、API、授权和业务服务
+apps/worker/                 文件处理 Worker
+packages/contracts/          共享 Zod 契约
+packages/selection-engine/   确定性选型引擎
+packages/file-storage/       私有文件存储边界
+packages/build-integrity/    发布完整性与启动安全
+packages/authority-core/     原生权限研究模块
+prisma/                      Schema 与向前迁移
+docs/architecture/           文件生命周期和安全架构
+docs/product/                产品整改、设计与独立审查材料
+AI_Elevator_Advisor_Codex_Blueprint/
+                             原产品需求与业务规则基线
+tools/native-rpc/            Native RPC 研究 Harness 源码
+```
+
+## 本地运行
+
+### 1. 环境要求
+
+- Node.js 24+
+- pnpm 11+
+- PostgreSQL 18
+
+### 2. 安装
 
 ```powershell
-cd D:\thinkbook\Desktop\jieya
 pnpm install
 ```
 
-如果网络下载中断，可安全地重复执行 `pnpm install`。依赖版本由 `pnpm-lock.yaml` 固定。
-
-## 配置本地环境变量
-
-复制模板：
+### 3. 配置环境变量
 
 ```powershell
 Copy-Item .env.example .env
+Copy-Item .env.test.example .env.test
 ```
 
-使用本地编辑器填写 `.env` 中的 `DATABASE_URL`：
+按模板填写本机数据库、Session 密钥和 DEMO 管理员配置。不要提交真实
+`.env`、测试数据库密码、模型密钥或客户数据。
 
-```text
-postgresql://elevator_app:REPLACE_WITH_URL_ENCODED_PASSWORD@127.0.0.1:5432/elevator_advisor?schema=public
-```
-
-要求：
-
-- 不要把真实密码发到聊天、截图或提交记录中。
-- 如果密码包含 `@`、`:`、`/`、`?`、`#`、`%` 等 URL 保留字符，需要先做 URL 编码。
-- `.env` 已被 `.gitignore` 排除，不要强制加入 Git。
-- 必须配置至少 32 字符的 `BETTER_AUTH_SECRET`。
-- 开发管理员账号通过 `DEV_ADMIN_USERNAME`、`DEV_ADMIN_NAME` 和
-  `DEV_ADMIN_PASSWORD` 配置，密码至少 12 字符。
-- 不开放注册，不要把这些开发凭据用于生产环境。
-
-验证数据库配置：
+### 4. 初始化开发数据库
 
 ```powershell
 pnpm db:validate
 pnpm db:generate
-pnpm exec prisma migrate deploy
+pnpm db:migrate:dev
 pnpm db:seed
+pnpm db:seed:mvp-roles
 ```
 
-首次 Worker 启动时，pg-boss 会在同一 PostgreSQL 数据库内创建自己的任务表。应用业务表由 Prisma 迁移管理。
-
-## 本地启动
-
-打开第一个 PowerShell：
+### 5. 启动
 
 ```powershell
-cd D:\thinkbook\Desktop\jieya
 pnpm dev:web
 ```
 
-访问：
-
-- 首页：`http://127.0.0.1:3000`
-- 登录：`http://127.0.0.1:3000/login`
-- 开发后台：`http://127.0.0.1:3000/admin`
-- 健康检查：`http://127.0.0.1:3000/api/health`
-
-打开第二个 PowerShell：
+另一个终端：
 
 ```powershell
-cd D:\thinkbook\Desktop\jieya
 pnpm dev:worker
 ```
 
-按 `Ctrl+C` 可停止进程。Worker 收到停止信号时会尝试在 10 秒内优雅退出。
+默认入口：
 
-## 检查与测试
+- 首页：`http://127.0.0.1:3000`
+- 登录：`http://127.0.0.1:3000/login`
+- 客户项目：`http://127.0.0.1:3000/projects`
+- 产品目录：`http://127.0.0.1:3000/catalog`
+- 管理后台：`http://127.0.0.1:3000/admin`
+- 健康检查：`http://127.0.0.1:3000/api/health`
 
-```powershell
-pnpm typecheck
-pnpm test
-pnpm test:e2e
-pnpm test:db:constraints
-pnpm build
-```
+## 测试与验证
 
-当前 Playwright 测试使用 HTTP 请求验证健康检查、登录、Cookie、退出、
-Session 过期、权限拒绝和完整 DEMO 项目流程，不下载或启动浏览器。
-
-Phase 3 的 E2E 必须使用独立测试数据库。首次配置：
-
-```powershell
-Copy-Item .env.test.example .env.test
-```
-
-填写本地测试数据库、测试账号和测试密钥后：
+完整测试只能使用经身份保护的独立测试数据库。禁止用开发/共享数据库代替。
 
 ```powershell
 pnpm test:db:verify
 pnpm test:db:init
+pnpm --filter @elevator/web test
+pnpm --filter @elevator/worker test
+pnpm --filter @elevator/contracts test
+pnpm --filter @elevator/selection-engine test
+pnpm --filter @elevator/file-storage test
+pnpm --filter @elevator/web test:e2e
 ```
 
-后续执行 `pnpm test:e2e` 时会先严格校验测试数据库身份，再重置并初始化
-`elevator_advisor_test`，不会使用开发数据库。详情见
-`docs/PHASE3_0_TEST_ENVIRONMENT.md`。
-
-## 目录
+历史 Full MVP Acceptance Report 记录了：
 
 ```text
-apps/web/                    Next.js Web 与 API
-apps/worker/                 pg-boss Worker
-packages/contracts/          Zod API 契约
-packages/selection-engine/   确定性选型引擎边界
-packages/shared-ui/         共享 UI 基础组件
-apps/web/src/modules/       认证、权限、审计和项目领域服务
-prisma/                     Prisma Schema 与迁移
-storage/private/            私有文件目录占位，不可公开访问
-docs/                       Phase 1 实施说明
-AI_Elevator_Advisor_Codex_Blueprint/
-                            原产品设计基线，保持原样
+Web unit/static:      275 tests passed
+Worker:                19 tests passed
+Contracts:             15 tests passed
+Selection engine:       9 tests passed
+File storage:          19 tests passed
+MVP E2E:                4 tests passed
+Isolated migrations:   PASS
 ```
 
-## 安全边界
+GitHub 发布准备阶段重新执行了不依赖数据库的：
 
-- 不虚构真实电梯产品、参数、价格、法规或工程结论。
-- AI 输出不能直接成为专业确认、审核结果或正式金额。
-- 客户、文件、私有目录和数据库凭据必须由服务端权限控制。
-- 前端按钮隐藏不能替代服务端权限检查。
-- 当前项目、建筑和安装单元编号均使用明确的 `DEMO-*` 前缀。
-- 审计日志只追加，数据库触发器拒绝 UPDATE 和 DELETE。
-- 真实 `.env`、密钥和私有文件不得提交到 Git。
-- 后续所有模拟数据必须显式标记为 `DEMO_MOCK`。
+```text
+Contracts:             15/15 PASS
+Selection engine:       9/9 PASS
+Repository typecheck:  FAIL — pre-existing P1-3 upload chain errors
+```
 
-产品规则以 [AGENTS.md](AI_Elevator_Advisor_Codex_Blueprint/AI_Elevator_Advisor_Codex_Blueprint/AGENTS.md) 和 `docs/01` 至 `docs/11` 为准。
+因此 `MVP COMPLETE — DEMO-READY` 只描述授权的 Mock-AI/DEMO 产品闭环，
+不代表整个仓库已生产就绪。
+
+## 已知限制
+
+1. `MockAIProvider` 只识别有限、可测试的中文文本模式。
+2. 产品库、技术参数和参考价格全部为虚构 `DEMO_MOCK`。
+3. 未接入真实 AI、OCR、图纸理解、产品供应商数据或正式价格源。
+4. 旧文件上传路径与 P1-3 Lifecycle 链未完成整合。
+5. 勘察、专业确认、正式技术审核、报价、合同、施工、交付和维保未实现。
+6. 浏览器视觉/交互自动化未验证。
+7. 生产 Build Gate 因缺少受控发布配置而按设计拒绝构建。
+8. 多个数据库、ACL、Native RPC 和并发设计仍需 PostgreSQL/Runtime 独立验证。
+
+## 安全原则
+
+- 服务端重新校验 Session、权限、项目归属和资源归属。
+- 客户不能访问其他客户的项目、顾问会话或文件。
+- 上传内容、PDF 文字和 AI 输出均视为不可信输入。
+- AI 输出不能成为专业确认、审核结果或正式金额。
+- 已审核和已签文件必须保留历史版本与审计链。
+- 真实 `.env`、密钥、私有文件和客户数据不得进入 Git。
+
+## 状态文档
+
+- [Full MVP Build](docs/product/full-mvp-build/README.md)
+- [MVP Implementation Status](docs/product/full-mvp-build/MVP_IMPLEMENTATION_STATUS.md)
+- [MVP Acceptance Report](docs/product/full-mvp-build/MVP_ACCEPTANCE_REPORT.md)
+- [MVP Known Limitations](docs/product/full-mvp-build/MVP_KNOWN_LIMITATIONS.md)
+- [File Lifecycle Implementation Status](docs/architecture/file-lifecycle-p13-implementation-status.md)
+- [Product Blueprint](AI_Elevator_Advisor_Codex_Blueprint/AI_Elevator_Advisor_Codex_Blueprint/README.md)
+
+## License
+
+当前仓库尚未选择开源许可证。公开可见不代表授权商业复制、生产部署或用于
+真实工程决策；在补充明确的 `LICENSE` 前，请保留所有权利。

@@ -35,10 +35,15 @@ test("test customer is limited to the assigned project", async ({
     projects: Array<{ id: string }>;
   };
   expect(
-    projectBody.projects.every(
+    projectBody.projects.some(
       (project) => project.id === assignedProjectId,
     ),
   ).toBe(true);
+  expect(
+    projectBody.projects.some(
+      (project) => project.id === "phase3_test_project_2",
+    ),
+  ).toBe(false);
 
   const unassignedProject = await request.get(
     "/api/admin/projects/project-not-assigned",

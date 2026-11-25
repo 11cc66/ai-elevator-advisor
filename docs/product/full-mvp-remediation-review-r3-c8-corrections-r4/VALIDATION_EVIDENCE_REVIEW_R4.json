@@ -1,0 +1,913 @@
+{
+  "scope": "INDEPENDENT READ-ONLY STATIC REVIEW AND ISOLATED MUTATION REPLAY",
+  "guard": {
+    "verified": true,
+    "parent_pid": 2064,
+    "parent_path": "C:\\Program Files\\WindowsApps\\OpenAI.CodexPrimaryRuntime.v26-1119-907-0_26.1119.907.0_x64__3k8sg7r9htsxt\\dependencies\\native\\powershell\\pwsh.exe",
+    "parent_creation_100ns": "134400256036563460",
+    "output_root": "D:\\thinkbook\\Desktop\\jieya\\docs\\product\\full-mvp-remediation-review-r3-c8-corrections-r4",
+    "checked_at_utc_ns": 1795552005141947600
+  },
+  "review_directory_existed_at_start": false,
+  "input_manifests": {
+    "r4": {
+      "path": "D:\\thinkbook\\Desktop\\jieya\\docs\\product\\full-mvp-remediation-design-r3-c8-corrections-r4\\SHA256SUMS_R4.txt",
+      "sha256": "BAB1129478D70E3CD21B6C2D60B338525CE7E18660ABE26D69BBE540409AB377",
+      "expected_sha256": "BAB1129478D70E3CD21B6C2D60B338525CE7E18660ABE26D69BBE540409AB377",
+      "records": 25,
+      "unique": 25,
+      "actual_files_excluding_manifest": 25,
+      "uncovered": [],
+      "extra": [],
+      "errors": [],
+      "pass": true
+    },
+    "r3_review": {
+      "path": "D:\\thinkbook\\Desktop\\jieya\\docs\\product\\full-mvp-remediation-review-r3-c8-corrections-r3\\SHA256SUMS_R3_C8_CORRECTIONS_R3_REVIEW.txt",
+      "sha256": "1500C72F8059AAD1D15F4829818D1BA688CD57B95DD606CDFEB26A3D58285EC2",
+      "expected_sha256": "1500C72F8059AAD1D15F4829818D1BA688CD57B95DD606CDFEB26A3D58285EC2",
+      "records": 18,
+      "unique": 18,
+      "actual_files_excluding_manifest": 0,
+      "uncovered": [],
+      "extra": [],
+      "errors": [],
+      "pass": true
+    },
+    "r3": {
+      "path": "D:\\thinkbook\\Desktop\\jieya\\docs\\product\\full-mvp-remediation-design-r3-c8-corrections-r3\\SHA256SUMS_R3_C8_CORRECTIONS_R3.txt",
+      "sha256": "C5611B8807D50E3E02286A63B5C9E39F9F745684793C2FD5525DCA4537A71825",
+      "expected_sha256": null,
+      "records": 28,
+      "unique": 28,
+      "actual_files_excluding_manifest": 0,
+      "uncovered": [],
+      "extra": [],
+      "errors": [],
+      "pass": true
+    },
+    "r2": {
+      "path": "D:\\thinkbook\\Desktop\\jieya\\docs\\product\\full-mvp-remediation-design-r3-c8-corrections-r2\\SHA256SUMS_R3_C8_CORRECTIONS_R2.txt",
+      "sha256": "45331850C8DB01CC4AE1DC58825AFFB9E5187259CD28F0B68D6BE32F9F6422E8",
+      "expected_sha256": null,
+      "records": 33,
+      "unique": 33,
+      "actual_files_excluding_manifest": 0,
+      "uncovered": [],
+      "extra": [],
+      "errors": [],
+      "pass": true
+    },
+    "r2_review": {
+      "path": "D:\\thinkbook\\Desktop\\jieya\\docs\\product\\full-mvp-remediation-review-r3-c8-corrections-r2\\SHA256SUMS_R3_C8_CORRECTIONS_R2_REVIEW.txt",
+      "sha256": "5865AAE961DDCFF7A546D6435729455D091810FF3BF8D4A155CA0EDB36082FF1",
+      "expected_sha256": null,
+      "records": 15,
+      "unique": 15,
+      "actual_files_excluding_manifest": 0,
+      "uncovered": [],
+      "extra": [],
+      "errors": [],
+      "pass": true
+    }
+  },
+  "key_hashes": {
+    "P1_PRODUCT_REMEDIATION_DESIGN_R4.md": {
+      "expected": "5CEB6F13B38CF093DF51F06515D88C6F9DE1153D6ABBE04CB6FD7D2DD0C2BB53",
+      "actual": "5CEB6F13B38CF093DF51F06515D88C6F9DE1153D6ABBE04CB6FD7D2DD0C2BB53",
+      "match": true
+    },
+    "DATABASE_COMPLETE_DDL_DESIGN_R4.sql": {
+      "expected": "F4DA543931B69F67DEB6672B41F968FCF24E1D8E025B367E5282B4AF44711B2F",
+      "actual": "F4DA543931B69F67DEB6672B41F968FCF24E1D8E025B367E5282B4AF44711B2F",
+      "match": true
+    },
+    "DATABASE_FINAL_STATE_OVERLAY_R4.sql": {
+      "expected": "87A3814632B59FBD6614CCA31E6A388FE3FDEDD0D695611FC04B1E39C4664552",
+      "actual": "87A3814632B59FBD6614CCA31E6A388FE3FDEDD0D695611FC04B1E39C4664552",
+      "match": true
+    },
+    "DATABASE_FUNCTION_SIGNATURE_REGISTRY_R4.json": {
+      "expected": "C0FD9D353F5E82D937E587A81106652B3A66DC47256B777BD8CE2DF430F86EA3",
+      "actual": "C0FD9D353F5E82D937E587A81106652B3A66DC47256B777BD8CE2DF430F86EA3",
+      "match": true
+    },
+    "VALIDATION_EVIDENCE_R4.json": {
+      "expected": "B1AB36A2CFB92E286AAA78F43F036B643257978B2F2112ACAF807360FAEBDA0E",
+      "actual": "B1AB36A2CFB92E286AAA78F43F036B643257978B2F2112ACAF807360FAEBDA0E",
+      "match": true
+    }
+  },
+  "r3_review_main_sha256": "B02540947A7EB883D638FC6D389DC2B542F52BDBCEF715CF8E2799D034D20259",
+  "object_inventory": {
+    "tables": 73,
+    "foreign_keys": 124,
+    "functions": 161,
+    "triggers": 174,
+    "roles": 26,
+    "effective_grant_signatures": 42
+  },
+  "fk_errors": [],
+  "trigger_errors": [],
+  "independent_checks": {
+    "manifest_all": true,
+    "key_hashes_all": true,
+    "r3_review_main_hash": true,
+    "table_count_73": true,
+    "fk_count_124": true,
+    "fk_structural_errors_zero": true,
+    "function_count_161": true,
+    "trigger_count_174": true,
+    "trigger_errors_zero": true,
+    "role_count_26": true,
+    "registry_ddl_hash_matches": true,
+    "complete_ddl_equals_r3_plus_overlay": true,
+    "registry_signatures_complete": true,
+    "registry_owners_complete": true,
+    "registry_grants_match": true,
+    "effective_grants_match_r3_plus_r4_replacements": true,
+    "expiry_helper_finishes_without_raise": true,
+    "expiry_helper_does_not_complete_ledger": true,
+    "approve_expiry_completes_own_ledger": true,
+    "execute_expiry_completes_own_ledger": true,
+    "active_attempt_index_exact": true,
+    "sequence_allocator_upsert": true,
+    "candidate_not_null_exact": true,
+    "candidate_fk_exact": true,
+    "candidate_backfill_audit": false,
+    "rotation_execute_current_root_recheck": false,
+    "begin_replaces_expired_active_attempt": false,
+    "attempt_response_loss_vector_nonvacuous": false,
+    "documentation_traceability_consistent": false,
+    "open_decisions_57_all_open": true
+  },
+  "submitted_mutation_replay": {
+    "r3_total": 29,
+    "r3_detected": 29,
+    "r2_total": 12,
+    "r2_detected": 12,
+    "r4_total": 46,
+    "r4_detected": 46,
+    "details": {
+      "r3": [
+        {
+          "id": "root1_operator_principal",
+          "target_present": true,
+          "target_check": "root1_operator_principal",
+          "detected": true
+        },
+        {
+          "id": "root2_operator_role",
+          "target_present": true,
+          "target_check": "root2_operator_role",
+          "detected": true
+        },
+        {
+          "id": "root3_session_principal",
+          "target_present": true,
+          "target_check": "root3_session_principal",
+          "detected": true
+        },
+        {
+          "id": "root4_grant_recipient",
+          "target_present": true,
+          "target_check": "root4_grant_recipient",
+          "detected": true
+        },
+        {
+          "id": "root5_grant_session",
+          "target_present": true,
+          "target_check": "root5_grant_session",
+          "detected": true
+        },
+        {
+          "id": "root6_nonroot_approvals",
+          "target_present": true,
+          "target_check": "root6_nonroot_approvals",
+          "detected": true
+        },
+        {
+          "id": "root7_generation",
+          "target_present": true,
+          "target_check": "root7_generation",
+          "detected": true
+        },
+        {
+          "id": "root8_single_root_grant",
+          "target_present": true,
+          "target_check": "root8_single_root_grant",
+          "detected": true
+        },
+        {
+          "id": "owner1_database_self",
+          "target_present": true,
+          "target_check": "owner1_database_self",
+          "detected": true
+        },
+        {
+          "id": "owner2_database_member",
+          "target_present": true,
+          "target_check": "owner2_database_member",
+          "detected": true
+        },
+        {
+          "id": "owner3_pg_database_owner",
+          "target_present": true,
+          "target_check": "owner3_pg_database_owner",
+          "detected": true
+        },
+        {
+          "id": "owner4_schema_owner",
+          "target_present": true,
+          "target_check": "owner4_schema_owner",
+          "detected": true
+        },
+        {
+          "id": "owner5_schema_indirect",
+          "target_present": true,
+          "target_check": "owner5_schema_indirect",
+          "detected": true
+        },
+        {
+          "id": "owner6_table_owner",
+          "target_present": true,
+          "target_check": "owner6_table_owner",
+          "detected": true
+        },
+        {
+          "id": "owner7_sequence_owner",
+          "target_present": true,
+          "target_check": "owner7_sequence_owner",
+          "detected": true
+        },
+        {
+          "id": "owner8_view_owner",
+          "target_present": true,
+          "target_check": "owner8_view_owner",
+          "detected": true
+        },
+        {
+          "id": "owner9_function_owner",
+          "target_present": true,
+          "target_check": "owner9_function_owner",
+          "detected": true
+        },
+        {
+          "id": "owner10_set",
+          "target_present": true,
+          "target_check": "owner10_set",
+          "detected": true
+        },
+        {
+          "id": "owner11_inherit",
+          "target_present": true,
+          "target_check": "owner11_inherit",
+          "detected": true
+        },
+        {
+          "id": "owner12_admin",
+          "target_present": true,
+          "target_check": "owner12_admin",
+          "detected": true
+        },
+        {
+          "id": "cat1_binding_table",
+          "target_present": true,
+          "target_check": "cat1_binding_table",
+          "detected": true
+        },
+        {
+          "id": "cat2_product_source",
+          "target_present": true,
+          "target_check": "cat2_product_source",
+          "detected": true
+        },
+        {
+          "id": "cat3_spec_source",
+          "target_present": true,
+          "target_check": "cat3_spec_source",
+          "detected": true
+        },
+        {
+          "id": "cat4_price_source",
+          "target_present": true,
+          "target_check": "cat4_price_source",
+          "detected": true
+        },
+        {
+          "id": "cat5_source_fk",
+          "target_present": true,
+          "target_check": "cat5_source_fk",
+          "detected": true
+        },
+        {
+          "id": "cat6_target_key",
+          "target_present": true,
+          "target_check": "cat6_target_key",
+          "detected": true
+        },
+        {
+          "id": "cat7_event_binding_fk",
+          "target_present": true,
+          "target_check": "cat7_event_binding_fk",
+          "detected": true
+        },
+        {
+          "id": "cat8_event_digest",
+          "target_present": true,
+          "target_check": "cat8_event_digest",
+          "detected": true
+        },
+        {
+          "id": "cat9_snapshot_binding",
+          "target_present": true,
+          "target_check": "cat9_snapshot_binding",
+          "detected": true
+        }
+      ],
+      "r2": [
+        {
+          "id": "root_principal",
+          "target_check": "root_principal",
+          "detected": true
+        },
+        {
+          "id": "root_grant",
+          "target_check": "root_grant",
+          "detected": true
+        },
+        {
+          "id": "recovery_functions",
+          "target_check": "recovery_functions",
+          "detected": true
+        },
+        {
+          "id": "database_owner",
+          "target_check": "database_owner",
+          "detected": true
+        },
+        {
+          "id": "schema_owner",
+          "target_check": "schema_owner",
+          "detected": true
+        },
+        {
+          "id": "relation_owner",
+          "target_check": "relation_owner",
+          "detected": true
+        },
+        {
+          "id": "function_owner",
+          "target_check": "function_owner",
+          "detected": true
+        },
+        {
+          "id": "catalog_table",
+          "target_check": "catalog_table",
+          "detected": true
+        },
+        {
+          "id": "catalog_event_binding",
+          "target_check": "catalog_event_binding",
+          "detected": true
+        },
+        {
+          "id": "original_session",
+          "target_check": "original_session",
+          "detected": true
+        },
+        {
+          "id": "field_trigger",
+          "target_check": "field_trigger",
+          "detected": true
+        },
+        {
+          "id": "bootstrap_guard",
+          "target_check": "bootstrap_guard",
+          "detected": true
+        }
+      ],
+      "r4": [
+        {
+          "id": "R4-TX-01",
+          "risk": "LOCKED update followed by uncaught RAISE",
+          "target": "transaction",
+          "check": "expiry_no_unhandled_raise",
+          "detected": true
+        },
+        {
+          "id": "R4-TX-02",
+          "risk": "expiry update placed inside swallowed exception block",
+          "target": "transaction",
+          "check": "expiry_no_exception_swallow",
+          "detected": true
+        },
+        {
+          "id": "R4-TX-03",
+          "risk": "business error replaces committed LOCKED path",
+          "target": "transaction",
+          "check": "approve_expiry_calls_helper",
+          "detected": true
+        },
+        {
+          "id": "R4-TX-04",
+          "risk": "audit event omitted from expiry transaction",
+          "target": "transaction",
+          "check": "expiry_appends_audit",
+          "detected": true
+        },
+        {
+          "id": "R4-TX-09",
+          "risk": "expiry Event records a mismatched caller Principal",
+          "target": "transaction",
+          "check": "expiry_audit_uses_attempt_actor",
+          "detected": true
+        },
+        {
+          "id": "R4-TX-05",
+          "risk": "Ledger completed inside helper before caller outcome",
+          "target": "transaction",
+          "check": "expiry_helper_no_ledger_completion",
+          "detected": true
+        },
+        {
+          "id": "R4-TX-06",
+          "risk": "response-loss replay branch removed from Execute",
+          "target": "transaction",
+          "check": "execute_replay_branch",
+          "detected": true
+        },
+        {
+          "id": "R4-TX-07",
+          "risk": "business expiry converted into swallowed PL/pgSQL exception",
+          "target": "transaction",
+          "check": "expiry_no_exception_swallow",
+          "detected": true
+        },
+        {
+          "id": "R4-TX-08",
+          "risk": "real database error masked as normal expiry result",
+          "target": "transaction",
+          "check": "expiry_no_exception_swallow",
+          "detected": true
+        },
+        {
+          "id": "R4-ATT-01",
+          "risk": "legacy one-per-generation unique retained",
+          "target": "attempt",
+          "check": "legacy_one_per_generation_dropped",
+          "detected": true
+        },
+        {
+          "id": "R4-ATT-02",
+          "risk": "attempt sequence uniqueness removed",
+          "target": "attempt",
+          "check": "attempt_identity_unique",
+          "detected": true
+        },
+        {
+          "id": "R4-ATT-03",
+          "risk": "caller supplies attempt sequence",
+          "target": "attempt",
+          "check": "caller_cannot_choose_sequence",
+          "detected": true
+        },
+        {
+          "id": "R4-ATT-04",
+          "risk": "terminal attempt reopened as PENDING",
+          "target": "attempt",
+          "check": "terminal_attempt_not_reopened",
+          "detected": true
+        },
+        {
+          "id": "R4-ATT-05",
+          "risk": "DENIED lifecycle cannot start new attempt",
+          "target": "attempt",
+          "check": "begin_accepts_locked_recovery",
+          "detected": true
+        },
+        {
+          "id": "R4-ATT-06",
+          "risk": "LOCKED lifecycle cannot start new attempt",
+          "target": "attempt",
+          "check": "begin_accepts_locked_recovery",
+          "detected": true
+        },
+        {
+          "id": "R4-ATT-07",
+          "risk": "partial unique allows two active attempts",
+          "target": "attempt",
+          "check": "active_attempt_unique",
+          "detected": true
+        },
+        {
+          "id": "R4-ATT-08",
+          "risk": "old approval is not scoped to its attempt ID",
+          "target": "attempt",
+          "check": "approval_scoped_to_attempt",
+          "detected": true
+        },
+        {
+          "id": "R4-ATT-09",
+          "risk": "old attempt delayed Execute accepted",
+          "target": "attempt",
+          "check": "execute_requires_approved",
+          "detected": true
+        },
+        {
+          "id": "R4-ATT-10",
+          "risk": "concurrent Begin can skip lifecycle row lock",
+          "target": "attempt",
+          "check": "begin_locks_lifecycle",
+          "detected": true
+        },
+        {
+          "id": "R4-REC-01",
+          "risk": "ROTATION omits active current-root authority check",
+          "target": "recovery",
+          "check": "rotation_requires_active_root",
+          "detected": true
+        },
+        {
+          "id": "R4-REC-02",
+          "risk": "target root role may equal current role",
+          "target": "recovery",
+          "check": "begin_requires_new_principal_and_role",
+          "detected": true
+        },
+        {
+          "id": "R4-REC-03",
+          "risk": "Begin omits strict backend identity",
+          "target": "recovery",
+          "check": "begin_backend_identity_required",
+          "detected": true
+        },
+        {
+          "id": "R4-REC-04",
+          "risk": "Begin replay target may be missing",
+          "target": "recovery",
+          "check": "begin_replay_target_required",
+          "detected": true
+        },
+        {
+          "id": "R4-REC-05",
+          "risk": "Deny approver may be current or target root",
+          "target": "recovery",
+          "check": "deny_operator_excludes_root_identities",
+          "detected": true
+        },
+        {
+          "id": "R4-REC-06",
+          "risk": "Execute accepts mismatched Lifecycle/Recovery root identity",
+          "target": "recovery",
+          "check": "execute_lifecycle_identity",
+          "detected": true
+        },
+        {
+          "id": "R4-REC-07",
+          "risk": "Begin initiator Principal is disabled",
+          "target": "recovery",
+          "check": "begin_initiator_principal_active",
+          "detected": true
+        },
+        {
+          "id": "R4-REC-08",
+          "risk": "target root Principal or role reuses an old identity",
+          "target": "recovery",
+          "check": "begin_target_identity_fresh",
+          "detected": true
+        },
+        {
+          "id": "R4-REC-09",
+          "risk": "disabled Approver/Deny Principal remains eligible",
+          "target": "recovery",
+          "check": "approve_deny_principal_active",
+          "detected": true
+        },
+        {
+          "id": "R4-REC-10",
+          "risk": "Execute advances Generation for inactive target or noninitial epoch",
+          "target": "recovery",
+          "check": "execute_target_principal_active_epoch",
+          "detected": true
+        },
+        {
+          "id": "R4-REC-11",
+          "risk": "Execute auto-provisions target Principal or Epoch",
+          "target": "recovery",
+          "check": "execute_does_not_provision_principal",
+          "detected": true
+        },
+        {
+          "id": "R4-REC-12",
+          "risk": "disabled approval Operator remains executable",
+          "target": "recovery",
+          "check": "execute_rechecks_approval_operator_enabled",
+          "detected": true
+        },
+        {
+          "id": "R4-CAND-01",
+          "risk": "Selection ProfessionalReview candidate becomes nullable",
+          "target": "candidate",
+          "check": "candidate_two_not_null",
+          "detected": true
+        },
+        {
+          "id": "R4-CAND-02",
+          "risk": "Overlay only adds/backfills candidate without NOT NULL",
+          "target": "candidate",
+          "check": "candidate_two_not_null",
+          "detected": true
+        },
+        {
+          "id": "R4-CAND-03",
+          "risk": "trigger bypass can insert NULL",
+          "target": "candidate",
+          "check": "candidate_two_not_null",
+          "detected": true
+        },
+        {
+          "id": "R4-CAND-04",
+          "risk": "composite FK depends on a nullable candidate",
+          "target": "candidate",
+          "check": "candidate_composite_fk",
+          "detected": true
+        },
+        {
+          "id": "R4-CAND-05",
+          "risk": "backfill invents a Candidate value",
+          "target": "candidate",
+          "check": "candidate_no_invented_value",
+          "detected": true
+        },
+        {
+          "id": "R4-CAND-06",
+          "risk": "unresolved historical Candidate proceeds to NOT NULL",
+          "target": "candidate",
+          "check": "candidate_unknown_fails_closed",
+          "detected": true
+        },
+        {
+          "id": "R4-CAND-07",
+          "risk": "sealed Selection guard blocks authoritative Candidate backfill",
+          "target": "candidate",
+          "check": "candidate_guard_exception_narrow",
+          "detected": true
+        },
+        {
+          "id": "R4-CAND-08",
+          "risk": "finalized Snapshot guard bypasses candidate-only restriction",
+          "target": "candidate",
+          "check": "candidate_guard_exception_narrow",
+          "detected": true
+        },
+        {
+          "id": "R4-CAND-09",
+          "risk": "migration helper permits other business-field mutation",
+          "target": "candidate",
+          "check": "candidate_guard_exception_narrow",
+          "detected": true
+        },
+        {
+          "id": "R4-CAND-10",
+          "risk": "Candidate helper Owner assigned after guarded backfill",
+          "target": "candidate",
+          "check": "candidate_helper_owned_before_guard",
+          "detected": true
+        },
+        {
+          "id": "R4-CAND-11",
+          "risk": "Candidate backfill reads unfrozen source tables",
+          "target": "candidate",
+          "check": "candidate_migration_locks_sources",
+          "detected": true
+        },
+        {
+          "id": "R4-ACL-01",
+          "risk": "bootstrap completion capability omitted after final revoke",
+          "target": "acl",
+          "check": "final_acl_matches_r3_capabilities",
+          "detected": true
+        },
+        {
+          "id": "R4-ACL-02",
+          "risk": "unsafe legacy Recovery entry remains role-accessible",
+          "target": "acl",
+          "check": "old_recovery_role_grants_absent",
+          "detected": true
+        },
+        {
+          "id": "R4-ACL-03",
+          "risk": "PUBLIC EXECUTE reintroduced after final revoke",
+          "target": "acl",
+          "check": "no_public_grant_after_final_revoke",
+          "detected": true
+        },
+        {
+          "id": "R4-ACL-04",
+          "risk": "new sequence table omits function-owner DML privilege",
+          "target": "acl",
+          "check": "sequence_table_function_owner_privilege",
+          "detected": true
+        }
+      ]
+    }
+  },
+  "independent_negative_mutations": {
+    "total": 22,
+    "passed": 18,
+    "details": [
+      {
+        "id": "IND-MUT-01",
+        "risk": "LOCKED update followed by exception rollback",
+        "target_check": "no unhandled expiry raise / no swallowed exception",
+        "detected": true,
+        "status": "DETECTED"
+      },
+      {
+        "id": "IND-MUT-02",
+        "risk": "Expiry Ledger operation mismatch",
+        "target_check": "caller completes its own operation and helper completes none",
+        "detected": true,
+        "status": "DETECTED"
+      },
+      {
+        "id": "IND-MUT-03",
+        "risk": "Denied Generation cannot create next Attempt",
+        "target_check": "LOCKED lifecycle accepted by Begin",
+        "detected": true,
+        "status": "DETECTED"
+      },
+      {
+        "id": "IND-MUT-04",
+        "risk": "Locked Generation cannot create next Attempt",
+        "target_check": "LOCKED lifecycle accepted by Begin",
+        "detected": true,
+        "status": "DETECTED"
+      },
+      {
+        "id": "IND-MUT-05",
+        "risk": "Concurrent Attempt Sequence duplicate",
+        "target_check": "atomic upsert allocator",
+        "detected": true,
+        "status": "DETECTED"
+      },
+      {
+        "id": "IND-MUT-06",
+        "risk": "Two Active Attempts coexist",
+        "target_check": "PENDING/APPROVED partial unique",
+        "detected": true,
+        "status": "DETECTED"
+      },
+      {
+        "id": "IND-MUT-07",
+        "risk": "Old Approval reused",
+        "target_check": "approval lookups scoped to recovery ID",
+        "detected": true,
+        "status": "DETECTED"
+      },
+      {
+        "id": "IND-MUT-08",
+        "risk": "Old Attempt delayed Execute",
+        "target_check": "Execute requires APPROVED",
+        "detected": true,
+        "status": "DETECTED"
+      },
+      {
+        "id": "IND-MUT-09",
+        "risk": "Sequence Function Owner lacks table DML",
+        "target_check": "exact sequence table grant",
+        "detected": true,
+        "status": "DETECTED"
+      },
+      {
+        "id": "IND-MUT-10",
+        "risk": "ROTATION Execute does not recheck current Root",
+        "target_check": "Execute includes Root Session/Grant/Principal/Epoch recheck",
+        "detected": false,
+        "status": "MISSED"
+      },
+      {
+        "id": "IND-MUT-11",
+        "risk": "Revoked Initiator remains eligible",
+        "target_check": "Begin checks ACTIVE initiator Principal",
+        "detected": true,
+        "status": "DETECTED"
+      },
+      {
+        "id": "IND-MUT-12",
+        "risk": "Revoked Approver can Execute",
+        "target_check": "Execute locks ACTIVE Principals and enabled Operators",
+        "detected": true,
+        "status": "DETECTED"
+      },
+      {
+        "id": "IND-MUT-13",
+        "risk": "Execute implicitly creates Principal",
+        "target_check": "Execute contains no trusted_principal INSERT",
+        "detected": true,
+        "status": "DETECTED"
+      },
+      {
+        "id": "IND-MUT-14",
+        "risk": "Execute implicitly creates Epoch",
+        "target_check": "Execute contains no principal_epoch INSERT",
+        "detected": true,
+        "status": "DETECTED"
+      },
+      {
+        "id": "IND-MUT-15",
+        "risk": "Candidate column nullable",
+        "target_check": "two Candidate NOT NULL alterations",
+        "detected": true,
+        "status": "DETECTED"
+      },
+      {
+        "id": "IND-MUT-16",
+        "risk": "Candidate backfill changes another field",
+        "target_check": "Candidate-only JSON equality exception",
+        "detected": true,
+        "status": "DETECTED"
+      },
+      {
+        "id": "IND-MUT-17",
+        "risk": "Candidate source is non-unique",
+        "target_check": "exact Event ID and Selection Result PK joins",
+        "detected": true,
+        "status": "DETECTED"
+      },
+      {
+        "id": "IND-MUT-18",
+        "risk": "Protected source tables mutate during backfill",
+        "target_check": "SHARE ROW EXCLUSIVE source freeze",
+        "detected": true,
+        "status": "DETECTED"
+      },
+      {
+        "id": "IND-MUT-19",
+        "risk": "Sealed Snapshot digest/field mismatch",
+        "target_check": "snapshot digest verification remains active",
+        "detected": true,
+        "status": "DETECTED"
+      },
+      {
+        "id": "IND-MUT-20",
+        "risk": "Expired active Attempt blocks immediate next Recovery",
+        "target_check": "Begin detects and replaces an expired PENDING/APPROVED Attempt",
+        "detected": false,
+        "status": "MISSED"
+      },
+      {
+        "id": "IND-MUT-21",
+        "risk": "Sealed Candidate backfill leaves no durable audit",
+        "target_check": "backfill has durable audit/evidence RETURNING",
+        "detected": false,
+        "status": "MISSED"
+      },
+      {
+        "id": "IND-MUT-22",
+        "risk": "Attempt response-loss vector is vacuous",
+        "target_check": "vector has a concrete durable result different from None",
+        "detected": false,
+        "status": "MISSED"
+      }
+    ]
+  },
+  "defects": [
+    {
+      "id": "REV-R4-IND-P2-01",
+      "severity": "P2",
+      "title": "ROTATION Execute lacks current Root revalidation",
+      "evidence": "app.bootstrap_execute_root_change_r4 lines 16054-16256"
+    },
+    {
+      "id": "REV-R4-IND-P2-02",
+      "severity": "P2",
+      "title": "Expired active Attempt blocks immediate next Recovery",
+      "evidence": "app.bootstrap_begin_root_change_r4 lines 15985-15992"
+    },
+    {
+      "id": "REV-R4-IND-P2-03",
+      "severity": "P2",
+      "title": "Sealed Candidate backfill has no durable per-row audit evidence",
+      "evidence": "R4 Overlay lines 15568-15612 contain no audit/evidence RETURNING path"
+    },
+    {
+      "id": "REV-R3-R3-P2-03",
+      "severity": "P2",
+      "title": "Validator semantic coverage remains partial",
+      "evidence": "Missing ROTATION Execute recheck and expired-active replacement checks; response_loss_replay vector compares None with None"
+    },
+    {
+      "id": "REV-R4-IND-P3-01",
+      "severity": "P3",
+      "title": "R4 traceability contains stale mutation ranges and duplicate finding ID",
+      "evidence": "R4_FINDING_TRACEABILITY.md"
+    }
+  ],
+  "result": "FAIL — DESIGN CORRECTIONS REQUIRED",
+  "postgresql_grammar": "NOT VERIFIED — NO COMPATIBLE OFFLINE PARSER",
+  "postgresql_compilation": "NOT VERIFIED — DATABASE NOT AUTHORIZED",
+  "catalog_introspection": "NOT VERIFIED — DATABASE NOT AUTHORIZED",
+  "runtime_concurrency": "NOT EXECUTED — RUNTIME NOT AUTHORIZED"
+}

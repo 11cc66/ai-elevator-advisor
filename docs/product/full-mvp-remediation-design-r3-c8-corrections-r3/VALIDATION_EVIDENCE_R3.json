@@ -1,0 +1,315 @@
+{
+  "design": "FULL-MVP-REMEDIATION-DESIGN-R3-C8-CORRECTIONS-R3",
+  "guard": {
+    "verified": true,
+    "parent_pid": 20212,
+    "parent_path": "C:\\Program Files\\WindowsApps\\OpenAI.CodexPrimaryRuntime.v26-1119-907-0_26.1119.907.0_x64__3k8sg7r9htsxt\\dependencies\\native\\powershell\\pwsh.exe",
+    "parent_creation_100ns": "134400216684456389",
+    "output_root": "D:\\thinkbook\\Desktop\\jieya\\docs\\product\\full-mvp-remediation-design-r3-c8-corrections-r3",
+    "checked_at_utc_ns": 1795548069905657000
+  },
+  "complete_ddl_sha256": "C899D5F7C433F6936617033E76161FB0D33ACED85B6CFF004073FB0B012C67ED",
+  "overlay_sha256": "8EC1CE0F6174225629F1A8EDD88CF7CDB77C0D296F6E3002C9418D5D655E4CEB",
+  "object_inventory": {
+    "tables": 72,
+    "foreign_keys": 123,
+    "functions": 153,
+    "triggers": 174,
+    "roles": 26
+  },
+  "core_checks": {
+    "no_bootstrap_root_session_old_fk": true,
+    "bootstrap_root_session_generation_history_fk_r3": true,
+    "approval_uses_generation_history": true,
+    "lifecycle_state_fk_deferrable": true,
+    "issuance_attempt": true,
+    "recovery_expiry": true,
+    "recovery_single_generation": true,
+    "recovery_replay_first": true,
+    "root_active_check": true,
+    "owner_advisory_lock": true,
+    "catalog_source_pk_fk": true,
+    "catalog_event_pk_fk": true,
+    "catalog_source_evidence_trigger": true,
+    "catalog_event_binding_trigger": true,
+    "professional_candidate_columns": true,
+    "professional_candidate_triggers": true,
+    "result_recovery_single": true,
+    "result_recovery_replay_first": true,
+    "catalog_actor_grant_fk": true,
+    "final_public_revoke": true,
+    "state_timestamp_checks": true,
+    "r2_manifest_hash": true,
+    "fk_target_integrity": true,
+    "registry_parses": true,
+    "complete_contains_overlay": true
+  },
+  "core_failed": [],
+  "fk_errors": [],
+  "formal_mutations_total": 29,
+  "formal_mutations_detected": 29,
+  "formal_mutation_results": [
+    {
+      "id": "root1_operator_principal",
+      "detected": true,
+      "new_failures": [
+        "root1_operator_principal"
+      ]
+    },
+    {
+      "id": "root2_operator_role",
+      "detected": true,
+      "new_failures": [
+        "root2_operator_role"
+      ]
+    },
+    {
+      "id": "root3_session_principal",
+      "detected": true,
+      "new_failures": [
+        "root3_session_principal"
+      ]
+    },
+    {
+      "id": "root4_grant_recipient",
+      "detected": true,
+      "new_failures": [
+        "root4_grant_recipient"
+      ]
+    },
+    {
+      "id": "root5_grant_session",
+      "detected": true,
+      "new_failures": [
+        "root5_grant_session"
+      ]
+    },
+    {
+      "id": "root6_nonroot_approvals",
+      "detected": true,
+      "new_failures": [
+        "root6_nonroot_approvals"
+      ]
+    },
+    {
+      "id": "root7_generation",
+      "detected": true,
+      "new_failures": [
+        "root7_generation"
+      ]
+    },
+    {
+      "id": "root8_single_root_grant",
+      "detected": true,
+      "new_failures": [
+        "root8_single_root_grant"
+      ]
+    },
+    {
+      "id": "owner1_database_self",
+      "detected": true,
+      "new_failures": [
+        "owner1_database_self"
+      ]
+    },
+    {
+      "id": "owner2_database_member",
+      "detected": true,
+      "new_failures": [
+        "owner2_database_member"
+      ]
+    },
+    {
+      "id": "owner3_pg_database_owner",
+      "detected": true,
+      "new_failures": [
+        "owner3_pg_database_owner"
+      ]
+    },
+    {
+      "id": "owner4_schema_owner",
+      "detected": true,
+      "new_failures": [
+        "owner4_schema_owner"
+      ]
+    },
+    {
+      "id": "owner5_schema_indirect",
+      "detected": true,
+      "new_failures": [
+        "owner5_schema_indirect"
+      ]
+    },
+    {
+      "id": "owner6_table_owner",
+      "detected": true,
+      "new_failures": [
+        "owner6_table_owner"
+      ]
+    },
+    {
+      "id": "owner7_sequence_owner",
+      "detected": true,
+      "new_failures": [
+        "owner6_table_owner",
+        "owner7_sequence_owner",
+        "owner8_view_owner"
+      ]
+    },
+    {
+      "id": "owner8_view_owner",
+      "detected": true,
+      "new_failures": [
+        "owner6_table_owner",
+        "owner7_sequence_owner",
+        "owner8_view_owner"
+      ]
+    },
+    {
+      "id": "owner9_function_owner",
+      "detected": true,
+      "new_failures": [
+        "owner9_function_owner"
+      ]
+    },
+    {
+      "id": "owner10_set",
+      "detected": true,
+      "new_failures": [
+        "owner10_set"
+      ]
+    },
+    {
+      "id": "owner11_inherit",
+      "detected": true,
+      "new_failures": [
+        "owner11_inherit"
+      ]
+    },
+    {
+      "id": "owner12_admin",
+      "detected": true,
+      "new_failures": [
+        "owner12_admin"
+      ]
+    },
+    {
+      "id": "cat1_binding_table",
+      "detected": true,
+      "new_failures": [
+        "cat1_binding_table"
+      ]
+    },
+    {
+      "id": "cat2_product_source",
+      "detected": true,
+      "new_failures": [
+        "cat2_product_source"
+      ]
+    },
+    {
+      "id": "cat3_spec_source",
+      "detected": true,
+      "new_failures": [
+        "cat3_spec_source"
+      ]
+    },
+    {
+      "id": "cat4_price_source",
+      "detected": true,
+      "new_failures": [
+        "cat4_price_source"
+      ]
+    },
+    {
+      "id": "cat5_source_fk",
+      "detected": true,
+      "new_failures": [
+        "cat5_source_fk"
+      ]
+    },
+    {
+      "id": "cat6_target_key",
+      "detected": true,
+      "new_failures": [
+        "cat6_target_key"
+      ]
+    },
+    {
+      "id": "cat7_event_binding_fk",
+      "detected": true,
+      "new_failures": [
+        "cat7_event_binding_fk"
+      ]
+    },
+    {
+      "id": "cat8_event_digest",
+      "detected": true,
+      "new_failures": [
+        "cat8_event_digest"
+      ]
+    },
+    {
+      "id": "cat9_snapshot_binding",
+      "detected": true,
+      "new_failures": [
+        "cat9_snapshot_binding"
+      ]
+    }
+  ],
+  "r2_mutations_total": 12,
+  "r2_mutations_detected": 12,
+  "r2_mutation_results": [
+    {
+      "id": "root_principal",
+      "detected": true
+    },
+    {
+      "id": "root_grant",
+      "detected": true
+    },
+    {
+      "id": "recovery_functions",
+      "detected": true
+    },
+    {
+      "id": "database_owner",
+      "detected": true
+    },
+    {
+      "id": "schema_owner",
+      "detected": true
+    },
+    {
+      "id": "relation_owner",
+      "detected": true
+    },
+    {
+      "id": "function_owner",
+      "detected": true
+    },
+    {
+      "id": "catalog_table",
+      "detected": true
+    },
+    {
+      "id": "catalog_event_binding",
+      "detected": true
+    },
+    {
+      "id": "original_session",
+      "detected": true
+    },
+    {
+      "id": "field_trigger",
+      "detected": true
+    },
+    {
+      "id": "bootstrap_guard",
+      "detected": true
+    }
+  ],
+  "result": "PASS",
+  "postgresql_grammar": "NOT VERIFIED \u2014 NO COMPATIBLE OFFLINE PARSER",
+  "postgresql_execution": "NOT EXECUTED \u2014 DATABASE NOT AUTHORIZED"
+}

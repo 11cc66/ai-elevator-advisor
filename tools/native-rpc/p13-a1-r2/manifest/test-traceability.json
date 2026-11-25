@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "executionStatus": "DESIGNED / NOT EXECUTED — BUILD-ONLY AUTHORIZATION",
+  "tests": [
+    {"id":"T01","source":"D1 T01","method":"P13Invoke","precondition":"valid test identity and session","expected":"authorized","evidence":"call attributes + session record","type":"NATIVE RPC RUNTIME","allowedInB1":false},
+    {"id":"T02","source":"D1 T02","method":"P13Invoke","precondition":"wrong PID","expected":"SESSION_PROCESS_MISMATCH / DENY","evidence":"current vs registered PID","type":"NATIVE RPC RUNTIME","allowedInB1":false},
+    {"id":"T03","source":"D1 T03","method":"AuthorizeCurrentCall","precondition":"wrong creation time","expected":"DENY","evidence":"creation-time pair","type":"NATIVE RPC RUNTIME","allowedInB1":false},
+    {"id":"T04","source":"D1 T04","method":"AuthorizeCurrentCall","precondition":"wrong token SID","expected":"DENY","evidence":"token groups","type":"NATIVE RPC RUNTIME","allowedInB1":false},
+    {"id":"T05","source":"D1 T05","method":"AuthorizeCurrentCall","precondition":"wrong RPC principal","expected":"PRINCIPAL_MISMATCH","evidence":"RPC principal","type":"NATIVE RPC RUNTIME","allowedInB1":false},
+    {"id":"T06","source":"D1 T06","method":"TestSessionStore","precondition":"expired session","expected":"SESSION_CLOSED","evidence":"session state","type":"LOGICAL + RUNTIME","allowedInB1":false},
+    {"id":"T07","source":"D1 T07","method":"TestSessionStore","precondition":"wrong epoch","expected":"EPOCH_MISMATCH","evidence":"epoch values","type":"LOGICAL + RUNTIME","allowedInB1":false},
+    {"id":"T08","source":"D1 T08","method":"TestSessionStore","precondition":"replayed request","expected":"REPLAY","evidence":"journal digest","type":"LOGICAL + RUNTIME","allowedInB1":false},
+    {"id":"T09","source":"D1 T09","method":"TestSessionStore","precondition":"conflicting request","expected":"CONFLICT","evidence":"journal digest","type":"LOGICAL + RUNTIME","allowedInB1":false},
+    {"id":"T10","source":"D1 T10","method":"P13Invoke","precondition":"cross-authority session","expected":"AUTHORITY_MISMATCH","evidence":"session/authority binding","type":"NATIVE RPC RUNTIME","allowedInB1":false},
+    {"id":"T11","source":"D1 T11","method":"AuthorizeCurrentCall","precondition":"client exit during call","expected":"session stale / request fail","evidence":"process signaled","type":"NATIVE RPC RUNTIME","allowedInB1":false},
+    {"id":"T12","source":"D1 T12","method":"AuthorizeCurrentCall","precondition":"PID reuse","expected":"DENY","evidence":"creation time + held handle","type":"NATIVE RPC RUNTIME","allowedInB1":false},
+    {"id":"T13","source":"D1 T13","method":"RPC callback + manager","precondition":"unauthorized caller","expected":"DENY","evidence":"callback and manager status","type":"NATIVE RPC RUNTIME","allowedInB1":false},
+    {"id":"T14","source":"D1 T14","method":"SESSION_CLOSE","precondition":"Helper revoke","expected":"no false CLOSED","evidence":"termination status","type":"NATIVE RPC RUNTIME","allowedInB1":false},
+    {"id":"T15","source":"D1 T15","method":"Job adapter","precondition":"Supervisor Job close","expected":"process signaled or UNKNOWN","evidence":"wait result","type":"NATIVE RPC RUNTIME","allowedInB1":false},
+    {"id":"T16","source":"D1 T16","method":"RevokeAndWait","precondition":"Job close timeout","expected":"TerminateProcess fallback then wait","evidence":"signaled state","type":"NATIVE RPC RUNTIME","allowedInB1":false},
+    {"id":"T17","source":"D1 T17","method":"Identity adapter","precondition":"stale process handle","expected":"DENY","evidence":"handle/creation mismatch","type":"NATIVE RPC RUNTIME","allowedInB1":false},
+    {"id":"T18","source":"D1 T18","method":"P13Invoke/P13LaunchInvoke","precondition":"unauthorized Manager entry","expected":"RPC/manager reject","evidence":"RPC status","type":"NATIVE RPC RUNTIME","allowedInB1":false},
+    {"id":"T19","source":"B1 matrix","method":"Launch state","precondition":"in-flight revoke race","expected":"stop new calls; UNKNOWN if unsupported","evidence":"CAS/state","type":"NATIVE RPC RUNTIME","allowedInB1":false},
+    {"id":"T20","source":"B1 matrix","method":"TestLaunchStore","precondition":"launch ticket reuse","expected":"CONFLICT","evidence":"ticket state","type":"LOGICAL + RUNTIME","allowedInB1":false},
+    {"id":"T21","source":"B1 matrix","method":"Identity adapter","precondition":"restricted SID mismatch","expected":"DENY","evidence":"TokenRestrictedSids","type":"NATIVE RPC RUNTIME","allowedInB1":false},
+    {"id":"T22","source":"B1 matrix","method":"Identity adapter","precondition":"normal SID missing","expected":"DENY","evidence":"TokenGroups","type":"NATIVE RPC RUNTIME","allowedInB1":false},
+    {"id":"T23","source":"B1 matrix","method":"Launch descriptor","precondition":"wrong credential reference","expected":"DENY","evidence":"descriptor mismatch","type":"LOGICAL + RUNTIME","allowedInB1":false},
+    {"id":"T24","source":"B1 matrix","method":"Job adapter","precondition":"Job assignment failure","expected":"terminate suspended process","evidence":"IsProcessInJob","type":"NATIVE RPC RUNTIME","allowedInB1":false},
+    {"id":"T25","source":"B1 matrix","method":"Job adapter","precondition":"Resume failure","expected":"Job terminate; UNKNOWN","evidence":"API status","type":"NATIVE RPC RUNTIME","allowedInB1":false},
+    {"id":"T26","source":"B1 matrix","method":"RevokeAndWait","precondition":"terminate fallback","expected":"signaled or UNKNOWN","evidence":"WaitForSingleObject","type":"NATIVE RPC RUNTIME","allowedInB1":false},
+    {"id":"T27","source":"B1 matrix","method":"RevokeAndWait","precondition":"wait timeout","expected":"UNKNOWN/QUARANTINED","evidence":"WAIT_TIMEOUT","type":"NATIVE RPC RUNTIME","allowedInB1":false},
+    {"id":"T28","source":"B1 matrix","method":"EvaluateSealedEvidence","precondition":"Sealer evidence mismatch","expected":"UNKNOWN","evidence":"dual evidence compare","type":"LOGICAL + RUNTIME","allowedInB1":false},
+    {"id":"T29","source":"B1 matrix","method":"EvaluateSealedEvidence","precondition":"old write handle not closed","expected":"UNKNOWN; no SEALED","evidence":"handle closure proof","type":"LOGICAL + RUNTIME","allowedInB1":false},
+    {"id":"T30","source":"B1 matrix","method":"Launch/Sealed state","precondition":"UNKNOWN recorded","expected":"never transition to CLOSED/SEALED without proof","evidence":"state transition audit","type":"LOGICAL + RUNTIME","allowedInB1":false}
+  ]
+}
+

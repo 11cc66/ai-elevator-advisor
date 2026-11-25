@@ -20,6 +20,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@elevator/build-integrity':
+        specifier: workspace:*
+        version: link:../../packages/build-integrity
       '@elevator/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
@@ -90,6 +93,9 @@ importers:
 
   apps/worker:
     dependencies:
+      '@elevator/build-integrity':
+        specifier: workspace:*
+        version: link:../../packages/build-integrity
       '@elevator/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
@@ -133,6 +139,12 @@ importers:
       vitest:
         specifier: 3.2.4
         version: 3.2.4(@types/node@24.19.2)(jiti@2.7.0)(lightningcss@1.33.0)(tsx@4.23.15)
+
+  packages/build-integrity:
+    dependencies:
+      typescript:
+        specifier: 5.9.3
+        version: 5.9.3
 
   packages/contracts:
     dependencies:

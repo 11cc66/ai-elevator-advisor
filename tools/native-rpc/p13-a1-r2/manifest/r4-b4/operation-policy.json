@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 2,
+  "status": "B4 BUILD-ONLY / IMMUTABLE CANONICAL POLICY",
+  "authorityPolicies": [
+    {"id":"0x0001","name":"SESSION_REGISTER","manager":"P13Invoke","principals":["WEB_SERVICE","WORKER_SERVICE","STAGING_WRITER_HELPER","PUBLISHER_HELPER","SEALER_HELPER","CLEANUP_HELPER"],"session":"CREATES","binding":"NO_GRANT","generation":false},
+    {"id":"0x0002","name":"SESSION_HEARTBEAT","manager":"P13Invoke","principals":["WEB_SERVICE","WORKER_SERVICE","STAGING_WRITER_HELPER","PUBLISHER_HELPER","SEALER_HELPER","CLEANUP_HELPER"],"session":"REQUIRED","binding":"NO_GRANT","generation":false},
+    {"id":"0x0003","name":"SESSION_CLOSE","manager":"P13Invoke","principals":["WEB_SERVICE","WORKER_SERVICE","STAGING_WRITER_HELPER","PUBLISHER_HELPER","SEALER_HELPER","CLEANUP_HELPER"],"session":"REQUIRED","binding":"NO_GRANT","generation":false},
+    {"id":"0x0004","name":"OPERATION_REQUEST_GRANT","manager":"P13Invoke","principals":["WEB_SERVICE","WORKER_SERVICE"],"session":"REQUIRED","binding":"NO_GRANT","generation":true},
+    {"id":"0x0005","name":"OPERATION_STATUS_READ","manager":"P13Invoke","principals":["WEB_SERVICE","WORKER_SERVICE"],"session":"REQUIRED","binding":"OPERATION_OWNER","generation":false},
+    {"id":"0x0006","name":"OPERATION_CANCEL_BEFORE_GRANT","manager":"P13Invoke","principals":["WEB_SERVICE","WORKER_SERVICE"],"session":"REQUIRED","binding":"OPERATION_OWNER","generation":true},
+    {"id":"0x0007","name":"HELPER_REGISTER","manager":"P13Invoke","principals":["STAGING_WRITER_HELPER","PUBLISHER_HELPER","SEALER_HELPER","CLEANUP_HELPER"],"session":"REQUIRED","binding":"LAUNCH_TICKET","generation":true},
+    {"id":"0x0008","name":"HELPER_HEARTBEAT","manager":"P13Invoke","principals":["STAGING_WRITER_HELPER","PUBLISHER_HELPER","SEALER_HELPER","CLEANUP_HELPER"],"session":"REQUIRED","binding":"MATCH_GRANT","generation":true},
+    {"id":"0x0009","name":"HELPER_EFFECT_COMMITTED","manager":"P13Invoke","principals":["STAGING_WRITER_HELPER","PUBLISHER_HELPER","SEALER_HELPER","CLEANUP_HELPER"],"session":"REQUIRED","binding":"MATCH_GRANT","generation":true},
+    {"id":"0x000A","name":"HELPER_EXIT_NOTICE","manager":"P13Invoke","principals":["STAGING_WRITER_HELPER","PUBLISHER_HELPER","SEALER_HELPER","CLEANUP_HELPER"],"session":"REQUIRED","binding":"MATCH_GRANT","generation":true},
+    {"id":"0x000B","name":"GRANT_STATUS_READ","manager":"P13Invoke","principals":["STAGING_WRITER_HELPER","PUBLISHER_HELPER","SEALER_HELPER","CLEANUP_HELPER"],"session":"REQUIRED","binding":"MATCH_GRANT","generation":true},
+    {"id":"0x000C","name":"AUTHORITY_EPOCH_READ","manager":"P13Invoke","principals":["WEB_SERVICE","WORKER_SERVICE","STAGING_WRITER_HELPER","PUBLISHER_HELPER","SEALER_HELPER","CLEANUP_HELPER"],"session":"NONE","binding":"NO_GRANT","generation":false},
+    {"id":"0x000D","name":"PROCESS_STATE_READ","manager":"P13Invoke","principals":["STAGING_WRITER_HELPER","PUBLISHER_HELPER","SEALER_HELPER","CLEANUP_HELPER"],"session":"REQUIRED","binding":"MATCH_GRANT","generation":true}
+  ],
+  "launchPolicies": [
+    {"id":"0x1000","name":"LAUNCH_SESSION_REGISTER","manager":"P13LaunchInvoke","principal":"AUTHORITY_SUPERVISOR","binding":"LAUNCH_TICKET"},
+    {"id":"0x1001","name":"LAUNCH_PREPARE","manager":"P13LaunchInvoke","principal":"AUTHORITY_SUPERVISOR","binding":"LAUNCH_TICKET"},
+    {"id":"0x1002","name":"LAUNCH_COMMIT","manager":"P13LaunchInvoke","principal":"AUTHORITY_SUPERVISOR","binding":"LAUNCH_TICKET"},
+    {"id":"0x1003","name":"LAUNCH_ABORT","manager":"P13LaunchInvoke","principal":"AUTHORITY_SUPERVISOR","binding":"LAUNCH_TICKET"},
+    {"id":"0x1004","name":"LAUNCH_STATUS_READ","manager":"P13LaunchInvoke","principal":"AUTHORITY_SUPERVISOR","binding":"NO_GRANT"},
+    {"id":"0x1005","name":"LAUNCH_SESSION_CLOSE","manager":"P13LaunchInvoke","principal":"AUTHORITY_SUPERVISOR","binding":"NO_GRANT"}
+  ]
+}
+

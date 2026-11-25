@@ -1,0 +1,2268 @@
+{
+  "design": "FULL-MVP-REMEDIATION-DESIGN-R3-C8-CORRECTIONS-R4",
+  "scope": "STATIC FINAL-FUNCTION REGISTRY; NOT POSTGRESQL CATALOG",
+  "ddl_sha256": "F4DA543931B69F67DEB6672B41F968FCF24E1D8E025B367E5282B4AF44711B2F",
+  "function_count": 161,
+  "missing_owners": [],
+  "unresolved_call_targets": [],
+  "effective_capability_grants": {
+    "app.activate_trusted_session(text, text)": [
+      "elevator_session_bootstrap"
+    ],
+    "app.add_selection_candidate(text, text, text, text, text, text)": [
+      "elevator_runtime_worker"
+    ],
+    "app.advance_principal_epoch(text, text)": [
+      "elevator_identity_broker"
+    ],
+    "app.approve_command_result_recovery_r2(text, text, text, text, text)": [
+      "elevator_security_admin"
+    ],
+    "app.bootstrap_approve_root_change_r4(text, text, text)": [
+      "elevator_bootstrap_approver"
+    ],
+    "app.bootstrap_begin_root_change_r4(text, boolean, text, text, text, text, text, text, text)": [
+      "elevator_bootstrap_initiator"
+    ],
+    "app.bootstrap_complete_root_r3(boolean, text)": [
+      "elevator_root_issuer"
+    ],
+    "app.bootstrap_complete_root_r3(boolean, text, text, text)": [
+      "elevator_root_issuer"
+    ],
+    "app.bootstrap_deny_root_change_r4(text, text, text, text)": [
+      "elevator_bootstrap_approver"
+    ],
+    "app.bootstrap_execute_root_change_r4(text, text, text)": [
+      "elevator_bootstrap_seed"
+    ],
+    "app.bootstrap_mark_issuance_failed_r3(boolean, text, text, text)": [
+      "elevator_bootstrap_seed"
+    ],
+    "app.bootstrap_prepare_r3(text, text, text, text, text, text, text, text, text)": [
+      "elevator_bootstrap_seed"
+    ],
+    "app.bootstrap_record_approval_r3(boolean, text)": [
+      "elevator_bootstrap_approver",
+      "elevator_bootstrap_initiator"
+    ],
+    "app.complete_selection_candidate_result(text, text, text, text, text, text, text, text, text)": [
+      "elevator_runtime_worker"
+    ],
+    "app.create_catalog_review_event_r3(text, text, text, text, text, text, text, text, text, text, text, text, text, text, text)": [
+      "elevator_catalog_reviewer"
+    ],
+    "app.create_catalog_source_target_binding_r2(text, text, text, text, text, text, text, text, text, text, text, text, text, text, text)": [
+      "elevator_catalog_publisher",
+      "elevator_catalog_reviewer"
+    ],
+    "app.create_policy_revision(text, text, text, bigint, text, text, text, text, text)": [
+      "elevator_policy_author"
+    ],
+    "app.create_price_revision_r3(text, text, text, text, text, text, text, bigint, text, text, text, text, timestamptz, timestamptz, timestamptz, text, numeric, numeric, text, text)": [
+      "elevator_catalog_publisher"
+    ],
+    "app.create_professional_review(text, text, text, text, text, text, text, text, text, text, text)": [
+      "elevator_professional_reviewer"
+    ],
+    "app.create_requirement_field_fact_r3(text, text, text, text, jsonb, text, text, text, text, text, boolean, text, text, text)": [
+      "elevator_runtime_worker"
+    ],
+    "app.create_selection_run(text, text, text, bigint, text, text)": [
+      "elevator_runtime_worker"
+    ],
+    "app.create_snapshot_r3(text, text, bigint)": [
+      "elevator_runtime_worker"
+    ],
+    "app.execute_command_result_recovery_r2(text, text, text)": [
+      "elevator_runtime_web",
+      "elevator_runtime_worker"
+    ],
+    "app.finalize_snapshot_r3(text, bigint)": [
+      "elevator_runtime_worker"
+    ],
+    "app.issue_authority_grant(text, text, text, text, text, text, text, timestamptz)": [
+      "elevator_root_issuer",
+      "elevator_security_admin"
+    ],
+    "app.open_trusted_session(text, text, bigint, text, text, text, text, text, timestamptz, timestamptz, timestamptz)": [
+      "elevator_identity_broker"
+    ],
+    "app.record_selection_catalog_review_result(text, text, text, text, text, text, timestamptz, text, text)": [
+      "elevator_runtime_worker"
+    ],
+    "app.record_selection_missing_field_result(text, text, text, text, text, text, text)": [
+      "elevator_runtime_worker"
+    ],
+    "app.record_selection_professional_review_result(text, text, text, bigint, text, text, text, text, timestamptz, text, text)": [
+      "elevator_runtime_worker"
+    ],
+    "app.record_selection_requirement_field(text, text, text, jsonb, text, text, text, text, text, text, boolean, text, text, text, text, text)": [
+      "elevator_runtime_worker"
+    ],
+    "app.record_selection_source_result(text, text, text, text)": [
+      "elevator_runtime_worker"
+    ],
+    "app.record_selection_warning_result(text, text, bigint, text, text, text, text, text, text)": [
+      "elevator_runtime_worker"
+    ],
+    "app.register_session_role(text, text, text, text)": [
+      "elevator_identity_broker"
+    ],
+    "app.request_command_result_recovery_r2(text, text, text, text, text, text)": [
+      "elevator_runtime_web",
+      "elevator_runtime_worker"
+    ],
+    "app.revoke_authority_grant(text, text)": [
+      "elevator_security_admin"
+    ],
+    "app.revoke_trusted_session(text, text)": [
+      "elevator_identity_broker"
+    ],
+    "app.seal_selection_run(text, bigint, text)": [
+      "elevator_runtime_worker"
+    ],
+    "app.set_selection_candidate_parameter(text, text, text, text)": [
+      "elevator_runtime_worker"
+    ],
+    "app.set_selection_candidate_price(text, text, text, text)": [
+      "elevator_runtime_worker"
+    ],
+    "app.terminate_trusted_session_r2(text, text, text, text, text)": [
+      "elevator_identity_broker"
+    ],
+    "app.transition_policy_review(text, bigint, app.policy_command, text, text, text)": [
+      "elevator_policy_author",
+      "elevator_policy_reviewer"
+    ],
+    "app.transition_professional_review(text, bigint, app.professional_review_command, text, text, text, text, text)": [
+      "elevator_professional_reviewer"
+    ]
+  },
+  "functions": [
+    {
+      "signature": "app.activate_trusted_session(text, text)",
+      "name": "app.activate_trusted_session",
+      "returns": "void",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [
+        "elevator_session_bootstrap"
+      ],
+      "calls": [
+        "app_private.session_token_digest",
+        "app_private.sha256_hex"
+      ]
+    },
+    {
+      "signature": "app.add_selection_candidate(text, text, text, text, text, text)",
+      "name": "app.add_selection_candidate",
+      "returns": "text",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [
+        "elevator_runtime_worker"
+      ],
+      "calls": [
+        "app_private.assert_active_session",
+        "app_private.claim_command_request",
+        "app_private.complete_command_request",
+        "app_private.lock_authority_grant",
+        "app_private.lock_current_session",
+        "app_private.r6_request_hash"
+      ]
+    },
+    {
+      "signature": "app.advance_principal_epoch(text, text)",
+      "name": "app.advance_principal_epoch",
+      "returns": "bigint",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [
+        "elevator_identity_broker"
+      ],
+      "calls": [
+        "app.terminate_trusted_session_r2"
+      ]
+    },
+    {
+      "signature": "app.approve_command_result_recovery_r2(text, text, text, text, text)",
+      "name": "app.approve_command_result_recovery_r2",
+      "returns": "void",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [
+        "elevator_security_admin"
+      ],
+      "calls": [
+        "app_private.assert_active_session",
+        "app_private.claim_command_request",
+        "app_private.complete_command_request",
+        "app_private.lock_authority_grant",
+        "app_private.lock_current_session",
+        "app_private.r6_request_hash"
+      ]
+    },
+    {
+      "signature": "app.bootstrap_approve_root_change_r2(text, text, text)",
+      "name": "app.bootstrap_approve_root_change_r2",
+      "returns": "void",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app.bootstrap_approve_root_change_r4"
+      ]
+    },
+    {
+      "signature": "app.bootstrap_approve_root_change_r4(text, text, text)",
+      "name": "app.bootstrap_approve_root_change_r4",
+      "returns": "text",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [
+        "elevator_bootstrap_approver"
+      ],
+      "calls": [
+        "app_private.append_bootstrap_event_r2",
+        "app_private.claim_bootstrap_request_r2",
+        "app_private.complete_bootstrap_request_r2",
+        "app_private.lock_expired_root_change_r4",
+        "app_private.r6_request_hash",
+        "app_private.validate_session_role_r3"
+      ]
+    },
+    {
+      "signature": "app.bootstrap_begin_root_change_r2(text, boolean, text, text, text, text, text, text, text)",
+      "name": "app.bootstrap_begin_root_change_r2",
+      "returns": "void",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app.bootstrap_begin_root_change_r4"
+      ]
+    },
+    {
+      "signature": "app.bootstrap_begin_root_change_r4(text, boolean, text, text, text, text, text, text, text)",
+      "name": "app.bootstrap_begin_root_change_r4",
+      "returns": "table(recovery_id text,attempt_sequence bigint)",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [
+        "elevator_bootstrap_initiator"
+      ],
+      "calls": [
+        "app_private.append_bootstrap_event_r2",
+        "app_private.bootstrap_recovery_digest_r2",
+        "app_private.claim_bootstrap_request_r2",
+        "app_private.complete_bootstrap_request_r2",
+        "app_private.next_bootstrap_recovery_sequence_r4",
+        "app_private.r6_request_hash",
+        "app_private.validate_session_role_r3"
+      ]
+    },
+    {
+      "signature": "app.bootstrap_complete_root_r3(boolean, text)",
+      "name": "app.bootstrap_complete_root_r3",
+      "returns": "void",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [
+        "elevator_root_issuer"
+      ],
+      "calls": [
+        "app.bootstrap_complete_root_r3"
+      ]
+    },
+    {
+      "signature": "app.bootstrap_complete_root_r3(boolean, text, text, text)",
+      "name": "app.bootstrap_complete_root_r3",
+      "returns": "void",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [
+        "elevator_root_issuer"
+      ],
+      "calls": [
+        "app_private.append_bootstrap_event_r2",
+        "app_private.bootstrap_root_grant_digest_r2",
+        "app_private.claim_bootstrap_request_r2",
+        "app_private.complete_bootstrap_request_r2",
+        "app_private.r6_request_hash",
+        "app_private.session_token_digest",
+        "app_private.sha256_hex",
+        "app_private.validate_session_role_r3"
+      ]
+    },
+    {
+      "signature": "app.bootstrap_deny_root_change_r3(text, text, text, text)",
+      "name": "app.bootstrap_deny_root_change_r3",
+      "returns": "void",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app.bootstrap_deny_root_change_r4"
+      ]
+    },
+    {
+      "signature": "app.bootstrap_deny_root_change_r4(text, text, text, text)",
+      "name": "app.bootstrap_deny_root_change_r4",
+      "returns": "text",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [
+        "elevator_bootstrap_approver"
+      ],
+      "calls": [
+        "app_private.append_bootstrap_event_r2",
+        "app_private.claim_bootstrap_request_r2",
+        "app_private.complete_bootstrap_request_r2",
+        "app_private.r6_request_hash",
+        "app_private.validate_session_role_r3"
+      ]
+    },
+    {
+      "signature": "app.bootstrap_execute_root_change_r2(text, text, text)",
+      "name": "app.bootstrap_execute_root_change_r2",
+      "returns": "bigint",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app.bootstrap_execute_root_change_r4"
+      ]
+    },
+    {
+      "signature": "app.bootstrap_execute_root_change_r4(text, text, text)",
+      "name": "app.bootstrap_execute_root_change_r4",
+      "returns": "table(result_code text,new_generation bigint)",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [
+        "elevator_bootstrap_seed"
+      ],
+      "calls": [
+        "app_private.append_bootstrap_event_r2",
+        "app_private.bootstrap_generation_digest_r2",
+        "app_private.claim_bootstrap_request_r2",
+        "app_private.complete_bootstrap_request_r2",
+        "app_private.lock_expired_root_change_r4",
+        "app_private.r6_request_hash"
+      ]
+    },
+    {
+      "signature": "app.bootstrap_mark_issuance_failed_r3(boolean, text, text, text)",
+      "name": "app.bootstrap_mark_issuance_failed_r3",
+      "returns": "void",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [
+        "elevator_bootstrap_seed"
+      ],
+      "calls": [
+        "app_private.append_bootstrap_event_r2",
+        "app_private.claim_bootstrap_request_r2",
+        "app_private.complete_bootstrap_request_r2",
+        "app_private.r6_request_hash"
+      ]
+    },
+    {
+      "signature": "app.bootstrap_prepare_r3(text, text, text, text, text, text, text, text, text)",
+      "name": "app.bootstrap_prepare_r3",
+      "returns": "void",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [
+        "elevator_bootstrap_seed"
+      ],
+      "calls": [
+        "app_private.append_bootstrap_event_r2",
+        "app_private.bootstrap_generation_digest_r2"
+      ]
+    },
+    {
+      "signature": "app.bootstrap_record_approval_r3(boolean, text)",
+      "name": "app.bootstrap_record_approval_r3",
+      "returns": "void",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [
+        "elevator_bootstrap_approver",
+        "elevator_bootstrap_initiator"
+      ],
+      "calls": [
+        "app_private.append_bootstrap_event_r2",
+        "app_private.claim_bootstrap_request_r2",
+        "app_private.complete_bootstrap_request_r2",
+        "app_private.sha256_hex",
+        "app_private.validate_session_role_r3"
+      ]
+    },
+    {
+      "signature": "app.build_snapshot_basis_r6(text)",
+      "name": "app.build_snapshot_basis_r6",
+      "returns": "bytea",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app_private.u16be",
+        "app_private.u32be",
+        "app_private.u64be"
+      ]
+    },
+    {
+      "signature": "app.complete_selection_candidate_result(text, text, text, text, text, text, text, text, text)",
+      "name": "app.complete_selection_candidate_result",
+      "returns": "text",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [
+        "elevator_runtime_worker"
+      ],
+      "calls": [
+        "app_private.append_selection_run_event",
+        "app_private.assert_active_session",
+        "app_private.claim_command_request",
+        "app_private.complete_command_request",
+        "app_private.lock_authority_grant",
+        "app_private.lock_current_session",
+        "app_private.r6_request_hash"
+      ]
+    },
+    {
+      "signature": "app.create_catalog_review_event_r3(text, text, text, text, text, text, text, text, text, text, text, text, text, text, text)",
+      "name": "app.create_catalog_review_event_r3",
+      "returns": "text",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [
+        "elevator_catalog_reviewer"
+      ],
+      "calls": [
+        "app.policy_is_effective",
+        "app_private.assert_active_session",
+        "app_private.claim_command_request",
+        "app_private.complete_command_request",
+        "app_private.lock_authority_grant",
+        "app_private.lock_current_session",
+        "app_private.r6_request_hash"
+      ]
+    },
+    {
+      "signature": "app.create_catalog_source_target_binding_r2(text, text, text, text, text, text, text, text, text, text, text, text, text, text, text)",
+      "name": "app.create_catalog_source_target_binding_r2",
+      "returns": "text",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [
+        "elevator_catalog_publisher",
+        "elevator_catalog_reviewer"
+      ],
+      "calls": [
+        "app_private.assert_active_session",
+        "app_private.claim_command_request",
+        "app_private.complete_command_request",
+        "app_private.lock_authority_grant",
+        "app_private.lock_current_session",
+        "app_private.r6_request_hash"
+      ]
+    },
+    {
+      "signature": "app.create_policy_revision(text, text, text, bigint, text, text, text, text, text)",
+      "name": "app.create_policy_revision",
+      "returns": "text",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [
+        "elevator_policy_author"
+      ],
+      "calls": [
+        "app.policy_digest",
+        "app_private.assert_active_session",
+        "app_private.claim_command_request",
+        "app_private.complete_command_request",
+        "app_private.lock_authority_grant",
+        "app_private.lock_current_session",
+        "app_private.r6_request_hash"
+      ]
+    },
+    {
+      "signature": "app.create_price_revision_r3(text, text, text, text, text, text, text, bigint, text, text, text, text, timestamptz, timestamptz, timestamptz, text, numeric, numeric, text, text)",
+      "name": "app.create_price_revision_r3",
+      "returns": "text",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [
+        "elevator_catalog_publisher"
+      ],
+      "calls": [
+        "app_private.assert_active_session",
+        "app_private.claim_command_request",
+        "app_private.complete_command_request",
+        "app_private.lock_authority_grant",
+        "app_private.lock_current_session",
+        "app_private.r6_request_hash"
+      ]
+    },
+    {
+      "signature": "app.create_professional_review(text, text, text, text, text, text, text, text, text, text, text)",
+      "name": "app.create_professional_review",
+      "returns": "text",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [
+        "elevator_professional_reviewer"
+      ],
+      "calls": [
+        "app.policy_is_effective",
+        "app_private.assert_active_session",
+        "app_private.claim_command_request",
+        "app_private.complete_command_request",
+        "app_private.lock_authority_grant",
+        "app_private.lock_current_session",
+        "app_private.r6_request_hash"
+      ]
+    },
+    {
+      "signature": "app.create_requirement_field_fact_r3(text, text, text, text, jsonb, text, text, text, text, text, boolean, text, text, text)",
+      "name": "app.create_requirement_field_fact_r3",
+      "returns": "text",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [
+        "elevator_runtime_worker"
+      ],
+      "calls": [
+        "app_private.assert_active_session",
+        "app_private.claim_command_request",
+        "app_private.complete_command_request",
+        "app_private.lock_authority_grant",
+        "app_private.lock_current_session",
+        "app_private.r6_request_hash",
+        "app_private.validate_source_aux_r3"
+      ]
+    },
+    {
+      "signature": "app.create_selection_run(text, text, text, bigint, text, text)",
+      "name": "app.create_selection_run",
+      "returns": "text",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [
+        "elevator_runtime_worker"
+      ],
+      "calls": [
+        "app_private.assert_active_session",
+        "app_private.claim_command_request",
+        "app_private.complete_command_request",
+        "app_private.lock_authority_grant",
+        "app_private.lock_current_session",
+        "app_private.r6_request_hash"
+      ]
+    },
+    {
+      "signature": "app.create_snapshot_r3(text, text, bigint)",
+      "name": "app.create_snapshot_r3",
+      "returns": "bigint",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [
+        "elevator_runtime_worker"
+      ],
+      "calls": [
+        "app.build_snapshot_basis_r6",
+        "app.selection_result_digest",
+        "app_private.assert_active_session",
+        "app_private.lock_authority_grant",
+        "app_private.lock_current_session",
+        "app_private.materialize_snapshot_r3",
+        "app_private.refresh_snapshot_basis_records_r3",
+        "app_private.sha256_hex",
+        "app_private.validate_snapshot_r3"
+      ]
+    },
+    {
+      "signature": "app.execute_command_result_recovery_r2(text, text, text)",
+      "name": "app.execute_command_result_recovery_r2",
+      "returns": "text",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [
+        "elevator_runtime_web",
+        "elevator_runtime_worker"
+      ],
+      "calls": [
+        "app_private.assert_active_session",
+        "app_private.claim_command_request",
+        "app_private.complete_command_request",
+        "app_private.lock_current_session",
+        "app_private.r6_request_hash"
+      ]
+    },
+    {
+      "signature": "app.finalize_snapshot_r3(text, bigint)",
+      "name": "app.finalize_snapshot_r3",
+      "returns": "bigint",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [
+        "elevator_runtime_worker"
+      ],
+      "calls": [
+        "app.build_snapshot_basis_r6",
+        "app_private.assert_active_session",
+        "app_private.lock_authority_grant",
+        "app_private.lock_current_session",
+        "app_private.refresh_snapshot_basis_records_r3",
+        "app_private.sha256_hex",
+        "app_private.validate_snapshot_r3"
+      ]
+    },
+    {
+      "signature": "app.has_project_authority(text, text, text)",
+      "name": "app.has_project_authority",
+      "returns": "boolean",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": []
+    },
+    {
+      "signature": "app.issue_authority_grant(text, text, text, text, text, text, text, timestamptz)",
+      "name": "app.issue_authority_grant",
+      "returns": "void",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [
+        "elevator_root_issuer",
+        "elevator_security_admin"
+      ],
+      "calls": [
+        "app_private.assert_active_session",
+        "app_private.lock_authority_grant",
+        "app_private.lock_current_session"
+      ]
+    },
+    {
+      "signature": "app.open_trusted_session(text, text, bigint, text, text, text, text, text, timestamptz, timestamptz, timestamptz)",
+      "name": "app.open_trusted_session",
+      "returns": "void",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [
+        "elevator_identity_broker"
+      ],
+      "calls": [
+        "app_private.validate_session_role_r3"
+      ]
+    },
+    {
+      "signature": "app.policy_digest(text)",
+      "name": "app.policy_digest",
+      "returns": "text",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app_private.sha256_hex"
+      ]
+    },
+    {
+      "signature": "app.policy_is_effective(text)",
+      "name": "app.policy_is_effective",
+      "returns": "boolean",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": []
+    },
+    {
+      "signature": "app.professional_event_decision_r3(text)",
+      "name": "app.professional_event_decision_r3",
+      "returns": "text",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": []
+    },
+    {
+      "signature": "app.record_selection_catalog_review_result(text, text, text, text, text, text, timestamptz, text, text)",
+      "name": "app.record_selection_catalog_review_result",
+      "returns": "void",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [
+        "elevator_runtime_worker"
+      ],
+      "calls": [
+        "app_private.append_selection_run_event",
+        "app_private.assert_active_session",
+        "app_private.claim_command_request",
+        "app_private.complete_command_request",
+        "app_private.lock_authority_grant",
+        "app_private.lock_current_session",
+        "app_private.r6_request_hash"
+      ]
+    },
+    {
+      "signature": "app.record_selection_missing_field_result(text, text, text, text, text, text, text)",
+      "name": "app.record_selection_missing_field_result",
+      "returns": "void",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [
+        "elevator_runtime_worker"
+      ],
+      "calls": [
+        "app_private.append_selection_run_event",
+        "app_private.assert_active_session",
+        "app_private.claim_command_request",
+        "app_private.complete_command_request",
+        "app_private.lock_authority_grant",
+        "app_private.lock_current_session",
+        "app_private.r6_request_hash"
+      ]
+    },
+    {
+      "signature": "app.record_selection_professional_review_result(text, text, text, bigint, text, text, text, text, timestamptz, text, text)",
+      "name": "app.record_selection_professional_review_result",
+      "returns": "void",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [
+        "elevator_runtime_worker"
+      ],
+      "calls": [
+        "app.professional_event_decision_r3",
+        "app_private.append_selection_run_event",
+        "app_private.assert_active_session",
+        "app_private.claim_command_request",
+        "app_private.complete_command_request",
+        "app_private.lock_authority_grant",
+        "app_private.lock_current_session",
+        "app_private.r6_request_hash"
+      ]
+    },
+    {
+      "signature": "app.record_selection_requirement_field(text, text, text, jsonb, text, text, text, text, text, text, boolean, text, text, text, text, text)",
+      "name": "app.record_selection_requirement_field",
+      "returns": "void",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [
+        "elevator_runtime_worker"
+      ],
+      "calls": [
+        "app_private.append_selection_run_event",
+        "app_private.assert_active_session",
+        "app_private.claim_command_request",
+        "app_private.complete_command_request",
+        "app_private.lock_authority_grant",
+        "app_private.lock_current_session",
+        "app_private.r6_request_hash"
+      ]
+    },
+    {
+      "signature": "app.record_selection_source_result(text, text, text, text)",
+      "name": "app.record_selection_source_result",
+      "returns": "void",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [
+        "elevator_runtime_worker"
+      ],
+      "calls": [
+        "app_private.append_selection_run_event",
+        "app_private.assert_active_session",
+        "app_private.claim_command_request",
+        "app_private.complete_command_request",
+        "app_private.lock_authority_grant",
+        "app_private.lock_current_session",
+        "app_private.r6_request_hash"
+      ]
+    },
+    {
+      "signature": "app.record_selection_warning_result(text, text, bigint, text, text, text, text, text, text)",
+      "name": "app.record_selection_warning_result",
+      "returns": "void",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [
+        "elevator_runtime_worker"
+      ],
+      "calls": [
+        "app_private.append_selection_run_event",
+        "app_private.assert_active_session",
+        "app_private.claim_command_request",
+        "app_private.complete_command_request",
+        "app_private.lock_authority_grant",
+        "app_private.lock_current_session",
+        "app_private.r6_request_hash"
+      ]
+    },
+    {
+      "signature": "app.register_session_role(text, text, text, text)",
+      "name": "app.register_session_role",
+      "returns": "void",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [
+        "elevator_identity_broker"
+      ],
+      "calls": [
+        "app_private.validate_session_role_r3"
+      ]
+    },
+    {
+      "signature": "app.request_command_result_recovery_r2(text, text, text, text, text, text)",
+      "name": "app.request_command_result_recovery_r2",
+      "returns": "void",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [
+        "elevator_runtime_web",
+        "elevator_runtime_worker"
+      ],
+      "calls": [
+        "app_private.assert_active_session",
+        "app_private.claim_command_request",
+        "app_private.complete_command_request",
+        "app_private.lock_current_session",
+        "app_private.r6_request_hash",
+        "app_private.sha256_hex"
+      ]
+    },
+    {
+      "signature": "app.revoke_authority_grant(text, text)",
+      "name": "app.revoke_authority_grant",
+      "returns": "void",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [
+        "elevator_security_admin"
+      ],
+      "calls": [
+        "app_private.assert_active_session",
+        "app_private.lock_authority_grant",
+        "app_private.lock_current_session"
+      ]
+    },
+    {
+      "signature": "app.revoke_trusted_session(text, text)",
+      "name": "app.revoke_trusted_session",
+      "returns": "void",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [
+        "elevator_identity_broker"
+      ],
+      "calls": [
+        "app.terminate_trusted_session_r2"
+      ]
+    },
+    {
+      "signature": "app.seal_selection_run(text, bigint, text)",
+      "name": "app.seal_selection_run",
+      "returns": "text",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [
+        "elevator_runtime_worker"
+      ],
+      "calls": [
+        "app.selection_result_digest",
+        "app_private.append_selection_run_event",
+        "app_private.assert_active_session",
+        "app_private.claim_command_request",
+        "app_private.complete_command_request",
+        "app_private.lock_authority_grant",
+        "app_private.lock_current_session",
+        "app_private.r6_request_hash",
+        "app_private.validate_selection_source_aux_r3"
+      ]
+    },
+    {
+      "signature": "app.selection_result_digest(text)",
+      "name": "app.selection_result_digest",
+      "returns": "text",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app_private.sha256_hex"
+      ]
+    },
+    {
+      "signature": "app.set_selection_candidate_parameter(text, text, text, text)",
+      "name": "app.set_selection_candidate_parameter",
+      "returns": "text",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [
+        "elevator_runtime_worker"
+      ],
+      "calls": [
+        "app_private.assert_active_session",
+        "app_private.claim_command_request",
+        "app_private.complete_command_request",
+        "app_private.lock_authority_grant",
+        "app_private.lock_current_session",
+        "app_private.r6_request_hash"
+      ]
+    },
+    {
+      "signature": "app.set_selection_candidate_price(text, text, text, text)",
+      "name": "app.set_selection_candidate_price",
+      "returns": "text",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [
+        "elevator_runtime_worker"
+      ],
+      "calls": [
+        "app_private.assert_active_session",
+        "app_private.claim_command_request",
+        "app_private.complete_command_request",
+        "app_private.lock_authority_grant",
+        "app_private.lock_current_session",
+        "app_private.r6_request_hash"
+      ]
+    },
+    {
+      "signature": "app.snapshot_record_count(text)",
+      "name": "app.snapshot_record_count",
+      "returns": "integer",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": []
+    },
+    {
+      "signature": "app.source_key_r3(text, text, text, boolean, text)",
+      "name": "app.source_key_r3",
+      "returns": "bytea",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app_private.r6_field",
+        "app_private.u16be"
+      ]
+    },
+    {
+      "signature": "app.terminate_trusted_session_r2(text, text, text, text, text)",
+      "name": "app.terminate_trusted_session_r2",
+      "returns": "void",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [
+        "elevator_identity_broker"
+      ],
+      "calls": [
+        "app_private.r6_request_hash",
+        "app_private.sha256_hex"
+      ]
+    },
+    {
+      "signature": "app.transition_policy_review(text, bigint, app.policy_command, text, text, text)",
+      "name": "app.transition_policy_review",
+      "returns": "table ( event_id text, event_sequence bigint, resulting_state text, replay boolean )",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [
+        "elevator_policy_author",
+        "elevator_policy_reviewer"
+      ],
+      "calls": [
+        "app_private.assert_active_session",
+        "app_private.lock_authority_grant",
+        "app_private.lock_current_session",
+        "app_private.r6_request_hash"
+      ]
+    },
+    {
+      "signature": "app.transition_professional_review(text, bigint, app.professional_review_command, text, text, text, text, text)",
+      "name": "app.transition_professional_review",
+      "returns": "table ( event_id text, event_sequence bigint, resulting_state text, replay boolean )",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [
+        "elevator_professional_reviewer"
+      ],
+      "calls": [
+        "app.policy_is_effective",
+        "app_private.assert_active_session",
+        "app_private.lock_authority_grant",
+        "app_private.lock_current_session",
+        "app_private.professional_basis_digest_v1",
+        "app_private.r6_request_hash"
+      ]
+    },
+    {
+      "signature": "app.verify_snapshot_basis_r6(bytea, text)",
+      "name": "app.verify_snapshot_basis_r6",
+      "returns": "boolean",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app_private.r6_record",
+        "app_private.snapshot_record_projection_r3",
+        "app_private.u16be",
+        "app_private.u32be",
+        "app_private.u64be"
+      ]
+    },
+    {
+      "signature": "app_private.a_bind_catalog_event_binding_r3()",
+      "name": "app_private.a_bind_catalog_event_binding_r3",
+      "returns": "trigger",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": []
+    },
+    {
+      "signature": "app_private.a_bind_catalog_source_evidence_r3()",
+      "name": "app_private.a_bind_catalog_source_evidence_r3",
+      "returns": "trigger",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": []
+    },
+    {
+      "signature": "app_private.a_bind_professional_candidate_r3()",
+      "name": "app_private.a_bind_professional_candidate_r3",
+      "returns": "trigger",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": []
+    },
+    {
+      "signature": "app_private.a_bind_selection_catalog_review_r3()",
+      "name": "app_private.a_bind_selection_catalog_review_r3",
+      "returns": "trigger",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": []
+    },
+    {
+      "signature": "app_private.a_bind_selection_professional_review_r3()",
+      "name": "app_private.a_bind_selection_professional_review_r3",
+      "returns": "trigger",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app.professional_event_decision_r3",
+        "app_private.sha256_hex"
+      ]
+    },
+    {
+      "signature": "app_private.a_bind_selection_requirement_source_r3()",
+      "name": "app_private.a_bind_selection_requirement_source_r3",
+      "returns": "trigger",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app_private.requirement_source_digest_r3"
+      ]
+    },
+    {
+      "signature": "app_private.a_bind_snapshot_catalog_review_r3()",
+      "name": "app_private.a_bind_snapshot_catalog_review_r3",
+      "returns": "trigger",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": []
+    },
+    {
+      "signature": "app_private.a_bind_snapshot_professional_candidate_r3()",
+      "name": "app_private.a_bind_snapshot_professional_candidate_r3",
+      "returns": "trigger",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": []
+    },
+    {
+      "signature": "app_private.a_bind_snapshot_professional_review_r3()",
+      "name": "app_private.a_bind_snapshot_professional_review_r3",
+      "returns": "trigger",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": []
+    },
+    {
+      "signature": "app_private.a_bind_snapshot_requirement_source_r3()",
+      "name": "app_private.a_bind_snapshot_requirement_source_r3",
+      "returns": "trigger",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": []
+    },
+    {
+      "signature": "app_private.a_compute_bootstrap_event_digest_r2()",
+      "name": "app_private.a_compute_bootstrap_event_digest_r2",
+      "returns": "trigger",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app_private.bootstrap_request_digest_v2"
+      ]
+    },
+    {
+      "signature": "app_private.a_compute_catalog_review_event_digest_r3()",
+      "name": "app_private.a_compute_catalog_review_event_digest_r3",
+      "returns": "trigger",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app_private.catalog_review_event_digest_v2"
+      ]
+    },
+    {
+      "signature": "app_private.a_compute_catalog_source_target_digest_r2()",
+      "name": "app_private.a_compute_catalog_source_target_digest_r2",
+      "returns": "trigger",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app_private.catalog_source_target_digest_v2"
+      ]
+    },
+    {
+      "signature": "app_private.a_compute_price_revision_fact_digest_r3()",
+      "name": "app_private.a_compute_price_revision_fact_digest_r3",
+      "returns": "trigger",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app_private.price_fact_digest_v1"
+      ]
+    },
+    {
+      "signature": "app_private.a_compute_requirement_source_digest_r3()",
+      "name": "app_private.a_compute_requirement_source_digest_r3",
+      "returns": "trigger",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app_private.requirement_source_digest_r3"
+      ]
+    },
+    {
+      "signature": "app_private.a_compute_selection_catalog_review_row_digest_r3()",
+      "name": "app_private.a_compute_selection_catalog_review_row_digest_r3",
+      "returns": "trigger",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app_private.catalog_review_row_digest_v1"
+      ]
+    },
+    {
+      "signature": "app_private.a_compute_selection_price_row_digest_r3()",
+      "name": "app_private.a_compute_selection_price_row_digest_r3",
+      "returns": "trigger",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app_private.price_row_digest_v1"
+      ]
+    },
+    {
+      "signature": "app_private.a_create_bootstrap_issuance_attempt_r3()",
+      "name": "app_private.a_create_bootstrap_issuance_attempt_r3",
+      "returns": "trigger",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": []
+    },
+    {
+      "signature": "app_private.a_fill_professional_event_review_r3()",
+      "name": "app_private.a_fill_professional_event_review_r3",
+      "returns": "trigger",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app_private.professional_basis_digest_v1",
+        "app_private.professional_event_digest_v1"
+      ]
+    },
+    {
+      "signature": "app_private.a_fill_selection_price_fact_r3()",
+      "name": "app_private.a_fill_selection_price_fact_r3",
+      "returns": "trigger",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": []
+    },
+    {
+      "signature": "app_private.a_fill_snapshot_price_fact_r3()",
+      "name": "app_private.a_fill_snapshot_price_fact_r3",
+      "returns": "trigger",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": []
+    },
+    {
+      "signature": "app_private.a_validate_requirement_field_domain_r2()",
+      "name": "app_private.a_validate_requirement_field_domain_r2",
+      "returns": "trigger",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app_private.requirement_field_domain_valid_r2"
+      ]
+    },
+    {
+      "signature": "app_private.a_verify_professional_event_digest_r3()",
+      "name": "app_private.a_verify_professional_event_digest_r3",
+      "returns": "trigger",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app_private.professional_event_digest_v1"
+      ]
+    },
+    {
+      "signature": "app_private.a_verify_snapshot_catalog_review_row_r3()",
+      "name": "app_private.a_verify_snapshot_catalog_review_row_r3",
+      "returns": "trigger",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app_private.catalog_review_row_digest_v1"
+      ]
+    },
+    {
+      "signature": "app_private.a_verify_snapshot_price_fact_r3()",
+      "name": "app_private.a_verify_snapshot_price_fact_r3",
+      "returns": "trigger",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app_private.price_row_digest_v1"
+      ]
+    },
+    {
+      "signature": "app_private.a_verify_snapshot_professional_review_r3()",
+      "name": "app_private.a_verify_snapshot_professional_review_r3",
+      "returns": "trigger",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app_private.sha256_hex"
+      ]
+    },
+    {
+      "signature": "app_private.a_verify_snapshot_requirement_source_r3()",
+      "name": "app_private.a_verify_snapshot_requirement_source_r3",
+      "returns": "trigger",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app_private.requirement_source_digest_r3"
+      ]
+    },
+    {
+      "signature": "app_private.append_bootstrap_event_r2(text, boolean, bigint, text, text, text, text)",
+      "name": "app_private.append_bootstrap_event_r2",
+      "returns": "text",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": []
+    },
+    {
+      "signature": "app_private.append_selection_run_event(text, text, text, text, text, text, text)",
+      "name": "app_private.append_selection_run_event",
+      "returns": "void",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": []
+    },
+    {
+      "signature": "app_private.assert_active_session(text, text, bigint)",
+      "name": "app_private.assert_active_session",
+      "returns": "void",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app_private.owner_closure_digest_r2",
+        "app_private.validate_session_role_r3"
+      ]
+    },
+    {
+      "signature": "app_private.assert_protected_owner_closure_r2(text)",
+      "name": "app_private.assert_protected_owner_closure_r2",
+      "returns": "text",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app_private.owner_closure_digest_r2"
+      ]
+    },
+    {
+      "signature": "app_private.assert_protected_owner_closure_r3(text)",
+      "name": "app_private.assert_protected_owner_closure_r3",
+      "returns": "text",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app_private.assert_protected_owner_closure_r2",
+        "app_private.lock_owner_catalog_r3"
+      ]
+    },
+    {
+      "signature": "app_private.bootstrap_generation_digest_r2(boolean, bigint, text, text, text)",
+      "name": "app_private.bootstrap_generation_digest_r2",
+      "returns": "text",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app_private.sha256_hex"
+      ]
+    },
+    {
+      "signature": "app_private.bootstrap_recovery_digest_r2(jsonb)",
+      "name": "app_private.bootstrap_recovery_digest_r2",
+      "returns": "text",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app_private.sha256_hex"
+      ]
+    },
+    {
+      "signature": "app_private.bootstrap_request_digest_v2(jsonb)",
+      "name": "app_private.bootstrap_request_digest_v2",
+      "returns": "text",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app_private.bootstrap_request_payload_v2",
+        "app_private.sha256_hex"
+      ]
+    },
+    {
+      "signature": "app_private.bootstrap_request_payload_v2(jsonb)",
+      "name": "app_private.bootstrap_request_payload_v2",
+      "returns": "jsonb",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": []
+    },
+    {
+      "signature": "app_private.bootstrap_root_grant_digest_r2(boolean, bigint, text, text, text, text, bigint)",
+      "name": "app_private.bootstrap_root_grant_digest_r2",
+      "returns": "text",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app_private.sha256_hex"
+      ]
+    },
+    {
+      "signature": "app_private.canonical_row_payload_r3(text, jsonb)",
+      "name": "app_private.canonical_row_payload_r3",
+      "returns": "jsonb",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": []
+    },
+    {
+      "signature": "app_private.catalog_review_event_digest_v1(jsonb)",
+      "name": "app_private.catalog_review_event_digest_v1",
+      "returns": "text",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app_private.catalog_review_event_payload_v1",
+        "app_private.sha256_hex"
+      ]
+    },
+    {
+      "signature": "app_private.catalog_review_event_digest_v2(jsonb)",
+      "name": "app_private.catalog_review_event_digest_v2",
+      "returns": "text",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app_private.catalog_review_event_payload_v2",
+        "app_private.sha256_hex"
+      ]
+    },
+    {
+      "signature": "app_private.catalog_review_event_payload_v1(jsonb)",
+      "name": "app_private.catalog_review_event_payload_v1",
+      "returns": "jsonb",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": []
+    },
+    {
+      "signature": "app_private.catalog_review_event_payload_v2(jsonb)",
+      "name": "app_private.catalog_review_event_payload_v2",
+      "returns": "jsonb",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": []
+    },
+    {
+      "signature": "app_private.catalog_review_row_digest_v1(text, jsonb)",
+      "name": "app_private.catalog_review_row_digest_v1",
+      "returns": "text",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app_private.catalog_review_row_payload_v1",
+        "app_private.sha256_hex"
+      ]
+    },
+    {
+      "signature": "app_private.catalog_review_row_payload_v1(text, jsonb)",
+      "name": "app_private.catalog_review_row_payload_v1",
+      "returns": "jsonb",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": []
+    },
+    {
+      "signature": "app_private.catalog_source_target_digest_v2(jsonb)",
+      "name": "app_private.catalog_source_target_digest_v2",
+      "returns": "text",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app_private.catalog_source_target_payload_v2",
+        "app_private.sha256_hex"
+      ]
+    },
+    {
+      "signature": "app_private.catalog_source_target_payload_v2(jsonb)",
+      "name": "app_private.catalog_source_target_payload_v2",
+      "returns": "jsonb",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": []
+    },
+    {
+      "signature": "app_private.claim_bootstrap_request_r2(text, text, text, boolean, bigint, text, text, text)",
+      "name": "app_private.claim_bootstrap_request_r2",
+      "returns": "table(replay boolean,result_id text)",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": []
+    },
+    {
+      "signature": "app_private.claim_command_request(text, text, text, text, text, text, text)",
+      "name": "app_private.claim_command_request",
+      "returns": "table(replay boolean,result_id text)",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": []
+    },
+    {
+      "signature": "app_private.complete_bootstrap_request_r2(text, text, text)",
+      "name": "app_private.complete_bootstrap_request_r2",
+      "returns": "void",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": []
+    },
+    {
+      "signature": "app_private.complete_command_request(text, text, text)",
+      "name": "app_private.complete_command_request",
+      "returns": "void",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": []
+    },
+    {
+      "signature": "app_private.compute_selection_row_digest_r3()",
+      "name": "app_private.compute_selection_row_digest_r3",
+      "returns": "trigger",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app_private.row_digest_r3"
+      ]
+    },
+    {
+      "signature": "app_private.current_session_context()",
+      "name": "app_private.current_session_context",
+      "returns": "table ( session_id text, principal_id text, login_epoch bigint, capability_role text )",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": []
+    },
+    {
+      "signature": "app_private.deny_delete_r3()",
+      "name": "app_private.deny_delete_r3",
+      "returns": "trigger",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": []
+    },
+    {
+      "signature": "app_private.deny_snapshot_truncate_r3()",
+      "name": "app_private.deny_snapshot_truncate_r3",
+      "returns": "trigger",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": []
+    },
+    {
+      "signature": "app_private.deny_truncate_r3()",
+      "name": "app_private.deny_truncate_r3",
+      "returns": "trigger",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": []
+    },
+    {
+      "signature": "app_private.dispatch_snapshot_validation_r3()",
+      "name": "app_private.dispatch_snapshot_validation_r3",
+      "returns": "trigger",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app_private.validate_snapshot_r3"
+      ]
+    },
+    {
+      "signature": "app_private.guard_append_only_r3()",
+      "name": "app_private.guard_append_only_r3",
+      "returns": "trigger",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": []
+    },
+    {
+      "signature": "app_private.guard_authority_grant_r3()",
+      "name": "app_private.guard_authority_grant_r3",
+      "returns": "trigger",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": []
+    },
+    {
+      "signature": "app_private.guard_command_request_r3()",
+      "name": "app_private.guard_command_request_r3",
+      "returns": "trigger",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": []
+    },
+    {
+      "signature": "app_private.guard_policy_current_r3()",
+      "name": "app_private.guard_policy_current_r3",
+      "returns": "trigger",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": []
+    },
+    {
+      "signature": "app_private.guard_policy_event_link_r3()",
+      "name": "app_private.guard_policy_event_link_r3",
+      "returns": "trigger",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": []
+    },
+    {
+      "signature": "app_private.guard_policy_revision_r3()",
+      "name": "app_private.guard_policy_revision_r3",
+      "returns": "trigger",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app.policy_digest"
+      ]
+    },
+    {
+      "signature": "app_private.guard_professional_review_state_r3()",
+      "name": "app_private.guard_professional_review_state_r3",
+      "returns": "trigger",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": []
+    },
+    {
+      "signature": "app_private.guard_sealed_result_r3()",
+      "name": "app_private.guard_sealed_result_r3",
+      "returns": "trigger",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app_private.r4_candidate_backfill_row_allowed"
+      ]
+    },
+    {
+      "signature": "app_private.guard_selection_run_r3()",
+      "name": "app_private.guard_selection_run_r3",
+      "returns": "trigger",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": []
+    },
+    {
+      "signature": "app_private.guard_session_role_registry_r3()",
+      "name": "app_private.guard_session_role_registry_r3",
+      "returns": "trigger",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": []
+    },
+    {
+      "signature": "app_private.guard_snapshot_child_r3()",
+      "name": "app_private.guard_snapshot_child_r3",
+      "returns": "trigger",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app_private.r4_candidate_backfill_row_allowed"
+      ]
+    },
+    {
+      "signature": "app_private.guard_snapshot_header_r3()",
+      "name": "app_private.guard_snapshot_header_r3",
+      "returns": "trigger",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": []
+    },
+    {
+      "signature": "app_private.has_current_authority(text, text, text, text, text)",
+      "name": "app_private.has_current_authority",
+      "returns": "boolean",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": []
+    },
+    {
+      "signature": "app_private.i64be(bigint)",
+      "name": "app_private.i64be",
+      "returns": "bytea",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": []
+    },
+    {
+      "signature": "app_private.lock_active_session(text, text)",
+      "name": "app_private.lock_active_session",
+      "returns": "table ( session_id text, principal_id text, login_epoch bigint, authority_grant_id text )",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": []
+    },
+    {
+      "signature": "app_private.lock_authority_grant(text, text, text, text, text, text, text)",
+      "name": "app_private.lock_authority_grant",
+      "returns": "text",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": []
+    },
+    {
+      "signature": "app_private.lock_current_session()",
+      "name": "app_private.lock_current_session",
+      "returns": "table ( session_id text, principal_id text, login_epoch bigint, capability_role text )",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app_private.validate_session_role_r3"
+      ]
+    },
+    {
+      "signature": "app_private.lock_expired_root_change_r4(text)",
+      "name": "app_private.lock_expired_root_change_r4",
+      "returns": "void",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app_private.append_bootstrap_event_r2"
+      ]
+    },
+    {
+      "signature": "app_private.lock_owner_catalog_r3()",
+      "name": "app_private.lock_owner_catalog_r3",
+      "returns": "void",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": []
+    },
+    {
+      "signature": "app_private.materialize_snapshot_r3(text)",
+      "name": "app_private.materialize_snapshot_r3",
+      "returns": "void",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app_private.stable_key_r3"
+      ]
+    },
+    {
+      "signature": "app_private.next_bootstrap_recovery_sequence_r4(boolean, bigint)",
+      "name": "app_private.next_bootstrap_recovery_sequence_r4",
+      "returns": "bigint",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": []
+    },
+    {
+      "signature": "app_private.owner_closure_digest_r2(text)",
+      "name": "app_private.owner_closure_digest_r2",
+      "returns": "text",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app_private.sha256_hex"
+      ]
+    },
+    {
+      "signature": "app_private.price_fact_canonical_v1(text, text, text, text, text, text, text, bigint, text, text, text, text, timestamptz, timestamptz, timestamptz, text, numeric, numeric)",
+      "name": "app_private.price_fact_canonical_v1",
+      "returns": "jsonb",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": []
+    },
+    {
+      "signature": "app_private.price_fact_digest_v1(text, text, text, text, text, text, text, bigint, text, text, text, text, timestamptz, timestamptz, timestamptz, text, numeric, numeric)",
+      "name": "app_private.price_fact_digest_v1",
+      "returns": "text",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app_private.price_fact_canonical_v1",
+        "app_private.sha256_hex"
+      ]
+    },
+    {
+      "signature": "app_private.price_row_digest_v1(text, jsonb)",
+      "name": "app_private.price_row_digest_v1",
+      "returns": "text",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app_private.price_row_payload_v1",
+        "app_private.sha256_hex"
+      ]
+    },
+    {
+      "signature": "app_private.price_row_payload_v1(text, jsonb)",
+      "name": "app_private.price_row_payload_v1",
+      "returns": "jsonb",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": []
+    },
+    {
+      "signature": "app_private.professional_basis_digest_v1(jsonb)",
+      "name": "app_private.professional_basis_digest_v1",
+      "returns": "text",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app_private.sha256_hex"
+      ]
+    },
+    {
+      "signature": "app_private.professional_event_digest_v1(jsonb)",
+      "name": "app_private.professional_event_digest_v1",
+      "returns": "text",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app_private.sha256_hex"
+      ]
+    },
+    {
+      "signature": "app_private.r4_candidate_backfill_row_allowed(jsonb, jsonb)",
+      "name": "app_private.r4_candidate_backfill_row_allowed",
+      "returns": "boolean",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": []
+    },
+    {
+      "signature": "app_private.r6_field(integer, integer, integer, bytea)",
+      "name": "app_private.r6_field",
+      "returns": "bytea",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app_private.u16be",
+        "app_private.u32be"
+      ]
+    },
+    {
+      "signature": "app_private.r6_field_allowed(smallint, integer, text)",
+      "name": "app_private.r6_field_allowed",
+      "returns": "boolean",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": []
+    },
+    {
+      "signature": "app_private.r6_record(smallint, text, bytea, jsonb)",
+      "name": "app_private.r6_record",
+      "returns": "bytea",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app_private.i64be",
+        "app_private.r6_field",
+        "app_private.r6_field_allowed",
+        "app_private.u16be",
+        "app_private.u32be"
+      ]
+    },
+    {
+      "signature": "app_private.r6_request_hash(jsonb)",
+      "name": "app_private.r6_request_hash",
+      "returns": "text",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app_private.sha256_hex"
+      ]
+    },
+    {
+      "signature": "app_private.refresh_snapshot_basis_records_r3(text)",
+      "name": "app_private.refresh_snapshot_basis_records_r3",
+      "returns": "integer",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app_private.r6_record",
+        "app_private.snapshot_record_projection_r3"
+      ]
+    },
+    {
+      "signature": "app_private.require_no_active_snapshot_children_r3(text)",
+      "name": "app_private.require_no_active_snapshot_children_r3",
+      "returns": "void",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": []
+    },
+    {
+      "signature": "app_private.requirement_field_domain_valid_r2(jsonb, text, text, text)",
+      "name": "app_private.requirement_field_domain_valid_r2",
+      "returns": "boolean",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": []
+    },
+    {
+      "signature": "app_private.requirement_source_digest_r3(text, jsonb)",
+      "name": "app_private.requirement_source_digest_r3",
+      "returns": "text",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app_private.sha256_hex"
+      ]
+    },
+    {
+      "signature": "app_private.row_digest_r3(text, text, jsonb)",
+      "name": "app_private.row_digest_r3",
+      "returns": "text",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app_private.canonical_row_payload_r3",
+        "app_private.sha256_hex"
+      ]
+    },
+    {
+      "signature": "app_private.session_token_digest(text)",
+      "name": "app_private.session_token_digest",
+      "returns": "text",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app_private.sha256_hex"
+      ]
+    },
+    {
+      "signature": "app_private.sha256_hex(bytea)",
+      "name": "app_private.sha256_hex",
+      "returns": "text",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": []
+    },
+    {
+      "signature": "app_private.snapshot_record_projection_r3(text)",
+      "name": "app_private.snapshot_record_projection_r3",
+      "returns": "table ( record_type smallint, stable_key bytea, row_id text, fields_json jsonb )",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app.source_key_r3",
+        "app_private.stable_key_r3"
+      ]
+    },
+    {
+      "signature": "app_private.stable_key_r3(smallint, jsonb)",
+      "name": "app_private.stable_key_r3",
+      "returns": "bytea",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app_private.i64be",
+        "app_private.u16be",
+        "app_private.u32be"
+      ]
+    },
+    {
+      "signature": "app_private.u16be(integer)",
+      "name": "app_private.u16be",
+      "returns": "bytea",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": []
+    },
+    {
+      "signature": "app_private.u32be(bigint)",
+      "name": "app_private.u32be",
+      "returns": "bytea",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": []
+    },
+    {
+      "signature": "app_private.u64be(bigint)",
+      "name": "app_private.u64be",
+      "returns": "bytea",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": []
+    },
+    {
+      "signature": "app_private.validate_selection_source_aux_r3(text)",
+      "name": "app_private.validate_selection_source_aux_r3",
+      "returns": "void",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app.source_key_r3",
+        "app_private.validate_source_aux_r3"
+      ]
+    },
+    {
+      "signature": "app_private.validate_session_role_r3(text, text, text)",
+      "name": "app_private.validate_session_role_r3",
+      "returns": "void",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app_private.assert_protected_owner_closure_r3"
+      ]
+    },
+    {
+      "signature": "app_private.validate_snapshot_r3(text)",
+      "name": "app_private.validate_snapshot_r3",
+      "returns": "void",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app.build_snapshot_basis_r6",
+        "app.snapshot_record_count",
+        "app.source_key_r3",
+        "app.verify_snapshot_basis_r6",
+        "app_private.require_no_active_snapshot_children_r3",
+        "app_private.sha256_hex"
+      ]
+    },
+    {
+      "signature": "app_private.validate_source_aux_r3(text)",
+      "name": "app_private.validate_source_aux_r3",
+      "returns": "text",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": []
+    },
+    {
+      "signature": "app_private.verify_snapshot_row_digest_r3()",
+      "name": "app_private.verify_snapshot_row_digest_r3",
+      "returns": "trigger",
+      "owner": "elevator_review_function_owner",
+      "security": "INVOKER",
+      "search_path": null,
+      "execute_roles": [],
+      "calls": [
+        "app_private.row_digest_r3"
+      ]
+    }
+  ]
+}

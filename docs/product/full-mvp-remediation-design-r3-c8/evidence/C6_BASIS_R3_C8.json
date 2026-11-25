@@ -1,0 +1,43 @@
+{
+  "records": 15,
+  "record_types": [
+    0,
+    1,
+    1,
+    2,
+    2,
+    3,
+    3,
+    4,
+    4,
+    5,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "bytes": 4036,
+  "sha256": "7D3CAC885F839594006650CC500FEF8A59D22AD151E6CB21567008D0D19519EB",
+  "hex_match": true,
+  "expected_record_types": [
+    0,
+    1,
+    1,
+    2,
+    2,
+    3,
+    3,
+    4,
+    4,
+    5,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "expected_bytes": 4036,
+  "expected_sha256": "7D3CAC885F839594006650CC500FEF8A59D22AD151E6CB21567008D0D19519EB",
+  "result": "PASS"
+}

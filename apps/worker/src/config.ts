@@ -12,7 +12,9 @@ const packageDirectory = path.resolve(
 );
 export const workerWorkspaceRoot = path.resolve(packageDirectory, "../..");
 
-loadEnv({ path: path.join(workerWorkspaceRoot, ".env") });
+if (process.env.NODE_ENV !== "test") {
+  loadEnv({ path: path.join(workerWorkspaceRoot, ".env") });
+}
 
 const workerEnvSchema = z.object({
   DATABASE_URL: z

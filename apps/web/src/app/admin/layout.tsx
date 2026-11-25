@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import { loadActor } from "@/modules/access/actor";
+import { PERMISSIONS } from "@/modules/access/permissions";
 import { requirePageSession } from "@/modules/auth/page-session";
 
 import { LogoutButton } from "./logout-button";
@@ -12,6 +14,18 @@ export default async function AdminLayout({
   children: React.ReactNode;
 }) {
   const session = await requirePageSession("/admin");
+  const actor = await loadActor(session.user.id);
+  const canManageCustomers = actor.globalPermissions.has(
+    PERMISSIONS.CUSTOMER_READ,
+  );
+  const canManageCatalog = actor.globalPermissions.has(
+    PERMISSIONS.CATALOG_MANAGE,
+  );
+  const canViewSales =
+    actor.globalPermissions.has(PERMISSIONS.SALES_MANAGE) ||
+    [...actor.projectPermissions.values()].some((permissions) =>
+      permissions.has(PERMISSIONS.SALES_MANAGE),
+    );
 
   return (
     <div className="min-h-screen bg-slate-100 text-slate-900">
@@ -21,8 +35,10 @@ export default async function AdminLayout({
             AI 电梯选型顾问 · 开发后台
           </Link>
           <nav className="flex flex-wrap items-center gap-5 text-sm text-slate-600">
-            <Link href="/admin/customers">客户</Link>
+            {canManageCustomers ? <Link href="/admin/customers">客户</Link> : null}
             <Link href="/admin/projects">项目</Link>
+            {canManageCatalog ? <Link href="/admin/products">产品目录</Link> : null}
+            {canViewSales ? <Link href="/admin/sales">销售跟进</Link> : null}
             <span>{session.user.name}</span>
             <LogoutButton />
           </nav>
