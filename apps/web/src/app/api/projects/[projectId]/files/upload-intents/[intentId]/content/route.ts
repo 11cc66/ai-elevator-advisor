@@ -9,7 +9,10 @@ import { requireApiActor } from "@/modules/auth/api-session";
 import { completeUpload } from "@/modules/files/upload-service";
 import { AppError, errorResponse } from "@/server/http/errors";
 import { getRequestId } from "@/server/http/request-id";
-import { getPrivateStorage } from "@/server/files/storage";
+import {
+  getObjectStorageAdapter,
+  getPrivateStorage,
+} from "@/server/files/storage";
 import { assertSameOrigin } from "@/server/http/origin";
 
 export const dynamic = "force-dynamic";
@@ -68,6 +71,7 @@ export async function PUT(
       ),
       requestId,
       storage: getPrivateStorage(),
+      objectStorage: getObjectStorageAdapter(),
     });
     const { version } = completed;
 

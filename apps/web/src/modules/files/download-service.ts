@@ -1,6 +1,11 @@
 import {
   ALLOWED_FILE_MIME_TYPES,
+  classifyObjectStorageFailure,
+  isExplicitLocalObjectStorageEnvironment,
+  isObjectStorageAdapterAllowed,
+  ObjectStorageError,
   PrivateStorageError,
+  type ObjectStorageReadCapability,
   type StorageReadCapability,
 } from "@elevator/file-storage";
 import {
@@ -46,8 +51,13 @@ type StorageFailureClass = {
   status: number;
 };
 
-function classifyStorageFailure(code: string): StorageFailureClass {
-  if (code === "STORAGE_OBJECT_MISSING") {
+export function classifyStorageFailure(
+  code: string,
+): StorageFailureClass {
+  if (
+    code === "STORAGE_OBJECT_MISSING" ||
+    code === "OBJECT_STORAGE_NOT_FOUND"
+  ) {
     return {
       eventType: "STORAGE_OBJECT_MISSING",
       severity: "CRITICAL",
@@ -58,7 +68,10 @@ function classifyStorageFailure(code: string): StorageFailureClass {
     };
   }
 
-  if (code === "STORAGE_OBJECT_CHECKSUM_MISMATCH") {
+  if (
+    code === "STORAGE_OBJECT_CHECKSUM_MISMATCH" ||
+    code === "OBJECT_STORAGE_CHECKSUM_MISMATCH"
+  ) {
     return {
       eventType: "CHECKSUM_MISMATCH",
       severity: "CRITICAL",
@@ -78,7 +91,11 @@ function classifyStorageFailure(code: string): StorageFailureClass {
     code === "STORAGE_OBJECT_SIZE_INVALID" ||
     code === "STORAGE_OBJECT_CHECKSUM_INVALID" ||
     code === "STORAGE_KEY_INVALID" ||
-    code === "STORAGE_KEY_OUTSIDE_ROOT"
+    code === "STORAGE_KEY_OUTSIDE_ROOT" ||
+    code === "OBJECT_STORAGE_VERSION_MISMATCH" ||
+    code === "OBJECT_STORAGE_VERSION_REQUIRED" ||
+    code === "OBJECT_STORAGE_SIZE_MISMATCH" ||
+    code === "OBJECT_STORAGE_BINDING_INVALID"
   ) {
     return {
       eventType: "VALIDATION_FAILED",
@@ -99,6 +116,33 @@ function classifyStorageFailure(code: string): StorageFailureClass {
         ? "STORAGE_RESOURCE_BUSY"
         : "STORAGE_UNAVAILABLE",
     clientMessage: "文件存储暂时不可用，请稍后重试。",
+    status: 503,
+  };
+}
+
+function classifyObjectStorageDownloadFailure(
+  error: ObjectStorageError,
+): StorageFailureClass {
+  const disposition = classifyObjectStorageFailure(error.code);
+  if (disposition.kind === "BINDING_INVALID") {
+    return {
+      eventType: "VALIDATION_FAILED",
+      severity: "CRITICAL",
+      markIntegrityFailed: true,
+      clientCode: "FILE_INTEGRITY_FAILED",
+      clientMessage: "文件对象绑定无效，已阻止下载。",
+      status: 409,
+    };
+  }
+  if (disposition.integrityFailure) {
+    return classifyStorageFailure(error.code);
+  }
+  return {
+    eventType: "VALIDATION_FAILED",
+    severity: "HIGH",
+    markIntegrityFailed: false,
+    clientCode: "STORAGE_UNAVAILABLE",
+    clientMessage: "对象存储暂不可用，请稍后重试。",
     status: 503,
   };
 }
@@ -238,6 +282,7 @@ export async function prepareFileDownload(input: {
   requestId: string;
   env: WebEnv;
   storage: StorageReadCapability;
+  objectStorage?: ObjectStorageReadCapability;
 }): Promise<PreparedDownload> {
   const file = await prisma.file.findFirst({
     where: {
@@ -262,6 +307,9 @@ export async function prepareFileDownload(input: {
     where: {
       id: input.versionId,
       fileId: file.id,
+    },
+    include: {
+      storageObjectBinding: true,
     },
   });
 
@@ -308,6 +356,24 @@ export async function prepareFileDownload(input: {
         ? "当前环境不允许下载未扫描文件。"
         : "文件状态尚未满足下载条件。",
       status,
+    );
+  }
+
+  if (
+    version.storageBackend !== "OBJECT_STORE" &&
+    !isExplicitLocalObjectStorageEnvironment(input.env.NODE_ENV)
+  ) {
+    await recordDownloadBlocked({
+      actorUserId: input.actor.userId,
+      fileId: file.id,
+      fileVersionId: version.id,
+      reason: "LEGACY_LOCAL_STORAGE_DISABLED",
+      requestId: input.requestId,
+    });
+    throw new AppError(
+      "LEGACY_LOCAL_STORAGE_DISABLED",
+      "当前环境禁止通过 Legacy 本地路径读取对象。",
+      503,
     );
   }
 
@@ -437,12 +503,76 @@ export async function prepareFileDownload(input: {
   };
 
   try {
-    const verifiedObject = await input.storage.readVerifiedObject({
-      objectKey: version.storageKey,
-      expectedSizeBytes: version.sizeBytes,
-      expectedChecksumSha256: version.checksumSha256.toLowerCase(),
-      maxBytes: MAX_DOWNLOAD_BYTES,
-    });
+    let verifiedObject: {
+      bytes: Buffer;
+      sizeBytes: bigint;
+      checksumSha256: string;
+    };
+
+    if (version.storageBackend === "OBJECT_STORE") {
+      if (
+        input.objectStorage &&
+        !isObjectStorageAdapterAllowed(
+          input.objectStorage.provider.providerKind,
+          input.env.NODE_ENV,
+        )
+      ) {
+        throw new ObjectStorageError(
+          "OBJECT_STORAGE_ADAPTER_UNAVAILABLE",
+          "对象存储 Adapter 不允许在当前环境使用。",
+        );
+      }
+      const binding = version.storageObjectBinding;
+      if (!input.objectStorage) {
+        throw new ObjectStorageError(
+          "OBJECT_STORAGE_ADAPTER_UNAVAILABLE",
+          "对象存储 Adapter 当前不可用。",
+        );
+      }
+      if (
+        !binding ||
+        binding.state !== "VERIFIED" ||
+        binding.operationId !== version.creationOperationAttemptId ||
+        binding.objectKey !== version.storageKey ||
+        binding.sizeBytes !== version.sizeBytes ||
+        binding.checksumSha256?.toLowerCase() !==
+          version.checksumSha256.toLowerCase() ||
+        !binding.providerVersionId ||
+        !binding.writeObservedAt
+      ) {
+        throw new ObjectStorageError(
+          "OBJECT_STORAGE_BINDING_INVALID",
+          "文件对象版本绑定不可用，已阻止下载。",
+        );
+      }
+
+      const exactRead = await input.objectStorage.readExact({
+        version: {
+          providerKind: binding.providerKind,
+          accountScopeRef: binding.accountScopeRef,
+          region: binding.region,
+          bucketOrContainer: binding.bucketOrContainer,
+          objectKey: binding.objectKey,
+          providerVersionId: binding.providerVersionId,
+          providerGeneration: binding.providerGeneration,
+        },
+        expectedSizeBytes: version.sizeBytes,
+        expectedChecksumSha256: version.checksumSha256.toLowerCase(),
+        maxBytes: MAX_DOWNLOAD_BYTES,
+      });
+      verifiedObject = {
+        bytes: exactRead.bytes,
+        sizeBytes: exactRead.sizeBytes,
+        checksumSha256: exactRead.checksumSha256,
+      };
+    } else {
+      verifiedObject = await input.storage.readVerifiedObject({
+        objectKey: version.storageKey,
+        expectedSizeBytes: version.sizeBytes,
+        expectedChecksumSha256: version.checksumSha256.toLowerCase(),
+        maxBytes: MAX_DOWNLOAD_BYTES,
+      });
+    }
 
     if (
       !version.detectedMimeType ||
@@ -510,9 +640,15 @@ export async function prepareFileDownload(input: {
       reportInterruption,
     };
   } catch (error) {
-    if (error instanceof PrivateStorageError) {
+    if (
+      error instanceof PrivateStorageError ||
+      error instanceof ObjectStorageError
+    ) {
       release();
-      const failure = classifyStorageFailure(error.code);
+      const failure =
+        error instanceof ObjectStorageError
+          ? classifyObjectStorageDownloadFailure(error)
+          : classifyStorageFailure(error.code);
       const actualChecksumSha256 =
         typeof error.details?.actualChecksumSha256 === "string"
           ? error.details.actualChecksumSha256

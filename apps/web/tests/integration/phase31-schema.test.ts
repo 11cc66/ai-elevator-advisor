@@ -5,6 +5,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { PERMISSIONS } from "../../src/modules/access/permissions";
 import { TEST_FIXTURE_IDS } from "../../scripts/test-db/seed";
+import { createP13TestFileVersion } from "../helpers/p13-file-version";
 
 const prisma = new PrismaClient();
 
@@ -36,20 +37,20 @@ async function createFileFixture() {
   });
 }
 
-async function createVersion(fileId: string, marker: string) {
-  return prisma.fileVersion.create({
-    data: {
-      fileId,
-      versionNumber: 1,
-      originalFilename: `${marker}.pdf`,
-      sanitizedFilename: `${marker}.pdf`,
-      declaredMimeType: "application/pdf",
-      detectedMimeType: "application/pdf",
-      sizeBytes: 1024n,
-      checksumSha256: checksum(marker),
-      storageKey: storageKey(marker),
-      uploadedById: adminUserId,
-    },
+async function createVersion(marker: string) {
+  return createP13TestFileVersion(prisma, {
+    uploadedById: adminUserId,
+    projectId: TEST_FIXTURE_IDS.project,
+    buildingId: TEST_FIXTURE_IDS.building,
+    installationUnitId: TEST_FIXTURE_IDS.installationUnit,
+    versionNumber: 1,
+    originalFilename: `${marker}.pdf`,
+    sanitizedFilename: `${marker}.pdf`,
+    declaredMimeType: "application/pdf",
+    detectedMimeType: "application/pdf",
+    sizeBytes: 1024n,
+    checksumSha256: checksum(marker),
+    storageKey: storageKey(marker),
   });
 }
 
@@ -187,9 +188,11 @@ describe.sequential("Phase 3.1 database constraints", () => {
   });
 
   it("prevents currentVersionId from referencing another file", async () => {
-    const firstFile = await createFileFixture();
     const secondFile = await createFileFixture();
-    const firstVersion = await createVersion(firstFile.id, "a");
+    const firstVersion = await createVersion("a");
+    const firstFile = await prisma.file.findUniqueOrThrow({
+      where: { id: firstVersion.fileId },
+    });
 
     const updatedFirstFile = await prisma.file.update({
       where: { id: firstFile.id },
@@ -206,8 +209,7 @@ describe.sequential("Phase 3.1 database constraints", () => {
   });
 
   it("protects original file versions from identity changes and deletion", async () => {
-    const file = await createFileFixture();
-    const version = await createVersion(file.id, "b");
+    const version = await createVersion("b");
 
     await expect(
       prisma.fileVersion.update({
@@ -228,8 +230,7 @@ describe.sequential("Phase 3.1 database constraints", () => {
   });
 
   it("keeps completed extraction content and text blocks immutable", async () => {
-    const file = await createFileFixture();
-    const version = await createVersion(file.id, "d");
+    const version = await createVersion("d");
     const extraction = await prisma.fileExtraction.create({
       data: {
         fileVersionId: version.id,
@@ -286,8 +287,7 @@ describe.sequential("Phase 3.1 database constraints", () => {
   });
 
   it("keeps professional fields pending after a customer correction", async () => {
-    const file = await createFileFixture();
-    const version = await createVersion(file.id, "e");
+    const version = await createVersion("e");
     const extraction = await prisma.fileExtraction.create({
       data: {
         fileVersionId: version.id,
@@ -377,8 +377,7 @@ describe.sequential("Phase 3.1 database constraints", () => {
   });
 
   it("preserves original ordinary values while appending review history", async () => {
-    const file = await createFileFixture();
-    const version = await createVersion(file.id, "f");
+    const version = await createVersion("f");
     const extraction = await prisma.fileExtraction.create({
       data: {
         fileVersionId: version.id,
@@ -461,8 +460,7 @@ describe.sequential("Phase 3.1 database constraints", () => {
   });
 
   it("keeps security events append-only", async () => {
-    const file = await createFileFixture();
-    const version = await createVersion(file.id, "f");
+    const version = await createVersion("f");
     const event = await prisma.fileSecurityEvent.create({
       data: {
         fileVersionId: version.id,
@@ -484,25 +482,24 @@ describe.sequential("Phase 3.1 database constraints", () => {
   });
 
   it("rejects malformed checksums and invalid confidence values", async () => {
-    const file = await createFileFixture();
-
     await expect(
-      prisma.fileVersion.create({
-        data: {
-          fileId: file.id,
-          versionNumber: 2,
-          originalFilename: "bad.pdf",
-          sanitizedFilename: "bad.pdf",
-          declaredMimeType: "application/pdf",
-          sizeBytes: 1n,
-          checksumSha256: "not-a-checksum",
-          storageKey: storageKey("invalid"),
-          uploadedById: adminUserId,
-        },
+      createP13TestFileVersion(prisma, {
+        uploadedById: adminUserId,
+        projectId: TEST_FIXTURE_IDS.project,
+        buildingId: TEST_FIXTURE_IDS.building,
+        installationUnitId: TEST_FIXTURE_IDS.installationUnit,
+        versionNumber: 1,
+        originalFilename: "bad.pdf",
+        sanitizedFilename: "bad.pdf",
+        declaredMimeType: "application/pdf",
+        detectedMimeType: "application/pdf",
+        sizeBytes: 1n,
+        checksumSha256: "not-a-checksum",
+        storageKey: storageKey("invalid"),
       }),
     ).rejects.toBeDefined();
 
-    const validVersion = await createVersion(file.id, "a");
+    const validVersion = await createVersion("a");
     const extraction = await prisma.fileExtraction.create({
       data: {
         fileVersionId: validVersion.id,

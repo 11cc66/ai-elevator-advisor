@@ -47,8 +47,8 @@ model User {
   uploadIntents        FileUploadIntent[]
   customerProfile      Customer?
   advisorConversations AdvisorConversation[]
-  requirementsCreated  BuildingRequirement[]  @relation("RequirementCreatedBy")
-  requirementsUpdated  BuildingRequirement[]  @relation("RequirementUpdatedBy")
+  requirementsCreated  BuildingRequirement[]   @relation("RequirementCreatedBy")
+  requirementsUpdated  BuildingRequirement[]   @relation("RequirementUpdatedBy")
   selectionRuns        SelectionRun[]
   salesHandoffsCreated SalesHandoff[]
   salesFollowUpNotes   SalesFollowUpNote[]
@@ -195,27 +195,27 @@ enum ProjectStatus {
 }
 
 model Project {
-  id                 String             @id @default(cuid())
-  projectCode        String             @unique @db.VarChar(40)
-  customerId         String
-  name               String             @db.VarChar(160)
-  address            String             @db.VarChar(300)
-  projectType        ProjectType        @default(OLD_BUILDING_ELEVATOR)
-  status             ProjectStatus      @default(DRAFT)
-  dataClassification DataClassification @default(DEMO_MOCK)
-  createdById        String
-  createdAt          DateTime           @default(now()) @db.Timestamptz(6)
-  updatedAt          DateTime           @updatedAt @db.Timestamptz(6)
-  customer           Customer           @relation(fields: [customerId], references: [id])
-  createdBy          User               @relation("ProjectCreatedBy", fields: [createdById], references: [id])
-  buildings          Building[]
-  roleAssignments    UserRole[]
-  files              File[]
-  uploadIntents      FileUploadIntent[]
+  id                   String                @id @default(cuid())
+  projectCode          String                @unique @db.VarChar(40)
+  customerId           String
+  name                 String                @db.VarChar(160)
+  address              String                @db.VarChar(300)
+  projectType          ProjectType           @default(OLD_BUILDING_ELEVATOR)
+  status               ProjectStatus         @default(DRAFT)
+  dataClassification   DataClassification    @default(DEMO_MOCK)
+  createdById          String
+  createdAt            DateTime              @default(now()) @db.Timestamptz(6)
+  updatedAt            DateTime              @updatedAt @db.Timestamptz(6)
+  customer             Customer              @relation(fields: [customerId], references: [id])
+  createdBy            User                  @relation("ProjectCreatedBy", fields: [createdById], references: [id])
+  buildings            Building[]
+  roleAssignments      UserRole[]
+  files                File[]
+  uploadIntents        FileUploadIntent[]
   advisorConversations AdvisorConversation[]
   buildingRequirements BuildingRequirement[]
-  selectionRuns      SelectionRun[]
-  salesHandoffs      SalesHandoff[]
+  selectionRuns        SelectionRun[]
+  salesHandoffs        SalesHandoff[]
 
   @@unique([id, customerId])
   @@index([customerId])
@@ -365,26 +365,28 @@ enum FileSecuritySeverity {
 }
 
 model File {
-  id                 String             @id @default(cuid())
-  customerId         String
-  projectId          String
-  buildingId         String?
-  installationUnitId String?
-  displayName        String             @db.VarChar(255)
-  status             FileStatus         @default(ACTIVE)
-  currentVersionId   String?            @unique
-  dataClassification DataClassification @default(DEMO_MOCK)
-  createdById        String
-  createdAt          DateTime           @default(now()) @db.Timestamptz(6)
-  updatedAt          DateTime           @updatedAt @db.Timestamptz(6)
-  customer           Customer           @relation(fields: [customerId], references: [id])
-  project            Project            @relation(fields: [projectId], references: [id])
-  building           Building?          @relation(fields: [buildingId], references: [id])
-  installationUnit   InstallationUnit?  @relation(fields: [installationUnitId], references: [id])
-  createdBy          User               @relation("FileCreatedBy", fields: [createdById], references: [id])
-  currentVersion     FileVersion?       @relation("CurrentFileVersion", fields: [currentVersionId], references: [id], onDelete: SetNull)
-  versions           FileVersion[]      @relation("FileVersions")
-  uploadIntents      FileUploadIntent[] @relation("ExistingUploadIntentFile")
+  id                      String             @id @default(cuid())
+  createdByUploadIntentId String?            @unique
+  customerId              String
+  projectId               String
+  buildingId              String?
+  installationUnitId      String?
+  displayName             String             @db.VarChar(255)
+  status                  FileStatus         @default(ACTIVE)
+  currentVersionId        String?            @unique
+  dataClassification      DataClassification @default(DEMO_MOCK)
+  createdById             String
+  createdAt               DateTime           @default(now()) @db.Timestamptz(6)
+  updatedAt               DateTime           @updatedAt @db.Timestamptz(6)
+  customer                Customer           @relation(fields: [customerId], references: [id])
+  project                 Project            @relation(fields: [projectId], references: [id])
+  building                Building?          @relation(fields: [buildingId], references: [id])
+  installationUnit        InstallationUnit?  @relation(fields: [installationUnitId], references: [id])
+  createdBy               User               @relation("FileCreatedBy", fields: [createdById], references: [id])
+  createdByUploadIntent   FileUploadIntent?  @relation("UploadIntentCreatedFile", fields: [createdByUploadIntentId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  currentVersion          FileVersion?       @relation("CurrentFileVersion", fields: [currentVersionId], references: [id], onDelete: SetNull)
+  versions                FileVersion[]      @relation("FileVersions")
+  uploadIntents           FileUploadIntent[] @relation("ExistingUploadIntentFile")
 
   @@unique([id, projectId])
   @@index([customerId])
@@ -406,6 +408,8 @@ model FileVersion {
   sizeBytes                  BigInt
   checksumSha256             String                  @db.Char(64)
   storageKey                 String                  @unique @db.VarChar(255)
+  storageBackend             StorageBackend          @default(LEGACY_LOCAL)
+  storageObjectBindingId     String?                 @unique @db.VarChar(32)
   uploadIntentId             String                  @db.VarChar(32)
   uploadAttemptId            String                  @unique @db.VarChar(32)
   creationOperationAttemptId String                  @unique @db.VarChar(64)
@@ -429,7 +433,9 @@ model FileVersion {
   uploadIntent               FileUploadIntent        @relation("IntentFileVersions", fields: [uploadIntentId], references: [id], onDelete: Restrict)
   uploadAttempt              FileUploadAttempt       @relation("UploadAttemptFileVersion", fields: [uploadAttemptId], references: [id], onDelete: Restrict)
   storageObject              StorageObjectLifecycle  @relation("FileVersionStorageObject", fields: [storageKey], references: [storageKey], onDelete: Restrict)
+  storageObjectBinding       StorageObjectBinding?   @relation("FileVersionObjectBinding", fields: [storageObjectBindingId], references: [id], onDelete: Restrict)
   completedIntent            FileUploadIntent?       @relation("CompletedUploadIntent")
+  expectedForUploadIntents   FileUploadIntent[]      @relation("IntentExpectedCurrentVersion")
   extractions                FileExtraction[]
   securityEvents             FileSecurityEvent[]
 
@@ -498,46 +504,61 @@ enum StorageObjectOperationType {
   PURGE
 }
 
+enum StorageBackend {
+  LEGACY_LOCAL
+  OBJECT_STORE
+}
+
+enum StorageObjectBindingState {
+  PENDING
+  VERIFIED
+  FAILED_RETAINED
+}
+
 model FileUploadIntent {
-  id                     String                 @id @default(cuid())
-  requestKey             String                 @db.VarChar(100)
-  requestFingerprint     String                 @db.Char(64)
-  uploadedById           String
-  projectId              String
-  buildingId             String?
-  installationUnitId     String?
-  existingFileId         String?
-  displayName            String                 @db.VarChar(255)
-  originalFilename       String                 @db.VarChar(255)
-  sanitizedFilename      String                 @db.VarChar(255)
-  declaredMimeType       String                 @db.VarChar(150)
-  declaredSizeBytes      BigInt
+  id                           String                 @id @default(cuid())
+  requestKey                   String                 @db.VarChar(100)
+  requestFingerprint           String                 @db.Char(64)
+  uploadedById                 String
+  projectId                    String
+  buildingId                   String?
+  installationUnitId           String?
+  existingFileId               String?
+  expectedCurrentFileVersionId String?                @db.VarChar(32)
+  displayName                  String                 @db.VarChar(255)
+  originalFilename             String                 @db.VarChar(255)
+  sanitizedFilename            String                 @db.VarChar(255)
+  declaredMimeType             String                 @db.VarChar(150)
+  declaredSizeBytes            BigInt
   /// Legacy compatibility field during staged P1-3 implementation.
   /// New attempts use FileUploadAttempt.stagingKey.
-  stagingKey             String?                @unique @db.VarChar(255)
-  objectStorageKey       String?                @unique @db.VarChar(255)
-  status                 FileUploadIntentStatus @default(PENDING)
-  currentAttemptId       String?                @unique @db.VarChar(32)
-  expiresAt              DateTime               @db.Timestamptz(6)
-  claimedAt              DateTime?              @db.Timestamptz(6)
-  completedAt            DateTime?              @db.Timestamptz(6)
-  failureCode            String?                @db.VarChar(100)
-  completedFileVersionId String?                @unique
-  createdAt              DateTime               @default(now()) @db.Timestamptz(6)
-  updatedAt              DateTime               @updatedAt @db.Timestamptz(6)
+  stagingKey                   String?                @unique @db.VarChar(255)
+  objectStorageKey             String?                @unique @db.VarChar(255)
+  status                       FileUploadIntentStatus @default(PENDING)
+  currentAttemptId             String?                @unique @db.VarChar(32)
+  expiresAt                    DateTime               @db.Timestamptz(6)
+  claimedAt                    DateTime?              @db.Timestamptz(6)
+  completedAt                  DateTime?              @db.Timestamptz(6)
+  failureCode                  String?                @db.VarChar(100)
+  completedFileVersionId       String?                @unique
+  createdAt                    DateTime               @default(now()) @db.Timestamptz(6)
+  updatedAt                    DateTime               @updatedAt @db.Timestamptz(6)
 
-  uploadedBy           User                     @relation(fields: [uploadedById], references: [id])
-  project              Project                  @relation(fields: [projectId], references: [id])
-  building             Building?                @relation(fields: [buildingId], references: [id])
-  installationUnit     InstallationUnit?        @relation(fields: [installationUnitId], references: [id])
-  existingFile         File?                    @relation("ExistingUploadIntentFile", fields: [existingFileId], references: [id])
-  completedFileVersion FileVersion?             @relation("CompletedUploadIntent", fields: [completedFileVersionId], references: [id])
-  currentAttempt       FileUploadAttempt?       @relation("CurrentUploadAttempt", fields: [currentAttemptId], references: [id], onDelete: Restrict)
-  attempts             FileUploadAttempt[]      @relation("IntentUploadAttempts")
-  fileVersions         FileVersion[]            @relation("IntentFileVersions")
-  reservedLifecycles   StorageObjectLifecycle[] @relation("LifecycleReservedIntent")
+  uploadedBy                 User                     @relation(fields: [uploadedById], references: [id])
+  project                    Project                  @relation(fields: [projectId], references: [id])
+  building                   Building?                @relation(fields: [buildingId], references: [id])
+  installationUnit           InstallationUnit?        @relation(fields: [installationUnitId], references: [id])
+  existingFile               File?                    @relation("ExistingUploadIntentFile", fields: [existingFileId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  expectedCurrentFileVersion FileVersion?             @relation("IntentExpectedCurrentVersion", fields: [expectedCurrentFileVersionId, existingFileId], references: [id, fileId], onDelete: Restrict, onUpdate: Restrict)
+  createdFile                File?                    @relation("UploadIntentCreatedFile")
+  completedFileVersion       FileVersion?             @relation("CompletedUploadIntent", fields: [completedFileVersionId], references: [id])
+  currentAttempt             FileUploadAttempt?       @relation("CurrentUploadAttempt", fields: [currentAttemptId], references: [id], onDelete: Restrict)
+  attempts                   FileUploadAttempt[]      @relation("IntentUploadAttempts")
+  fileVersions               FileVersion[]            @relation("IntentFileVersions")
+  reservedLifecycles         StorageObjectLifecycle[] @relation("LifecycleReservedIntent")
 
   @@unique([uploadedById, requestKey])
+  @@index([existingFileId, status])
   @@index([projectId, status])
   @@index([status, expiresAt])
   @@index([buildingId])
@@ -577,6 +598,7 @@ model FileUploadAttempt {
 model StorageObjectLifecycle {
   id                     String             @id @default(cuid()) @db.VarChar(32)
   objectKind             StorageObjectKind
+  storageBackend         StorageBackend     @default(LEGACY_LOCAL)
   storageKey             String             @unique @db.VarChar(255)
   state                  StorageObjectState
   reservedAttemptId      String?            @unique @db.VarChar(32)
@@ -615,6 +637,7 @@ model StorageObjectLifecycle {
   stagingAttempt   FileUploadAttempt?       @relation("UploadAttemptStagingLifecycle")
   canonicalAttempt FileUploadAttempt?       @relation("UploadAttemptCanonicalLifecycle")
   fileVersion      FileVersion?             @relation("FileVersionStorageObject")
+  objectBinding    StorageObjectBinding?    @relation("ObjectBindingLifecycle")
 
   @@unique([id, storageKey])
   @@unique([reservedAttemptId, reservedIntentId, storageKey])
@@ -633,6 +656,7 @@ model StorageObjectOperation {
   state                  StorageObjectOperationState
   ownerToken             String                      @db.VarChar(64)
   fencingGeneration      BigInt
+  writeIdempotencyKey    String?                     @db.VarChar(160)
   leaseExpiresAt         DateTime?                   @db.Timestamptz(6)
   sourcePath             String?                     @db.VarChar(255)
   targetPath             String?                     @db.VarChar(255)
@@ -648,11 +672,42 @@ model StorageObjectOperation {
   lifecycle           StorageObjectLifecycle  @relation("LifecycleOperations", fields: [objectLifecycleId], references: [id], onDelete: Restrict)
   currentForLifecycle StorageObjectLifecycle? @relation("LifecycleCurrentOperation")
   sourceAttempt       FileUploadAttempt?      @relation(fields: [sourceAttemptId], references: [id], onDelete: Restrict)
+  objectBinding       StorageObjectBinding?   @relation("ObjectBindingOperation")
 
   @@unique([id, objectLifecycleId, storageKey])
   @@index([storageKey, state])
   @@index([state, leaseExpiresAt])
   @@map("storage_object_operation")
+}
+
+model StorageObjectBinding {
+  id                 String                    @id @default(cuid()) @db.VarChar(32)
+  objectLifecycleId  String                    @unique @db.VarChar(32)
+  operationId        String                    @unique @db.VarChar(32)
+  providerKind       String                    @db.VarChar(64)
+  accountScopeRef    String                    @db.VarChar(128)
+  region             String                    @db.VarChar(64)
+  bucketOrContainer  String                    @db.VarChar(255)
+  objectKey          String                    @db.VarChar(255)
+  providerVersionId  String?                   @db.VarChar(255)
+  providerGeneration BigInt?
+  providerRequestId  String?                   @db.VarChar(255)
+  sizeBytes          BigInt?
+  checksumSha256     String?                   @db.Char(64)
+  writeObservedAt    DateTime?                 @db.Timestamptz(6)
+  state              StorageObjectBindingState @default(PENDING)
+  createdAt          DateTime                  @default(now()) @db.Timestamptz(6)
+  verifiedAt         DateTime?                 @db.Timestamptz(6)
+
+  objectLifecycle StorageObjectLifecycle @relation("ObjectBindingLifecycle", fields: [objectLifecycleId], references: [id], onDelete: Restrict)
+  operation       StorageObjectOperation @relation("ObjectBindingOperation", fields: [operationId], references: [id], onDelete: Restrict)
+  fileVersion     FileVersion?           @relation("FileVersionObjectBinding")
+
+  @@unique([providerKind, accountScopeRef, region, bucketOrContainer, objectKey, providerVersionId], map: "storage_object_binding_provider_version_key")
+  @@unique([providerKind, accountScopeRef, region, bucketOrContainer, objectKey], map: "storage_object_binding_namespace_objectKey_key")
+  @@unique([id, operationId, objectKey])
+  @@index([state])
+  @@map("storage_object_binding")
 }
 
 model FileExtraction {
@@ -874,9 +929,9 @@ model AdvisorConversation {
   createdAt   DateTime                  @default(now()) @db.Timestamptz(6)
   updatedAt   DateTime                  @updatedAt @db.Timestamptz(6)
 
-  project     Project                   @relation(fields: [projectId], references: [id], onDelete: Restrict)
-  createdBy   User                      @relation(fields: [createdById], references: [id], onDelete: Restrict)
-  messages    AdvisorMessage[]
+  project      Project               @relation(fields: [projectId], references: [id], onDelete: Restrict)
+  createdBy    User                  @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  messages     AdvisorMessage[]
   requirements BuildingRequirement[]
 
   @@index([projectId, createdAt])
@@ -885,16 +940,16 @@ model AdvisorConversation {
 }
 
 model AdvisorMessage {
-  id                String                @id @default(cuid())
+  id                String              @id @default(cuid())
   conversationId    String
   sequence          Int
   role              AdvisorMessageRole
-  content           String                @db.Text
-  provider          AdvisorProviderKind   @default(MOCK)
+  content           String              @db.Text
+  provider          AdvisorProviderKind @default(MOCK)
   structuredPayload Json?
-  createdAt         DateTime              @default(now()) @db.Timestamptz(6)
+  createdAt         DateTime            @default(now()) @db.Timestamptz(6)
 
-  conversation      AdvisorConversation   @relation(fields: [conversationId], references: [id], onDelete: Restrict)
+  conversation AdvisorConversation @relation(fields: [conversationId], references: [id], onDelete: Restrict)
 
   @@unique([conversationId, sequence])
   @@index([conversationId, createdAt])
@@ -902,26 +957,26 @@ model AdvisorMessage {
 }
 
 model BuildingRequirement {
-  id                         String              @id @default(cuid())
+  id                         String               @id @default(cuid())
   projectId                  String
   conversationId             String?
   installationScenario       InstallationScenario
-  status                     RequirementStatus   @default(DRAFT)
-  version                    Int                 @default(1)
+  status                     RequirementStatus    @default(DRAFT)
+  version                    Int                  @default(1)
   fields                     Json
   missingFields              Json
-  professionalReviewRequired Boolean             @default(true)
+  professionalReviewRequired Boolean              @default(true)
   createdById                String
   updatedById                String?
-  createdAt                  DateTime            @default(now()) @db.Timestamptz(6)
-  updatedAt                  DateTime            @updatedAt @db.Timestamptz(6)
+  createdAt                  DateTime             @default(now()) @db.Timestamptz(6)
+  updatedAt                  DateTime             @updatedAt @db.Timestamptz(6)
 
-  project                    Project             @relation(fields: [projectId], references: [id], onDelete: Restrict)
-  conversation               AdvisorConversation? @relation(fields: [conversationId], references: [id], onDelete: SetNull)
-  createdBy                  User                @relation("RequirementCreatedBy", fields: [createdById], references: [id], onDelete: Restrict)
-  updatedBy                  User?               @relation("RequirementUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
-  revisions                  RequirementRevision[]
-  selectionRuns              SelectionRun[]
+  project       Project               @relation(fields: [projectId], references: [id], onDelete: Restrict)
+  conversation  AdvisorConversation?  @relation(fields: [conversationId], references: [id], onDelete: SetNull)
+  createdBy     User                  @relation("RequirementCreatedBy", fields: [createdById], references: [id], onDelete: Restrict)
+  updatedBy     User?                 @relation("RequirementUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
+  revisions     RequirementRevision[]
+  selectionRuns SelectionRun[]
 
   @@unique([projectId, version])
   @@index([projectId, createdAt])
@@ -939,7 +994,7 @@ model RequirementRevision {
   createdById   String
   createdAt     DateTime                  @default(now()) @db.Timestamptz(6)
 
-  requirement   BuildingRequirement       @relation(fields: [requirementId], references: [id], onDelete: Restrict)
+  requirement BuildingRequirement @relation(fields: [requirementId], references: [id], onDelete: Restrict)
 
   @@unique([requirementId, version])
   @@index([requirementId, createdAt])
@@ -960,35 +1015,35 @@ model ProductManufacturer {
 }
 
 model ProductBrand {
-  id             String                    @id @default(cuid())
-  manufacturerId String
-  name           String                    @db.VarChar(120)
+  id                 String                    @id @default(cuid())
+  manufacturerId     String
+  name               String                    @db.VarChar(120)
   verificationStatus CatalogVerificationStatus @default(DEMO_MOCK)
-  createdAt      DateTime                  @default(now()) @db.Timestamptz(6)
-  updatedAt      DateTime                  @updatedAt @db.Timestamptz(6)
-  manufacturer   ProductManufacturer       @relation(fields: [manufacturerId], references: [id], onDelete: Restrict)
-  products       ProductModel[]
+  createdAt          DateTime                  @default(now()) @db.Timestamptz(6)
+  updatedAt          DateTime                  @updatedAt @db.Timestamptz(6)
+  manufacturer       ProductManufacturer       @relation(fields: [manufacturerId], references: [id], onDelete: Restrict)
+  products           ProductModel[]
 
   @@unique([manufacturerId, name])
   @@map("product_brand")
 }
 
 model ProductModel {
-  id               String                    @id @default(cuid())
-  brandId          String
-  modelCode        String                    @db.VarChar(100)
-  name             String                    @db.VarChar(160)
-  description      String?                   @db.Text
+  id                  String                    @id @default(cuid())
+  brandId             String
+  modelCode           String                    @db.VarChar(100)
+  name                String                    @db.VarChar(160)
+  description         String?                   @db.Text
   applicableScenarios Json
-  verificationStatus CatalogVerificationStatus @default(DEMO_MOCK)
-  sourceReference  String?                   @db.VarChar(500)
-  active           Boolean                   @default(true)
-  createdAt        DateTime                  @default(now()) @db.Timestamptz(6)
-  updatedAt        DateTime                  @updatedAt @db.Timestamptz(6)
-  brand            ProductBrand              @relation(fields: [brandId], references: [id], onDelete: Restrict)
-  specifications   ProductSpecification[]
-  prices           ProductPrice[]
-  recommendations  SelectionRecommendation[]
+  verificationStatus  CatalogVerificationStatus @default(DEMO_MOCK)
+  sourceReference     String?                   @db.VarChar(500)
+  active              Boolean                   @default(true)
+  createdAt           DateTime                  @default(now()) @db.Timestamptz(6)
+  updatedAt           DateTime                  @updatedAt @db.Timestamptz(6)
+  brand               ProductBrand              @relation(fields: [brandId], references: [id], onDelete: Restrict)
+  specifications      ProductSpecification[]
+  prices              ProductPrice[]
+  recommendations     SelectionRecommendation[]
 
   @@unique([brandId, modelCode])
   @@index([verificationStatus, active])
@@ -1021,58 +1076,58 @@ model ProductSpecification {
 }
 
 model ProductPrice {
-  id             String                    @id @default(cuid())
-  productId      String
-  version        Int
-  currency       String                    @default("CNY") @db.VarChar(8)
-  region         String                    @default("DEMO") @db.VarChar(80)
-  minimumAmount  Int?
-  maximumAmount  Int?
-  sourceReference String?                  @db.VarChar(500)
-  validityStatus PriceValidityStatus       @default(DEMO_MOCK)
-  effectiveFrom  DateTime?                 @db.Timestamptz(6)
-  effectiveTo    DateTime?                 @db.Timestamptz(6)
-  createdAt      DateTime                  @default(now()) @db.Timestamptz(6)
-  product        ProductModel              @relation(fields: [productId], references: [id], onDelete: Restrict)
+  id              String              @id @default(cuid())
+  productId       String
+  version         Int
+  currency        String              @default("CNY") @db.VarChar(8)
+  region          String              @default("DEMO") @db.VarChar(80)
+  minimumAmount   Int?
+  maximumAmount   Int?
+  sourceReference String?             @db.VarChar(500)
+  validityStatus  PriceValidityStatus @default(DEMO_MOCK)
+  effectiveFrom   DateTime?           @db.Timestamptz(6)
+  effectiveTo     DateTime?           @db.Timestamptz(6)
+  createdAt       DateTime            @default(now()) @db.Timestamptz(6)
+  product         ProductModel        @relation(fields: [productId], references: [id], onDelete: Restrict)
 
   @@unique([productId, version])
   @@map("product_price")
 }
 
 model SelectionRun {
-  id               String              @id @default(cuid())
-  projectId        String
-  requirementId    String
-  createdById      String
-  rulesVersion     String              @db.VarChar(50)
-  status           SelectionRunStatus
-  inputSnapshot    Json
-  outputSnapshot   Json
-  createdAt        DateTime            @default(now()) @db.Timestamptz(6)
+  id             String             @id @default(cuid())
+  projectId      String
+  requirementId  String
+  createdById    String
+  rulesVersion   String             @db.VarChar(50)
+  status         SelectionRunStatus
+  inputSnapshot  Json
+  outputSnapshot Json
+  createdAt      DateTime           @default(now()) @db.Timestamptz(6)
 
-  project          Project             @relation(fields: [projectId], references: [id], onDelete: Restrict)
-  requirement      BuildingRequirement @relation(fields: [requirementId], references: [id], onDelete: Restrict)
-  createdBy        User                @relation(fields: [createdById], references: [id], onDelete: Restrict)
-  recommendations  SelectionRecommendation[]
+  project         Project                   @relation(fields: [projectId], references: [id], onDelete: Restrict)
+  requirement     BuildingRequirement       @relation(fields: [requirementId], references: [id], onDelete: Restrict)
+  createdBy       User                      @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  recommendations SelectionRecommendation[]
 
   @@index([projectId, createdAt])
   @@map("selection_run")
 }
 
 model SelectionRecommendation {
-  id               String           @id @default(cuid())
-  selectionRunId   String
-  productId        String
-  specVersion      Int
-  budgetAssessment BudgetAssessment
-  recommendationType String         @db.VarChar(50)
-  reasons          Json
-  limitations      Json
-  sourceReferences Json
-  createdAt        DateTime         @default(now()) @db.Timestamptz(6)
+  id                 String           @id @default(cuid())
+  selectionRunId     String
+  productId          String
+  specVersion        Int
+  budgetAssessment   BudgetAssessment
+  recommendationType String           @db.VarChar(50)
+  reasons            Json
+  limitations        Json
+  sourceReferences   Json
+  createdAt          DateTime         @default(now()) @db.Timestamptz(6)
 
-  selectionRun     SelectionRun     @relation(fields: [selectionRunId], references: [id], onDelete: Restrict)
-  product          ProductModel     @relation(fields: [productId], references: [id], onDelete: Restrict)
+  selectionRun SelectionRun @relation(fields: [selectionRunId], references: [id], onDelete: Restrict)
+  product      ProductModel @relation(fields: [productId], references: [id], onDelete: Restrict)
 
   @@index([selectionRunId, budgetAssessment])
   @@map("selection_recommendation")
@@ -1089,8 +1144,8 @@ model SalesHandoff {
   createdAt     DateTime           @default(now()) @db.Timestamptz(6)
   updatedAt     DateTime           @updatedAt @db.Timestamptz(6)
 
-  project       Project            @relation(fields: [projectId], references: [id], onDelete: Restrict)
-  createdBy     User               @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  project       Project             @relation(fields: [projectId], references: [id], onDelete: Restrict)
+  createdBy     User                @relation(fields: [createdById], references: [id], onDelete: Restrict)
   followUpNotes SalesFollowUpNote[]
 
   @@unique([projectId])
@@ -1098,15 +1153,15 @@ model SalesHandoff {
 }
 
 model SalesFollowUpNote {
-  id           String        @id @default(cuid())
-  handoffId    String
-  authorUserId String
-  contactStatus String       @db.VarChar(80)
-  note         String        @db.Text
-  createdAt    DateTime      @default(now()) @db.Timestamptz(6)
+  id            String   @id @default(cuid())
+  handoffId     String
+  authorUserId  String
+  contactStatus String   @db.VarChar(80)
+  note          String   @db.Text
+  createdAt     DateTime @default(now()) @db.Timestamptz(6)
 
-  handoff      SalesHandoff  @relation(fields: [handoffId], references: [id], onDelete: Restrict)
-  author       User          @relation(fields: [authorUserId], references: [id], onDelete: Restrict)
+  handoff SalesHandoff @relation(fields: [handoffId], references: [id], onDelete: Restrict)
+  author  User         @relation(fields: [authorUserId], references: [id], onDelete: Restrict)
 
   @@index([handoffId, createdAt])
   @@map("sales_follow_up_note")

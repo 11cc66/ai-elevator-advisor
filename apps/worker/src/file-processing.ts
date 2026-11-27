@@ -5,8 +5,13 @@ import {
   type FileRecognitionJob,
 } from "@elevator/contracts";
 import {
+  classifyObjectStorageFailure,
   detectAllowedFileType,
+  isExplicitLocalObjectStorageEnvironment,
+  isObjectStorageAdapterAllowed,
+  ObjectStorageError,
   PrivateStorageError,
+  type ObjectStorageReadCapability,
   type StorageReadCapability,
 } from "@elevator/file-storage";
 import { Prisma, PrismaClient } from "@prisma/client";
@@ -40,7 +45,10 @@ import {
 import { extractImageMetadata } from "./image-metadata.js";
 import { logger } from "./logger.js";
 import { PdfParserError, parsePdfInWorker } from "./pdf-parser-client.js";
-import { createWorkerStorage } from "./storage.js";
+import {
+  createWorkerObjectStorage,
+  createWorkerStorage,
+} from "./storage.js";
 
 const MAX_FILE_BYTES = 20n * 1024n * 1024n;
 const PDF_PROVIDER_VERSION = "pdfjs-dist@6.5.438";
@@ -57,10 +65,13 @@ export type ProcessingCheckpoint =
 export interface FileProcessingDependencies {
   prisma?: PrismaClient;
   storage?: StorageReadCapability;
+  objectStorage?: ObjectStorageReadCapability;
   parsePdf?: typeof parsePdfInWorker;
   readObject?: (
     storage: StorageReadCapability,
     storageKey: string,
+    expectedSizeBytes: bigint,
+    expectedChecksumSha256: string,
   ) => Promise<Buffer>;
   now?: () => Date;
   jobId?: string;
@@ -75,17 +86,20 @@ interface WorkerRuntime {
   env: WorkerEnv;
   prisma: PrismaClient;
   storage: StorageReadCapability;
+  objectStorage?: ObjectStorageReadCapability;
 }
 
 function createRuntime(
   prisma: PrismaClient,
   storage?: StorageReadCapability,
+  objectStorage?: ObjectStorageReadCapability,
 ): WorkerRuntime {
   const env = readWorkerEnv();
   return {
     env,
     prisma,
     storage: storage ?? createWorkerStorage(env),
+    objectStorage: objectStorage ?? createWorkerObjectStorage(env),
   };
 }
 
@@ -173,20 +187,19 @@ async function verifyTestIdentity(runtime: WorkerRuntime): Promise<boolean> {
 async function readObjectBytes(
   storage: StorageReadCapability,
   storageKey: string,
+  expectedSizeBytes: bigint,
+  expectedChecksumSha256: string,
 ): Promise<Buffer> {
-  const chunks: Buffer[] = [];
-  let totalBytes = 0n;
-
-  for await (const chunk of storage.openReadStream(storageKey)) {
-    const buffer = Buffer.from(chunk);
-    totalBytes += BigInt(buffer.byteLength);
-    if (totalBytes > MAX_FILE_BYTES) {
-      throw new PdfParserError("FILE_TOO_LARGE");
-    }
-    chunks.push(buffer);
+  const verified = await storage.readVerifiedObject({
+    objectKey: storageKey,
+    expectedSizeBytes,
+    expectedChecksumSha256: expectedChecksumSha256.toLowerCase(),
+    maxBytes: MAX_FILE_BYTES,
+  });
+  if (verified.sizeBytes > MAX_FILE_BYTES) {
+    throw new PdfParserError("FILE_TOO_LARGE");
   }
-
-  return Buffer.concat(chunks);
+  return verified.bytes;
 }
 
 async function runCheckpoint(
@@ -272,6 +285,18 @@ export function classifyFileProcessingError(
     };
   }
 
+  if (error instanceof ObjectStorageError) {
+    const disposition = classifyObjectStorageFailure(error.code);
+    const transient = disposition.transient;
+    return {
+      code: error.code,
+      safeMessage: transient
+        ? "对象存储暂时不可用，将按策略重试。"
+        : "对象存储读取结果不可用，已停止处理。",
+      failureClass: transient ? "TRANSIENT" : "BLOCKED",
+    };
+  }
+
   if (error instanceof PrivateStorageError) {
     return {
       code: error.code,
@@ -334,7 +359,11 @@ export async function processFileRecognitionJob(
 ): Promise<"COMPLETED" | "IGNORED" | "FAILED" | "BLOCKED"> {
   const ownsPrisma = !dependencies.prisma;
   const prisma = dependencies.prisma ?? new PrismaClient();
-  const runtime = createRuntime(prisma, dependencies.storage);
+  const runtime = createRuntime(
+    prisma,
+    dependencies.storage,
+    dependencies.objectStorage,
+  );
   const currentTime = (): Date => dependencies.now?.() ?? new Date();
   let claim: ProcessingClaim | null = null;
   let lease: FileProcessingLeaseController | null = null;
@@ -346,6 +375,7 @@ export async function processFileRecognitionJob(
       include: {
         fileVersion: {
           include: {
+            storageObjectBinding: true,
             file: {
               select: {
                 id: true,
@@ -483,13 +513,149 @@ export async function processFileRecognitionJob(
     let objectBytes: Buffer;
     try {
       await lease.assertHeld();
-      objectBytes = await (dependencies.readObject ?? readObjectBytes)(
-        runtime.storage,
-        extraction.fileVersion.storageKey,
-      );
+      if (extraction.fileVersion.storageBackend === "OBJECT_STORE") {
+        if (
+          runtime.objectStorage &&
+          !isObjectStorageAdapterAllowed(
+            runtime.objectStorage.provider.providerKind,
+            process.env.NODE_ENV,
+          )
+        ) {
+          throw new ObjectStorageError(
+            "OBJECT_STORAGE_ADAPTER_UNAVAILABLE",
+            "Worker object storage adapter is not allowed in this environment.",
+          );
+        }
+        const binding = extraction.fileVersion.storageObjectBinding;
+        if (!runtime.objectStorage) {
+          throw new ObjectStorageError(
+            "OBJECT_STORAGE_ADAPTER_UNAVAILABLE",
+            "Worker object storage adapter is unavailable.",
+          );
+        }
+        if (
+          !binding ||
+          binding.state !== "VERIFIED" ||
+          binding.operationId !==
+            extraction.fileVersion.creationOperationAttemptId ||
+          binding.objectKey !== extraction.fileVersion.storageKey ||
+          binding.sizeBytes !== extraction.fileVersion.sizeBytes ||
+          binding.checksumSha256?.toLowerCase() !==
+            extraction.fileVersion.checksumSha256.toLowerCase() ||
+          !binding.providerVersionId ||
+          !binding.writeObservedAt
+        ) {
+          throw new ObjectStorageError(
+            "OBJECT_STORAGE_BINDING_INVALID",
+            "Worker cannot resolve an exact verified object binding.",
+          );
+        }
+
+        const exact = await runtime.objectStorage.readExact({
+          version: {
+            providerKind: binding.providerKind,
+            accountScopeRef: binding.accountScopeRef,
+            region: binding.region,
+            bucketOrContainer: binding.bucketOrContainer,
+            objectKey: binding.objectKey,
+            providerVersionId: binding.providerVersionId,
+            providerGeneration: binding.providerGeneration,
+          },
+          expectedSizeBytes: extraction.fileVersion.sizeBytes,
+          expectedChecksumSha256:
+            extraction.fileVersion.checksumSha256.toLowerCase(),
+          maxBytes: MAX_FILE_BYTES,
+        });
+        objectBytes = exact.bytes;
+      } else {
+        if (
+          !isExplicitLocalObjectStorageEnvironment(process.env.NODE_ENV)
+        ) {
+          await lease.assertHeld();
+          await recordSecurityEvent(prisma, {
+            fileVersionId: extraction.fileVersion.id,
+            eventType: "VALIDATION_FAILED",
+            severity: "HIGH",
+            actorUserId,
+            jobId: dependencies.jobId,
+            policyCode: "PROCESSING_LEGACY_LOCAL_STORAGE_DISABLED",
+          });
+          throw blockedProcessingError(
+            "LEGACY_LOCAL_STORAGE_DISABLED",
+            "当前环境禁止通过 Legacy 本地路径读取对象。",
+          );
+        }
+        objectBytes = await (dependencies.readObject ?? readObjectBytes)(
+          runtime.storage,
+          extraction.fileVersion.storageKey,
+          extraction.fileVersion.sizeBytes,
+          extraction.fileVersion.checksumSha256,
+        );
+      }
     } catch (error) {
       if (error instanceof SimulatedWorkerCrashError) {
         throw error;
+      }
+
+      if (error instanceof ObjectStorageError) {
+        const disposition = classifyObjectStorageFailure(error.code);
+        if (disposition.integrityFailure) {
+          await prisma.$transaction(async (tx) => {
+            await tx.fileVersion.update({
+              where: { id: extraction.fileVersion.id },
+              data: { integrityStatus: "FAILED" },
+            });
+          });
+          await recordSecurityEvent(prisma, {
+            fileVersionId: extraction.fileVersion.id,
+            eventType:
+              error.code === "OBJECT_STORAGE_NOT_FOUND"
+                ? "STORAGE_OBJECT_MISSING"
+                : error.code ===
+                    "OBJECT_STORAGE_CHECKSUM_MISMATCH"
+                  ? "CHECKSUM_MISMATCH"
+                  : "VALIDATION_FAILED",
+            severity: "CRITICAL",
+            expectedChecksum: extraction.fileVersion.checksumSha256,
+            actualChecksum:
+              typeof error.details?.actualChecksumSha256 === "string"
+                ? error.details.actualChecksumSha256
+                : undefined,
+            actorUserId,
+            jobId: dependencies.jobId,
+            policyCode: "PROCESSING_OBJECT_BINDING_PREFLIGHT",
+            details: {
+              errorCode: error.code,
+              actualChecksumSha256:
+                typeof error.details?.actualChecksumSha256 === "string"
+                  ? error.details.actualChecksumSha256
+                  : null,
+            },
+          });
+          throw permanentProcessingError(
+            error.code,
+            "对象存储版本与已存文件版本不一致。",
+          );
+        }
+        await recordSecurityEvent(prisma, {
+          fileVersionId: extraction.fileVersion.id,
+          eventType: "VALIDATION_FAILED",
+          severity: "HIGH",
+          actorUserId,
+          jobId: dependencies.jobId,
+          policyCode: "PROCESSING_OBJECT_STORAGE_OPERATIONAL_FAILURE",
+          details: {
+            errorCode: error.code,
+            failureKind: disposition.kind,
+          },
+        });
+        if (disposition.transient) {
+          throw error;
+        }
+        throw blockedProcessingError(
+          error.code,
+          "对象存储配置不可用，已停止处理。",
+        );
       }
 
       const code = getSafeErrorCode(error);

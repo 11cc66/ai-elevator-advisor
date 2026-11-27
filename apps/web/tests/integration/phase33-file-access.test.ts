@@ -21,6 +21,7 @@ import {
 } from "../../src/modules/files/upload-service";
 import { readWebEnv } from "../../src/server/env";
 import { TEST_FIXTURE_IDS } from "../../scripts/test-db/seed";
+import { createP13TestFileVersion } from "../helpers/p13-file-version";
 
 const prisma = new PrismaClient();
 const storage = new LocalPrivateStorage(
@@ -227,25 +228,25 @@ it("classifies missing objects without recording a successful download", async (
 
 it("rejects oversized metadata before allocating a download buffer", async () => {
   const version = await uploadFile();
-  const oversized = await prisma.fileVersion.create({
-    data: {
-      fileId: version.fileId,
-      versionNumber: 3,
-      originalFilename: "oversized.pdf",
-      sanitizedFilename: "oversized.pdf",
-      declaredMimeType: "application/pdf",
-      detectedMimeType: "application/pdf",
-      sizeBytes: 20n * 1024n * 1024n + 1n,
-      checksumSha256: "a".repeat(64),
-      storageKey: `test/phase33/oversized-${randomUUID()}`,
-      uploadStatus: "UPLOADED",
-      validationStatus: "PASSED",
-      malwareScanStatus: "SCAN_UNAVAILABLE",
-      integrityStatus: "VERIFIED",
-      recognitionStatus: "COMPLETED",
-      uploadedById: actor.userId,
-      finalizedAt: new Date(),
-    },
+  const oversized = await createP13TestFileVersion(prisma, {
+    fileId: version.fileId,
+    uploadedById: actor.userId,
+    projectId: TEST_FIXTURE_IDS.project,
+    buildingId: TEST_FIXTURE_IDS.building,
+    installationUnitId: TEST_FIXTURE_IDS.installationUnit,
+    versionNumber: 3,
+    originalFilename: "oversized.pdf",
+    sanitizedFilename: "oversized.pdf",
+    declaredMimeType: "application/pdf",
+    detectedMimeType: "application/pdf",
+    sizeBytes: 20n * 1024n * 1024n + 1n,
+    checksumSha256: "a".repeat(64),
+    storageKey: `objects/phase33/oversized-${randomUUID()}`,
+    uploadStatus: "UPLOADED",
+    validationStatus: "PASSED",
+    integrityStatus: "VERIFIED",
+    recognitionStatus: "COMPLETED",
+    finalizedAt: new Date(),
   });
 
   await expect(
@@ -270,25 +271,25 @@ it("records MIME rejection without changing integrity status", async () => {
   );
   const storageKey = `objects/mime-${randomUUID()}.bin`;
   await storage.finalize(written.stagingKey, storageKey);
-  const mimeRejected = await prisma.fileVersion.create({
-    data: {
-      fileId: version.fileId,
-      versionNumber: 2,
-      originalFilename: "mime-rejected.txt",
-      sanitizedFilename: "mime-rejected.txt",
-      declaredMimeType: "text/plain",
-      detectedMimeType: "text/plain",
-      sizeBytes: written.sizeBytes,
-      checksumSha256: written.checksumSha256,
-      storageKey,
-      uploadStatus: "UPLOADED",
-      validationStatus: "PASSED",
-      malwareScanStatus: "SCAN_UNAVAILABLE",
-      integrityStatus: "VERIFIED",
-      recognitionStatus: "COMPLETED",
-      uploadedById: actor.userId,
-      finalizedAt: new Date(),
-    },
+  const mimeRejected = await createP13TestFileVersion(prisma, {
+    fileId: version.fileId,
+    uploadedById: actor.userId,
+    projectId: TEST_FIXTURE_IDS.project,
+    buildingId: TEST_FIXTURE_IDS.building,
+    installationUnitId: TEST_FIXTURE_IDS.installationUnit,
+    versionNumber: 2,
+    originalFilename: "mime-rejected.txt",
+    sanitizedFilename: "mime-rejected.txt",
+    declaredMimeType: "text/plain",
+    detectedMimeType: "text/plain",
+    sizeBytes: written.sizeBytes,
+    checksumSha256: written.checksumSha256,
+    storageKey,
+    uploadStatus: "UPLOADED",
+    validationStatus: "PASSED",
+    integrityStatus: "VERIFIED",
+    recognitionStatus: "COMPLETED",
+    finalizedAt: new Date(),
   });
   const requestId = `mime-${randomUUID()}`;
 

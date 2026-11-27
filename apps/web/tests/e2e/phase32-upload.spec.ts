@@ -235,6 +235,9 @@ test("Phase 3.2 private streaming upload flow", async ({ request }) => {
     const intentRecord = await prisma.fileUploadIntent.findUniqueOrThrow({
       where: { id: firstIntentBody.uploadIntent.id },
     });
+    if (!intentRecord.stagingKey) {
+      throw new Error("EXPECTED_STAGING_KEY");
+    }
     await expect(
       fs.access(path.join(storageRoot, intentRecord.stagingKey)),
     ).rejects.toBeDefined();
@@ -333,6 +336,9 @@ test("Phase 3.2 private streaming upload flow", async ({ request }) => {
     });
     expect(failedIntent.status).toBe("FAILED");
     expect(failedIntent.completedFileVersionId).toBeNull();
+    if (!failedIntent.stagingKey) {
+      throw new Error("EXPECTED_STAGING_KEY");
+    }
     await expect(
       fs.access(path.join(storageRoot, failedIntent.stagingKey)),
     ).rejects.toBeDefined();
@@ -357,6 +363,9 @@ test("Phase 3.2 private streaming upload flow", async ({ request }) => {
       where: { id: lengthMismatchBody.uploadIntent.id },
     });
     expect(unchangedIntent.status).toBe("PENDING");
+    if (!unchangedIntent.stagingKey) {
+      throw new Error("EXPECTED_STAGING_KEY");
+    }
     await expect(
       fs.access(path.join(storageRoot, unchangedIntent.stagingKey)),
     ).rejects.toBeDefined();
@@ -410,17 +419,18 @@ test("Phase 3.2 private streaming upload flow", async ({ request }) => {
       ),
     ]);
 
-    expect(concurrentUploads.map((response) => response.status())).toEqual([
-      201,
-      201,
-    ]);
+    expect(
+      concurrentUploads
+        .map((response) => response.status())
+        .sort((left, right) => left - right),
+    ).toEqual([201, 409]);
     const versions = await prisma.fileVersion.findMany({
       where: { fileId: storedVersion.fileId },
       orderBy: { versionNumber: "asc" },
       select: { id: true, versionNumber: true },
     });
     expect(versions.map((version) => version.versionNumber)).toEqual([
-      1, 2, 3,
+      1, 2,
     ]);
     expect(versions[versions.length - 1]?.id).toBe(
       (

@@ -11,6 +11,7 @@ import type {
 import type { SelectionResult } from "../../../../../packages/selection-engine/src/index";
 
 import { appendAuditLog } from "@/modules/audit/log";
+import { resolveCurrentSelectionRun } from "@/modules/workbench/selection-consistency";
 import { AppError } from "@/server/http/errors";
 import { prisma } from "@/server/prisma";
 
@@ -1059,14 +1060,37 @@ export async function listSalesHandoffs(): Promise<SalesHandoffRecord[]> {
         getLatestRequirement(row.projectId),
         listSelectionRuns(row.projectId),
       ]);
+      const selectionResolution = resolveCurrentSelectionRun(
+        requirement?.id,
+        selectionRuns,
+      );
+      const currentSelectionRun =
+        selectionResolution.kind === "CURRENT" &&
+        (selectionResolution.run.status === "COMPLETED" ||
+          selectionResolution.run.status === "NO_VALID_MATCH")
+          ? selectionResolution.run
+          : null;
       return {
         ...row,
         requirement,
-        selectionRun: selectionRuns[0] ?? null,
+        selectionRun: currentSelectionRun,
         followUpNotes: notes,
       };
     }),
   );
+}
+
+export async function getLatestSalesHandoff(projectId: string) {
+  return prisma.salesHandoff.findUnique({
+    where: { projectId },
+    select: {
+      id: true,
+      status: true,
+      summary: true,
+      budgetConcern: true,
+      updatedAt: true,
+    },
+  });
 }
 
 export async function getSalesHandoffProjectId(

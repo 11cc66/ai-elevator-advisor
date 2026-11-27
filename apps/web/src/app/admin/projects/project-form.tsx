@@ -4,6 +4,7 @@ import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 
 import { postJson } from "@/lib/api-client";
+import { FormFeedback } from "@/components/form-feedback";
 
 interface CustomerOption {
   id: string;
@@ -17,6 +18,7 @@ export function ProjectForm({
 }) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
   if (customers.length === 0) {
@@ -29,19 +31,31 @@ export function ProjectForm({
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (pending) {
+      return;
+    }
     setError(null);
-    setPending(true);
+    setSuccess(null);
     const formElement = event.currentTarget;
     const form = new FormData(formElement);
+    const customerId = String(form.get("customerId") ?? "").trim();
+    const name = String(form.get("name") ?? "").trim();
+    const address = String(form.get("address") ?? "").trim();
+    if (!customerId || !name || !address) {
+      setError("请选择客户，并填写项目名称和地址。");
+      return;
+    }
+    setPending(true);
 
     try {
       await postJson("/api/admin/projects", {
-        customerId: String(form.get("customerId") ?? ""),
-        name: String(form.get("name") ?? ""),
-        address: String(form.get("address") ?? ""),
+        customerId,
+        name,
+        address,
         projectType: String(form.get("projectType") ?? "OLD_BUILDING_ADDITION"),
       });
       formElement.reset();
+      setSuccess("项目已创建。");
       router.refresh();
     } catch (submitError) {
       setError(
@@ -61,7 +75,12 @@ export function ProjectForm({
     >
       <label className="space-y-2 text-sm font-medium">
         <span>所属客户</span>
-        <select className="admin-input" name="customerId" required>
+        <select
+          className="admin-input"
+          disabled={pending}
+          name="customerId"
+          required
+        >
           <option value="">请选择</option>
           {customers.map((customer) => (
             <option key={customer.id} value={customer.id}>
@@ -72,24 +91,44 @@ export function ProjectForm({
       </label>
       <label className="space-y-2 text-sm font-medium">
         <span>项目名称</span>
-        <input className="admin-input" name="name" required />
+        <input
+          className="admin-input"
+          disabled={pending}
+          maxLength={160}
+          name="name"
+          required
+        />
       </label>
       <label className="space-y-2 text-sm font-medium md:col-span-2">
         <span>项目地址</span>
-        <input className="admin-input" name="address" required />
+        <input
+          className="admin-input"
+          disabled={pending}
+          maxLength={300}
+          name="address"
+          required
+        />
       </label>
       <label className="space-y-2 text-sm font-medium md:col-span-2">
         <span>安装场景</span>
-        <select className="admin-input" defaultValue="OLD_BUILDING_ADDITION" name="projectType">
-          <option value="OLD_BUILDING_ADDITION">旧楼加装</option>
-          <option value="EXISTING_ELEVATOR_RENOVATION">现有电梯改造</option>
-          <option value="NEW_BUILDING_INSTALLATION">新楼安装</option>
+        <select
+          className="admin-input"
+          defaultValue="OLD_BUILDING_ADDITION"
+          disabled={pending}
+          name="projectType"
+        >
+          <option value="OLD_BUILDING_ADDITION">旧楼加装电梯</option>
+          <option value="EXISTING_ELEVATOR_RENOVATION">旧电梯更新</option>
+          <option value="NEW_BUILDING_INSTALLATION">新楼安装电梯</option>
         </select>
       </label>
       <div className="md:col-span-2">
-        {error ? <p className="mb-3 text-sm text-red-700">{error}</p> : null}
+        <div className="mb-3 space-y-2">
+          <FormFeedback kind="error" message={error} />
+          <FormFeedback kind="success" message={success} />
+        </div>
         <button className="admin-button" disabled={pending} type="submit">
-          {pending ? "正在创建…" : "创建旧楼加装 DEMO 项目"}
+          {pending ? "正在创建…" : "创建演示项目"}
         </button>
       </div>
     </form>

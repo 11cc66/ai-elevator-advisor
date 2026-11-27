@@ -114,6 +114,7 @@ test("authenticated MVP routes render the complete customer workflow", async ({
   const projectHtml = await projectPage.text();
   expect(projectHtml).toContain("需求摘要");
   expect(projectHtml).toContain("初步推荐历史");
-  expect(projectHtml).toContain("初步匹配完成");
+  expect(projectHtml).toContain("初步匹配结果");
+  expect(projectHtml).toContain("初步方案已生成");
   expect(projectHtml).toContain("不替代现场勘察");
 });

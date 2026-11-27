@@ -28,7 +28,7 @@ export default async function HomePage() {
             AI 电梯选型顾问
           </h1>
           <p className="text-lg leading-8 text-slate-600">
-            通过多轮对话整理旧楼加装、旧梯改造和新楼安装需求，
+            通过多轮对话整理旧楼加装电梯、旧电梯更新和新楼安装电梯需求，
             再用确定性规则给出可追溯的初步产品建议。
           </p>
           <p className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-900">
@@ -93,7 +93,10 @@ export default async function HomePage() {
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
               <p className="text-sm font-medium text-cyan-800">最近进展</p>
-              <h2 className="mt-1 text-2xl font-semibold">最近推荐方案</h2>
+              <h2 className="mt-1 text-2xl font-semibold">最近选型历史</h2>
+              <p className="mt-1 text-sm text-slate-500">
+                以下为最近产生的历史记录，不代表项目当前需求的最终方案。
+              </p>
             </div>
             <Link className="text-sm text-cyan-800" href="/projects">查看全部项目</Link>
           </div>
@@ -113,7 +116,14 @@ export default async function HomePage() {
                     href={`/projects/${run.projectId}`}
                     key={run.id}
                   >
-                    <p className="text-sm text-slate-500">{run.projectName}</p>
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="text-sm text-slate-500">
+                        {run.projectName}
+                      </p>
+                      <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] text-slate-600">
+                        历史记录
+                      </span>
+                    </div>
                     <p className="mt-2 font-semibold">
                       {recommendation
                         ? `${recommendation.product.manufacturer} · ${recommendation.product.modelCode}`

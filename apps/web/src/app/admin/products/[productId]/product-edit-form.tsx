@@ -3,6 +3,11 @@
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 
+import {
+  BUSINESS_SCENARIO_CODES,
+  getScenarioPresentation,
+} from "@/modules/workbench/presentation";
+
 interface Product {
   productId: string;
   name: string;
@@ -92,9 +97,15 @@ export function ProductEditForm({ product }: { product: Product }) {
       <select className="admin-input" defaultValue={product.price?.validityStatus ?? "DEMO_MOCK"} name="validityStatus">
         <option value="DEMO_MOCK">DEMO_MOCK</option><option value="VALID">VALID</option><option value="EXPIRED">EXPIRED</option>
       </select>
-      {["OLD_BUILDING_ADDITION","EXISTING_ELEVATOR_RENOVATION","NEW_BUILDING_INSTALLATION"].map((scenario) => (
+      {BUSINESS_SCENARIO_CODES.map((scenario) => (
         <label className="text-sm" key={scenario}>
-          <input defaultChecked={product.applicableScenarios.includes(scenario)} name="applicableScenarios" type="checkbox" value={scenario} /> {scenario}
+          <input
+            defaultChecked={product.applicableScenarios.includes(scenario)}
+            name="applicableScenarios"
+            type="checkbox"
+            value={scenario}
+          />{" "}
+          {getScenarioPresentation(scenario).label}
         </label>
       ))}
       <button className="admin-button md:col-span-3" type="submit">保存并生成新规格版本</button>

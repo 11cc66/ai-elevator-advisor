@@ -13,6 +13,7 @@ import {
   deriveEffectiveFieldStatus,
 } from "../../src/modules/files/field-review-policy";
 import { TEST_FIXTURE_IDS } from "../../scripts/test-db/seed";
+import { createP13TestFileVersion } from "../helpers/p13-file-version";
 
 const prisma = new PrismaClient();
 let adminUserId = "";
@@ -44,36 +45,27 @@ afterAll(async () => {
 
 async function createFixture() {
   sequence += 1;
-  const file = await prisma.file.create({
-    data: {
-      customerId: TEST_FIXTURE_IDS.customer,
-      projectId: TEST_FIXTURE_IDS.project,
-      buildingId: TEST_FIXTURE_IDS.building,
-      installationUnitId: TEST_FIXTURE_IDS.installationUnit,
-      displayName: `DEMO_MOCK Phase 3.6 文件 ${sequence}`,
-      dataClassification: "DEMO_MOCK",
-      createdById: adminUserId,
-    },
+  const version = await createP13TestFileVersion(prisma, {
+    uploadedById: adminUserId,
+    projectId: TEST_FIXTURE_IDS.project,
+    buildingId: TEST_FIXTURE_IDS.building,
+    installationUnitId: TEST_FIXTURE_IDS.installationUnit,
+    versionNumber: 1,
+    originalFilename: `phase36-${sequence}.pdf`,
+    sanitizedFilename: `phase36-${sequence}.pdf`,
+    declaredMimeType: "application/pdf",
+    detectedMimeType: "application/pdf",
+    sizeBytes: 100n,
+    checksumSha256: String(sequence % 10).repeat(64),
+    storageKey: `objects/phase36/${sequence}-${randomUUID()}`,
+    uploadStatus: "UPLOADED",
+    validationStatus: "PASSED",
+    integrityStatus: "VERIFIED",
+    recognitionStatus: "COMPLETED",
+    finalizedAt: new Date(),
   });
-  const version = await prisma.fileVersion.create({
-    data: {
-      fileId: file.id,
-      versionNumber: 1,
-      originalFilename: `phase36-${sequence}.pdf`,
-      sanitizedFilename: `phase36-${sequence}.pdf`,
-      declaredMimeType: "application/pdf",
-      detectedMimeType: "application/pdf",
-      sizeBytes: 100n,
-      checksumSha256: String(sequence % 10).repeat(64),
-      storageKey: `test/phase36/${sequence}-${randomUUID()}`,
-      uploadStatus: "UPLOADED",
-      validationStatus: "PASSED",
-      malwareScanStatus: "SCAN_UNAVAILABLE",
-      integrityStatus: "VERIFIED",
-      recognitionStatus: "COMPLETED",
-      uploadedById: adminUserId,
-      finalizedAt: new Date(),
-    },
+  const file = await prisma.file.findUniqueOrThrow({
+    where: { id: version.fileId },
   });
   const extraction = await prisma.fileExtraction.create({
     data: {

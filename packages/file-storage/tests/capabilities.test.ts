@@ -26,6 +26,11 @@ function storageDouble(): StorageRuntimeCapability {
       sizeBytes: 1n,
       checksumSha256: "b".repeat(64),
       headerBytes: Uint8Array.from([1]),
+      writerClosedAt: new Date(0),
+      closedIdentity: {
+        dev: "1",
+        ino: "2",
+      },
     })),
     finalize: vi.fn(async () => undefined),
   };

@@ -3,6 +3,11 @@
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 
+import {
+  BUSINESS_SCENARIO_CODES,
+  getScenarioPresentation,
+} from "@/modules/workbench/presentation";
+
 export function ProductForm() {
   const router = useRouter();
   const [pending, setPending] = useState(false);
@@ -86,9 +91,16 @@ export function ProductForm() {
         <option value="MR">有机房 MR</option>
         <option value="UNKNOWN">待确认</option>
       </select>
-      <label className="text-sm"><input name="applicableScenarios" type="checkbox" value="OLD_BUILDING_ADDITION" /> 旧楼加装</label>
-      <label className="text-sm"><input name="applicableScenarios" type="checkbox" value="EXISTING_ELEVATOR_RENOVATION" /> 旧梯改造</label>
-      <label className="text-sm"><input name="applicableScenarios" type="checkbox" value="NEW_BUILDING_INSTALLATION" /> 新楼安装</label>
+      {BUSINESS_SCENARIO_CODES.map((scenario) => (
+        <label className="text-sm" key={scenario}>
+          <input
+            name="applicableScenarios"
+            type="checkbox"
+            value={scenario}
+          />{" "}
+          {getScenarioPresentation(scenario).label}
+        </label>
+      ))}
       {message ? <p className="text-sm text-cyan-800 md:col-span-3">{message}</p> : null}
       <button className="admin-button md:col-span-3" disabled={pending} type="submit">
         {pending ? "正在保存…" : "新增 DEMO_MOCK 产品"}

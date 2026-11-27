@@ -71,7 +71,7 @@ export interface SalesHandoffRecord {
   requirement: RequirementRecord | null;
   selectionRun: Pick<
     SelectionRunRecord,
-    "id" | "status" | "result" | "createdAt"
+    "id" | "requirementId" | "status" | "result" | "createdAt"
   > | null;
   followUpNotes: Array<{
     id: string;

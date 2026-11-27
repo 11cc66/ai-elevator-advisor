@@ -4,26 +4,41 @@ import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 
 import { postJson } from "@/lib/api-client";
+import { FormFeedback } from "@/components/form-feedback";
 
 export function CustomerForm() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (pending) {
+      return;
+    }
     setError(null);
-    setPending(true);
+    setSuccess(null);
     const formElement = event.currentTarget;
     const form = new FormData(formElement);
+    const organizationName = String(
+      form.get("organizationName") ?? "",
+    ).trim();
+    const contactName = String(form.get("contactName") ?? "").trim();
+    if (!organizationName || !contactName) {
+      setError("请填写客户名称和联系人。");
+      return;
+    }
+    setPending(true);
 
     try {
       await postJson("/api/admin/customers", {
-        organizationName: String(form.get("organizationName") ?? ""),
-        contactName: String(form.get("contactName") ?? ""),
-        contactPhone: String(form.get("contactPhone") ?? ""),
+        organizationName,
+        contactName,
+        contactPhone: String(form.get("contactPhone") ?? "").trim(),
       });
       formElement.reset();
+      setSuccess("客户档案已创建。");
       router.refresh();
     } catch (submitError) {
       setError(
@@ -43,18 +58,38 @@ export function CustomerForm() {
     >
       <label className="space-y-2 text-sm font-medium">
         <span>客户 / 组织名称</span>
-        <input className="admin-input" name="organizationName" required />
+        <input
+          className="admin-input"
+          disabled={pending}
+          maxLength={160}
+          name="organizationName"
+          required
+        />
       </label>
       <label className="space-y-2 text-sm font-medium">
         <span>联系人</span>
-        <input className="admin-input" name="contactName" required />
+        <input
+          className="admin-input"
+          disabled={pending}
+          maxLength={120}
+          name="contactName"
+          required
+        />
       </label>
       <label className="space-y-2 text-sm font-medium">
         <span>联系电话（可选）</span>
-        <input className="admin-input" name="contactPhone" />
+        <input
+          className="admin-input"
+          disabled={pending}
+          maxLength={40}
+          name="contactPhone"
+        />
       </label>
       <div className="md:col-span-3">
-        {error ? <p className="mb-3 text-sm text-red-700">{error}</p> : null}
+        <div className="mb-3 space-y-2">
+          <FormFeedback kind="error" message={error} />
+          <FormFeedback kind="success" message={success} />
+        </div>
         <button className="admin-button" disabled={pending} type="submit">
           {pending ? "正在创建…" : "创建 DEMO 客户"}
         </button>
