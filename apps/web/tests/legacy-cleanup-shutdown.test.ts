@@ -2,7 +2,7 @@ import { Readable } from "node:stream";
 
 import {
   LegacyStorageCleanupDisabledError,
-  type StorageUploadWriteCapability,
+  type StorageRuntimeCapability,
 } from "@elevator/file-storage";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -84,6 +84,7 @@ function uploadIntent(overrides: Record<string, unknown> = {}) {
     buildingId: null,
     installationUnitId: null,
     existingFileId: "file-1",
+    expectedCurrentFileVersionId: null,
     displayName: "demo.pdf",
     originalFilename: "demo.pdf",
     sanitizedFilename: "demo.pdf",
@@ -115,16 +116,31 @@ function storageDouble() {
       sizeBytes: BigInt(pdfBytes.byteLength),
       checksumSha256: "b".repeat(64),
       headerBytes: pdfBytes.subarray(0, 16),
+      writerClosedAt: new Date(),
+      closedIdentity: {
+        dev: "1",
+        ino: "2",
+      },
     })),
     finalize: vi.fn(async () => undefined),
-  } as StorageUploadWriteCapability & {
+    verifyObjectChecksum: vi.fn(async () => ({
+      valid: true,
+      actualChecksumSha256: "b".repeat(64),
+    })),
+    readVerifiedObject: vi.fn(async () => ({
+      bytes: pdfBytes,
+      sizeBytes: BigInt(pdfBytes.byteLength),
+      checksumSha256: "b".repeat(64),
+    })),
+    openReadStream: vi.fn(() => Readable.from([pdfBytes])),
+  } as StorageRuntimeCapability & {
     writeToStaging: ReturnType<typeof vi.fn>;
     finalize: ReturnType<typeof vi.fn>;
   };
 }
 
 function expectNoDeleteCapability(
-  storage: StorageUploadWriteCapability,
+  storage: StorageRuntimeCapability,
 ): void {
   expect("removeStaging" in storage).toBe(false);
   expect("removeObject" in storage).toBe(false);
@@ -178,6 +194,33 @@ describe("legacy Web cleanup shutdown", () => {
 });
 
 describe("complete upload cleanup shutdown", () => {
+  it.each([undefined, "staging", "production", "unknown", "test "])(
+    "fails closed without an exact adapter in NODE_ENV=%s",
+    async (nodeEnvironment) => {
+      const storage = storageDouble();
+      vi.stubEnv("NODE_ENV", nodeEnvironment);
+
+      try {
+        await expect(
+          completeUpload({
+            actor,
+            projectId: "project-1",
+            intentId: "intent-1",
+            requestContentLength: pdfBytes.byteLength,
+            requestMimeType: "application/pdf",
+            source: Readable.from([pdfBytes]),
+            requestId: "request-1",
+            storage,
+          }),
+        ).rejects.toMatchObject({ code: "OBJECT_STORAGE_REQUIRED" });
+        expect(storage.writeToStaging).not.toHaveBeenCalled();
+        expect(storage.finalize).not.toHaveBeenCalled();
+      } finally {
+        vi.unstubAllEnvs();
+      }
+    },
+  );
+
   it.each([
     ["explicit commit failure", new Error("COMMIT_FAILED")],
     [
@@ -232,8 +275,12 @@ describe("complete upload cleanup shutdown", () => {
     const extraction = { id: "extraction-1" };
     const tx = {
       $executeRaw: vi.fn(async () => 1),
+      $queryRaw: vi.fn(async () => [
+        { currentVersionId: null },
+      ]),
       file: {
         update: vi.fn(async () => ({})),
+        updateMany: vi.fn(async () => ({ count: 1 })),
       },
       fileVersion: {
         aggregate: vi.fn(async () => ({ _max: { versionNumber: 0 } })),

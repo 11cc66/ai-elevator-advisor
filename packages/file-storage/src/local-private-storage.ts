@@ -20,6 +20,9 @@ export interface LocalPrivateStorageHooks {
     bytesRead: number,
     totalBytesRead: number,
   ) => void | Promise<void>;
+  afterStagingClose?: () => void | Promise<void>;
+  beforeFinalizeLink?: () => void | Promise<void>;
+  afterFinalizeLink?: () => void | Promise<void>;
 }
 
 function isPathInside(root: string, candidate: string): boolean {
@@ -111,13 +114,14 @@ export class LocalPrivateStorage implements StorageRuntimeCapability {
     maxBytes: bigint,
   ): Promise<WrittenUpload> {
     const filePath = this.#resolveKey(stagingKey);
-    await fs.mkdir(path.dirname(filePath), { recursive: true });
+    await this.#ensureSafeParentDirectory(stagingKey, true);
 
     const handle = await fs.open(filePath, "wx", 0o600);
     const hash = createHash("sha256");
     const headerChunks: Buffer[] = [];
     let headerSize = 0;
     let sizeBytes = 0n;
+    let closed = false;
 
     try {
       for await (const rawChunk of source) {
@@ -150,45 +154,197 @@ export class LocalPrivateStorage implements StorageRuntimeCapability {
           "Uploaded file is empty.",
         );
       }
+
+      await handle.sync();
+      const closedStats = await handle.stat({ bigint: true });
+      const identity = readReliableIdentity(closedStats);
+      if (
+        !closedStats.isFile() ||
+        closedStats.size !== sizeBytes ||
+        !identity
+      ) {
+        throw new PrivateStorageError(
+          "STORAGE_IO_ERROR",
+          "Private storage staging identity changed before close.",
+        );
+      }
+      const checksumSha256 = hash.digest("hex");
+      await handle.close();
+      closed = true;
+      await this.#hooks.afterStagingClose?.();
+      const verifiedIdentity = await this.#verifyClosedStaging({
+        stagingKey,
+        expectedIdentity: identity,
+        expectedSizeBytes: sizeBytes,
+        expectedChecksumSha256: checksumSha256,
+      });
+
+      return {
+        stagingKey,
+        sizeBytes,
+        checksumSha256,
+        headerBytes: Buffer.concat(headerChunks),
+        writerClosedAt: new Date(),
+        closedIdentity: verifiedIdentity
+          ? {
+              dev: verifiedIdentity.dev.toString(),
+              ino: verifiedIdentity.ino.toString(),
+            }
+          : null,
+      };
     } catch (error) {
-      await handle.close().catch(() => undefined);
-      throw error;
+      if (!closed) {
+        await handle.close().catch(() => undefined);
+      }
+      throw error instanceof PrivateStorageError
+        ? error
+        : new PrivateStorageError(
+            "STORAGE_IO_ERROR",
+            "Private storage staging could not be closed safely.",
+          );
     }
-
-    await handle.close();
-
-    return {
-      stagingKey,
-      sizeBytes,
-      checksumSha256: hash.digest("hex"),
-      headerBytes: Buffer.concat(headerChunks),
-    };
   }
 
   async finalize(
     stagingKey: string,
     objectKey: string,
+    expected?: {
+      sizeBytes: bigint;
+      checksumSha256: string;
+    },
   ): Promise<void> {
     const stagingPath = this.#resolveKey(stagingKey);
     const objectPath = this.#resolveKey(objectKey);
-    await fs.mkdir(path.dirname(objectPath), { recursive: true });
-
-    try {
-      await fs.access(objectPath);
+    await this.#ensureSafeParentDirectory(objectKey, true);
+    const stagingStats = await fs.lstat(stagingPath, { bigint: true });
+    const stagingIdentity = readReliableIdentity(stagingStats);
+    if (
+      !stagingStats.isFile() ||
+      stagingStats.isSymbolicLink() ||
+      !stagingIdentity
+    ) {
       throw new PrivateStorageError(
-        "STORAGE_OBJECT_EXISTS",
-        "Refusing to overwrite an existing private object.",
+        "STORAGE_OBJECT_NOT_REGULAR",
+        "Private staging object is not a trusted regular file.",
       );
+    }
+
+    await this.#hooks.beforeFinalizeLink?.();
+    try {
+      await fs.link(stagingPath, objectPath);
     } catch (error) {
+      const code =
+        typeof error === "object" &&
+        error !== null &&
+        "code" in error &&
+        typeof error.code === "string"
+          ? error.code
+          : undefined;
+      if (code !== "EEXIST") {
+        throw new PrivateStorageError(
+          code === "EXDEV"
+            ? "STORAGE_PUBLICATION_UNSUPPORTED"
+            : "STORAGE_IO_ERROR",
+          "Private object could not be published atomically without overwrite.",
+        );
+      }
+      const targetStats = await fs.lstat(objectPath, { bigint: true });
+      const targetIdentity = readReliableIdentity(targetStats);
       if (
-        error instanceof PrivateStorageError &&
-        error.code === "STORAGE_OBJECT_EXISTS"
+        !targetIdentity ||
+        !identitiesMatch(stagingIdentity, targetIdentity)
       ) {
-        throw error;
+        throw new PrivateStorageError(
+          "STORAGE_OBJECT_EXISTS",
+          "Refusing to overwrite an existing private object.",
+        );
       }
     }
 
-    await fs.rename(stagingPath, objectPath);
+    const targetStats = await fs.lstat(objectPath, { bigint: true });
+    const targetIdentity = readReliableIdentity(targetStats);
+    if (
+      targetStats.isSymbolicLink() ||
+      !targetStats.isFile() ||
+      !targetIdentity ||
+      !identitiesMatch(stagingIdentity, targetIdentity)
+    ) {
+      throw new PrivateStorageError(
+        "STORAGE_OBJECT_IDENTITY_CHANGED",
+        "Published private object identity does not match staging.",
+      );
+    }
+    await this.#hooks.afterFinalizeLink?.();
+    if (expected) {
+      await this.readVerifiedObject({
+        objectKey,
+        expectedSizeBytes: expected.sizeBytes,
+        expectedChecksumSha256: expected.checksumSha256,
+        maxBytes: expected.sizeBytes,
+      });
+    }
+    const sourceBeforeUnlink = await fs.lstat(stagingPath, { bigint: true });
+    const sourceBeforeUnlinkIdentity =
+      readReliableIdentity(sourceBeforeUnlink);
+    if (
+      sourceBeforeUnlink.isSymbolicLink() ||
+      !sourceBeforeUnlink.isFile() ||
+      !sourceBeforeUnlinkIdentity ||
+      !identitiesMatch(stagingIdentity, sourceBeforeUnlinkIdentity)
+    ) {
+      throw new PrivateStorageError(
+        "STORAGE_OBJECT_IDENTITY_CHANGED",
+        "Private staging path changed before cleanup of the hard link.",
+      );
+    }
+    // Automatic physical cleanup remains disabled; the verified staging hard
+    // link is retained for recovery and operator inspection.
+  }
+
+  async verifyStagingForRecovery(input: {
+    stagingKey: string;
+    expectedSizeBytes: bigint;
+    expectedChecksumSha256: string;
+    maxBytes: bigint;
+  }): Promise<WrittenUpload> {
+    const verified = await this.readVerifiedObject({
+      objectKey: input.stagingKey,
+      expectedSizeBytes: input.expectedSizeBytes,
+      expectedChecksumSha256: input.expectedChecksumSha256,
+      maxBytes: input.maxBytes,
+    });
+    const filePath = this.#resolveKey(input.stagingKey);
+    await this.#ensureSafeParentDirectory(input.stagingKey, false);
+    const stats = await fs.lstat(filePath, { bigint: true });
+    const identity = readReliableIdentity(stats);
+    if (
+      stats.isSymbolicLink() ||
+      !stats.isFile() ||
+      stats.size !== input.expectedSizeBytes ||
+      !identity
+    ) {
+      throw new PrivateStorageError(
+        "STORAGE_OBJECT_IDENTITY_CHANGED",
+        "Private staging recovery identity is not trusted.",
+      );
+    }
+    const verifiedIdentity = await this.#verifyClosedStaging({
+      stagingKey: input.stagingKey,
+      expectedIdentity: identity,
+      expectedSizeBytes: input.expectedSizeBytes,
+      expectedChecksumSha256: input.expectedChecksumSha256,
+    });
+    return {
+      stagingKey: input.stagingKey,
+      sizeBytes: verified.sizeBytes,
+      checksumSha256: verified.checksumSha256,
+      headerBytes: verified.bytes.subarray(0, 4100),
+      writerClosedAt: new Date(),
+      closedIdentity: {
+        dev: verifiedIdentity.dev.toString(),
+        ino: verifiedIdentity.ino.toString(),
+      },
+    };
   }
 
   async verifyObjectChecksum(
@@ -480,6 +636,157 @@ export class LocalPrivateStorage implements StorageRuntimeCapability {
 
   openReadStream(objectKey: string): Readable {
     return createReadStream(this.#resolveKey(objectKey));
+  }
+
+  async #verifyClosedStaging(input: {
+    stagingKey: string;
+    expectedIdentity: FileIdentity | null;
+    expectedSizeBytes: bigint;
+    expectedChecksumSha256: string;
+  }): Promise<FileIdentity> {
+    if (!input.expectedIdentity) {
+      throw new PrivateStorageError(
+        "STORAGE_OBJECT_IDENTITY_UNAVAILABLE",
+        "Private staging identity was unavailable before close.",
+      );
+    }
+
+    const filePath = this.#resolveKey(input.stagingKey);
+    await this.#ensureSafeParentDirectory(input.stagingKey, false);
+    const stats = await fs.lstat(filePath, { bigint: true });
+    const identity = readReliableIdentity(stats);
+    if (
+      stats.isSymbolicLink() ||
+      !stats.isFile() ||
+      stats.size !== input.expectedSizeBytes ||
+      !identity ||
+      !identitiesMatch(identity, input.expectedIdentity)
+    ) {
+      throw new PrivateStorageError(
+        "STORAGE_OBJECT_IDENTITY_CHANGED",
+        "Private staging object changed after close.",
+      );
+    }
+
+    const noFollow =
+      (constants as typeof constants & { O_NOFOLLOW?: number })
+        .O_NOFOLLOW ?? 0;
+    const handle = await fs.open(
+      filePath,
+      constants.O_RDONLY | noFollow,
+    );
+    let verifiedIdentity: FileIdentity | undefined;
+    let verificationError: unknown;
+    let closeError: unknown;
+    try {
+      const openedStats = await handle.stat({ bigint: true });
+      const openedIdentity = readReliableIdentity(openedStats);
+      if (
+        !openedStats.isFile() ||
+        openedStats.size !== input.expectedSizeBytes ||
+        !openedIdentity ||
+        !identitiesMatch(openedIdentity, input.expectedIdentity)
+      ) {
+        throw new PrivateStorageError(
+          "STORAGE_OBJECT_IDENTITY_CHANGED",
+          "Private staging object changed before post-close verification.",
+        );
+      }
+      const bytes = await handle.readFile();
+      const checksumSha256 = createHash("sha256")
+        .update(bytes)
+        .digest("hex");
+      if (
+        BigInt(bytes.byteLength) !== input.expectedSizeBytes ||
+        checksumSha256.toLowerCase() !==
+          input.expectedChecksumSha256.toLowerCase()
+      ) {
+        throw new PrivateStorageError(
+          checksumSha256.toLowerCase() ===
+          input.expectedChecksumSha256.toLowerCase()
+            ? "STORAGE_OBJECT_SIZE_MISMATCH"
+            : "STORAGE_OBJECT_CHECKSUM_MISMATCH",
+          "Private staging post-close verification failed.",
+        );
+      }
+      verifiedIdentity = identity;
+    } catch (error) {
+      verificationError = error;
+    } finally {
+      try {
+        await handle.close();
+      } catch (error) {
+        closeError = error;
+      }
+    }
+    if (closeError) {
+      throw new PrivateStorageError(
+        "STORAGE_IO_ERROR",
+        "Private staging verification handle could not be closed.",
+      );
+    }
+    if (verificationError) {
+      throw verificationError;
+    }
+    if (!verifiedIdentity) {
+      throw new PrivateStorageError(
+        "STORAGE_IO_ERROR",
+        "Private staging post-close verification did not complete.",
+      );
+    }
+    return verifiedIdentity;
+  }
+
+  async #ensureSafeParentDirectory(
+    key: string,
+    create: boolean,
+  ): Promise<void> {
+    const filePath = this.#resolveKey(key);
+    if (create) {
+      await fs.mkdir(this.#root, { recursive: true });
+    }
+    const rootStats = await fs.lstat(this.#root, { bigint: true });
+    if (rootStats.isSymbolicLink() || !rootStats.isDirectory()) {
+      throw new PrivateStorageError(
+        "STORAGE_ROOT_IDENTITY_INVALID",
+        "Private storage root must be a real directory.",
+      );
+    }
+    const canonicalRoot = await fs.realpath(this.#root);
+    const relativePath = path.relative(this.#root, filePath);
+    const segments = relativePath.split(path.sep);
+    let currentPath = this.#root;
+    for (const segment of segments.slice(0, -1)) {
+      currentPath = path.join(currentPath, segment);
+      if (create) {
+        try {
+          await fs.mkdir(currentPath, { mode: 0o700 });
+        } catch (error) {
+          const code =
+            typeof error === "object" &&
+            error !== null &&
+            "code" in error &&
+            typeof error.code === "string"
+              ? error.code
+              : undefined;
+          if (code !== "EEXIST") {
+            throw error;
+          }
+        }
+      }
+      const stats = await fs.lstat(currentPath, { bigint: true });
+      const canonicalPath = await fs.realpath(currentPath);
+      if (
+        stats.isSymbolicLink() ||
+        !stats.isDirectory() ||
+        !isPathInside(canonicalRoot, canonicalPath)
+      ) {
+        throw new PrivateStorageError(
+          "STORAGE_PATH_COMPONENT_INVALID",
+          "Private storage parent components must be trusted directories.",
+        );
+      }
+    }
   }
 
   #resolveKey(key: string): string {

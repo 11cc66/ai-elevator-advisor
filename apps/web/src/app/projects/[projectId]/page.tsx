@@ -1,24 +1,35 @@
 import Link from "next/link";
+import { notFound } from "next/navigation";
 
 import { PERMISSIONS } from "@/modules/access/permissions";
 import { canAccessProject } from "@/modules/access/policy";
 import { requireProjectPageAccess } from "@/modules/auth/page-session";
 import {
+  getLatestSalesHandoff,
   getLatestRequirement,
   listSelectionRuns,
 } from "@/modules/mvp/store";
 import { getProjectDetails } from "@/modules/projects/service";
+import {
+  buildProjectWorkbench,
+  getBudgetAssessmentPresentation,
+  getDataClassificationPresentation,
+  getMissingFieldLabels,
+  getProjectRecordStatusLabel,
+  getRecommendationTypePresentation,
+  getRequirementStatusPresentation,
+  getSalesStatusPresentation,
+  getScenarioPresentation,
+  getSelectionStatusPresentation,
+} from "@/modules/workbench/presentation";
+import { loadVisibleWorkbenchSalesHandoff } from "@/modules/workbench/visibility";
+import { AppError } from "@/server/http/errors";
 
 import { CreateSalesHandoffForm } from "./project-actions";
+import { StatusBadge } from "@/components/status-badge";
+import { ProjectWorkbenchSummary } from "@/components/project-workbench-summary";
 
 export const dynamic = "force-dynamic";
-
-const scenarioLabels: Record<string, string> = {
-  OLD_BUILDING_ELEVATOR: "旧楼加装",
-  OLD_BUILDING_ADDITION: "旧楼加装",
-  EXISTING_ELEVATOR_RENOVATION: "现有电梯改造",
-  NEW_BUILDING_INSTALLATION: "新楼安装",
-};
 
 export default async function CustomerProjectPage({
   params,
@@ -40,11 +51,53 @@ export default async function CustomerProjectPage({
     projectId,
     PERMISSIONS.SALES_HANDOFF_CREATE,
   );
-  const [project, requirement, runs] = await Promise.all([
-    getProjectDetails(projectId),
-    getLatestRequirement(projectId),
-    listSelectionRuns(projectId),
-  ]);
+  const canManageSales = canAccessProject(
+    actor,
+    projectId,
+    PERMISSIONS.SALES_MANAGE,
+  );
+  let project: Awaited<ReturnType<typeof getProjectDetails>>;
+  let requirement: Awaited<ReturnType<typeof getLatestRequirement>>;
+  let runs: Awaited<ReturnType<typeof listSelectionRuns>>;
+  let salesHandoff: Awaited<ReturnType<typeof getLatestSalesHandoff>>;
+
+  try {
+    [project, requirement, runs, salesHandoff] = await Promise.all([
+      getProjectDetails(projectId),
+      getLatestRequirement(projectId),
+      listSelectionRuns(projectId),
+      loadVisibleWorkbenchSalesHandoff({
+        allowed: canManageSales,
+        load: () => getLatestSalesHandoff(projectId),
+      }),
+    ]);
+  } catch (error) {
+    if (error instanceof AppError && error.code === "PROJECT_NOT_FOUND") {
+      notFound();
+    }
+    throw error;
+  }
+  const scenario = getScenarioPresentation(project.projectType);
+  const projectRecordStatus = getProjectRecordStatusLabel(project.status);
+  const classification = getDataClassificationPresentation(
+    project.dataClassification,
+  );
+  const workbench = buildProjectWorkbench({
+    projectStatus: project.status,
+    requirement,
+    selectionRuns: runs,
+    salesHandoff,
+    salesVisible: canManageSales,
+    canRequestSalesFollowUp: canCreateHandoff,
+  });
+  const actionHref =
+    workbench.nextAction.target === "advisor" && canUseAdvisor
+      ? `/projects/${projectId}/advisor`
+      : workbench.nextAction.target === "sales" && canManageSales
+        ? "/admin/sales"
+        : workbench.nextAction.target === "sales" && canCreateHandoff
+          ? "#sales-handoff"
+          : null;
 
   return (
     <main className="mx-auto min-h-screen w-full max-w-6xl px-6 py-10">
@@ -54,12 +107,20 @@ export default async function CustomerProjectPage({
           <div>
             <p className="text-sm text-slate-500">{project.projectCode}</p>
             <h1 className="mt-2 text-3xl font-semibold">{project.name}</h1>
-            <p className="mt-2 text-slate-600">
-              {scenarioLabels[project.projectType] ?? project.projectType} · {project.address}
-            </p>
+            <p className="mt-2 text-slate-600">{project.address}</p>
           </div>
-          <span className="demo-badge">{project.dataClassification}</span>
+          <div className="flex flex-wrap gap-2">
+            <StatusBadge label={scenario.label} tone={scenario.tone} />
+            <StatusBadge label={projectRecordStatus} tone="neutral" />
+            <StatusBadge
+              label={classification.label}
+              tone={classification.tone}
+            />
+          </div>
         </div>
+        <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-600">
+          {scenario.description}
+        </p>
         <div className="mt-5 flex flex-wrap gap-3">
           {canUseAdvisor ? (
             <Link className="admin-button" href={`/projects/${projectId}/advisor`}>AI 需求顾问</Link>
@@ -68,15 +129,28 @@ export default async function CustomerProjectPage({
         </div>
       </header>
 
+      <div className="mt-6">
+        <ProjectWorkbenchSummary
+          actionHref={actionHref}
+          workbench={workbench}
+        />
+      </div>
+
       <div className="mt-6 grid gap-6 lg:grid-cols-[1.2fr_1fr]">
         <section className="space-y-6">
           <article className="rounded-2xl border border-slate-200 bg-white p-6">
             <div className="flex items-center justify-between gap-3">
               <h2 className="text-xl font-semibold">需求摘要</h2>
               {requirement ? (
-                <span className="rounded-full bg-slate-100 px-3 py-1 text-xs">
-                  v{requirement.version} · {requirement.status}
-                </span>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="rounded-full bg-slate-100 px-3 py-1 text-xs">
+                    v{requirement.version}
+                  </span>
+                  <StatusBadge
+                    label={getRequirementStatusPresentation(requirement.status).label}
+                    tone={getRequirementStatusPresentation(requirement.status).tone}
+                  />
+                </div>
               ) : null}
             </div>
             {!requirement ? (
@@ -93,7 +167,8 @@ export default async function CustomerProjectPage({
                 </dl>
                 {requirement.missingFields.length > 0 ? (
                   <p className="mt-4 rounded-lg bg-amber-50 p-3 text-sm text-amber-900">
-                    待补充：{requirement.missingFields.join("、")}
+                    待补充：
+                    {getMissingFieldLabels(requirement.missingFields).join("、")}
                   </p>
                 ) : null}
               </>
@@ -115,7 +190,13 @@ export default async function CustomerProjectPage({
                   return (
                   <section className="rounded-xl bg-slate-50 p-4" key={run.id}>
                     <div className="flex flex-wrap items-center justify-between gap-2">
-                      <p className="font-semibold">{run.status === "COMPLETED" ? "初步匹配完成" : "无有效匹配"}</p>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <p className="font-semibold">初步匹配结果</p>
+                        <StatusBadge
+                          label={getSelectionStatusPresentation(run.status).label}
+                          tone={getSelectionStatusPresentation(run.status).tone}
+                        />
+                      </div>
                       <span className="text-xs text-slate-500">{run.createdAt.toLocaleString("zh-CN")}</span>
                     </div>
                     {candidates.length === 0 ? (
@@ -133,6 +214,7 @@ export default async function CustomerProjectPage({
                                   <th className="px-3 py-2">预算</th>
                                   <th className="px-3 py-2">载重 / 速度</th>
                                   <th className="px-3 py-2">层数 / 行程</th>
+                                  <th className="px-3 py-2">适用场景</th>
                                   <th className="px-3 py-2">数据状态</th>
                                 </tr>
                               </thead>
@@ -143,10 +225,19 @@ export default async function CustomerProjectPage({
                                     key={`compare-${run.id}-${candidate.product.productId}`}
                                   >
                                     <td className="px-3 py-2">
-                                      {candidate.product.modelCode} · {candidate.recommendationType}
+                                      {candidate.product.modelCode} ·{" "}
+                                      {
+                                        getRecommendationTypePresentation(
+                                          candidate.recommendationType,
+                                        ).label
+                                      }
                                     </td>
                                     <td className="px-3 py-2">
-                                      {candidate.budgetAssessment}
+                                      {
+                                        getBudgetAssessmentPresentation(
+                                          candidate.budgetAssessment,
+                                        ).label
+                                      }
                                     </td>
                                     <td className="px-3 py-2">
                                       {candidate.product.specification.capacityKg ?? "待确认"} kg / {candidate.product.specification.speedMps ?? "待确认"} m/s
@@ -154,7 +245,21 @@ export default async function CustomerProjectPage({
                                     <td className="px-3 py-2">
                                       {candidate.product.specification.maxFloors ?? "待确认"} / {candidate.product.specification.maxTravelM ?? "待确认"} m
                                     </td>
-                                    <td className="px-3 py-2">{candidate.dataClassification}</td>
+                                    <td className="px-3 py-2">
+                                      {candidate.product.applicableScenarios
+                                        .map(
+                                          (item) =>
+                                            getScenarioPresentation(item).label,
+                                        )
+                                        .join("、") || "待确认"}
+                                    </td>
+                                    <td className="px-3 py-2">
+                                      {
+                                        getDataClassificationPresentation(
+                                          candidate.dataClassification,
+                                        ).label
+                                      }
+                                    </td>
                                   </tr>
                                 ))}
                               </tbody>
@@ -168,22 +273,60 @@ export default async function CustomerProjectPage({
                                 <p className="font-semibold">{candidate.product.manufacturer} · {candidate.product.brand} {candidate.product.modelCode}</p>
                                 <p className="text-sm text-slate-500">{candidate.product.name}</p>
                               </div>
-                              <span className="demo-badge">{candidate.dataClassification}</span>
+                              <StatusBadge
+                                label={
+                                  getRecommendationTypePresentation(
+                                    candidate.recommendationType,
+                                  ).label
+                                }
+                                tone={
+                                  getRecommendationTypePresentation(
+                                    candidate.recommendationType,
+                                  ).tone
+                                }
+                              />
                             </div>
                             <p className="mt-2 text-sm text-slate-600">
-                              预算判断：{candidate.budgetAssessment} · 参考价格：
+                              预算判断：
+                              {
+                                getBudgetAssessmentPresentation(
+                                  candidate.budgetAssessment,
+                                ).label
+                              }{" "}
+                              · 参考价格：
                               {candidate.product.price?.minimumAmount
                                 ? `¥${candidate.product.price.minimumAmount.toLocaleString("zh-CN")} 起`
                                 : "待询价"}
+                            </p>
+                            <p className="mt-2 text-sm text-slate-600">
+                              数据状态：
+                              {
+                                getDataClassificationPresentation(
+                                  candidate.dataClassification,
+                                ).label
+                              }
                             </p>
                             <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-slate-600">
                               {candidate.matchingReasons.map((reason) => <li key={reason}>{reason}</li>)}
                               {candidate.warnings.map((warning) => <li className="text-amber-800" key={warning}>{warning}</li>)}
                             </ul>
+                            <p className="mt-3 text-xs leading-5 text-slate-500">
+                              数据来源：
+                              {candidate.sourceReferences.join("；") ||
+                                "待补充"}
+                            </p>
                           </div>
                         ))}
                       </div>
                     )}
+                    {run.result.missingInformation.length > 0 ? (
+                      <p className="mt-3 rounded-lg bg-amber-50 p-3 text-xs leading-5 text-amber-950">
+                        尚缺信息：
+                        {getMissingFieldLabels(
+                          run.result.missingInformation,
+                        ).join("、")}
+                      </p>
+                    ) : null}
                     <p className="mt-3 text-xs leading-5 text-slate-500">
                       {run.result.riskWarnings.join("；")} 规则版本：{run.rulesVersion}
                     </p>
@@ -196,7 +339,50 @@ export default async function CustomerProjectPage({
         </section>
 
         <aside className="space-y-6">
-          {canCreateHandoff ? <CreateSalesHandoffForm projectId={projectId} /> : null}
+          {canManageSales ? (
+            <section
+              className="rounded-2xl border border-slate-200 bg-white p-5"
+              id="sales-progress"
+            >
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <h2 className="text-lg font-semibold">销售进展</h2>
+                {salesHandoff ? (
+                  <StatusBadge
+                    label={
+                      getSalesStatusPresentation(salesHandoff.status).label
+                    }
+                    tone={getSalesStatusPresentation(salesHandoff.status).tone}
+                  />
+                ) : (
+                  <StatusBadge label="尚未提交" tone="neutral" />
+                )}
+              </div>
+              {salesHandoff ? (
+                <>
+                  <p className="mt-3 text-sm leading-6 text-slate-700">
+                    {salesHandoff.summary ?? "暂无销售交接摘要。"}
+                  </p>
+                  {salesHandoff.budgetConcern ? (
+                    <p className="mt-3 rounded-lg bg-amber-50 p-3 text-sm text-amber-950">
+                      预算事项：{salesHandoff.budgetConcern}
+                    </p>
+                  ) : null}
+                  <p className="mt-3 text-xs text-slate-500">
+                    最近更新：{salesHandoff.updatedAt.toLocaleString("zh-CN")}
+                  </p>
+                </>
+              ) : (
+                <p className="mt-3 text-sm leading-6 text-slate-600">
+                  尚无销售交接记录。
+                </p>
+              )}
+            </section>
+          ) : null}
+          {canCreateHandoff ? (
+            <div id="sales-handoff">
+              <CreateSalesHandoffForm projectId={projectId} />
+            </div>
+          ) : null}
           <section className="rounded-2xl border border-amber-200 bg-amber-50 p-5 text-sm leading-6 text-amber-900">
             <h2 className="font-semibold">专业边界</h2>
             <p className="mt-2">

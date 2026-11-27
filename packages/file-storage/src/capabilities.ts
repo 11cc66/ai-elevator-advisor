@@ -5,6 +5,11 @@ export interface WrittenUpload {
   sizeBytes: bigint;
   checksumSha256: string;
   headerBytes: Uint8Array;
+  writerClosedAt: Date;
+  closedIdentity: {
+    dev: string;
+    ino: string;
+  } | null;
 }
 
 export interface IntegrityCheck {
@@ -42,7 +47,14 @@ export interface StorageUploadWriteCapability {
     source: Readable,
     maxBytes: bigint,
   ): Promise<WrittenUpload>;
-  finalize(stagingKey: string, objectKey: string): Promise<void>;
+  finalize(
+    stagingKey: string,
+    objectKey: string,
+    expected?: {
+      sizeBytes: bigint;
+      checksumSha256: string;
+    },
+  ): Promise<void>;
 }
 
 export interface StorageRuntimeCapability
@@ -94,8 +106,14 @@ export function createStorageUploadWriteCapability(
       maxBytes: bigint,
     ) =>
       storage.writeToStaging(stagingKey, source, maxBytes),
-    finalize: (stagingKey: string, objectKey: string) =>
-      storage.finalize(stagingKey, objectKey),
+    finalize: (
+      stagingKey: string,
+      objectKey: string,
+      expected?: {
+        sizeBytes: bigint;
+        checksumSha256: string;
+      },
+    ) => storage.finalize(stagingKey, objectKey, expected),
   });
 }
 

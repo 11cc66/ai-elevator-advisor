@@ -6,14 +6,12 @@ import { PERMISSIONS } from "@/modules/access/permissions";
 import { hasPermissionInAnyScope } from "@/modules/access/policy";
 import { requirePageSession } from "@/modules/auth/page-session";
 import { listCatalogProducts } from "@/modules/mvp/store";
+import {
+  BUSINESS_SCENARIO_CODES,
+  getScenarioPresentation,
+} from "@/modules/workbench/presentation";
 
 export const dynamic = "force-dynamic";
-
-const scenarioLabels: Record<string, string> = {
-  OLD_BUILDING_ADDITION: "旧楼加装",
-  EXISTING_ELEVATOR_RENOVATION: "现有电梯改造",
-  NEW_BUILDING_INSTALLATION: "新楼安装",
-};
 
 export default async function CatalogPage({
   searchParams,
@@ -65,8 +63,10 @@ export default async function CatalogPage({
             适用场景
             <select className="admin-input mt-1" defaultValue={scenario} name="scenario">
               <option value="">全部场景</option>
-              {Object.entries(scenarioLabels).map(([value, label]) => (
-                <option key={value} value={value}>{label}</option>
+              {BUSINESS_SCENARIO_CODES.map((value) => (
+                <option key={value} value={value}>
+                  {getScenarioPresentation(value).label}
+                </option>
               ))}
             </select>
           </label>
@@ -103,7 +103,10 @@ export default async function CatalogPage({
                 <div><dt className="text-slate-500">最大行程</dt><dd>{product.specification.maxTravelM ?? "待确认"} m</dd></div>
               </dl>
               <p className="mt-4 text-sm text-slate-600">
-                适用场景：{product.applicableScenarios.map((item) => scenarioLabels[item] ?? item).join("、")}
+                适用场景：
+                {product.applicableScenarios
+                  .map((item) => getScenarioPresentation(item).label)
+                  .join("、")}
               </p>
               <p className="mt-2 text-sm text-slate-600">
                 参考价格：{product.price?.minimumAmount

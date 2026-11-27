@@ -5,8 +5,16 @@ import { PERMISSIONS } from "@/modules/access/permissions";
 import { hasGlobalPermission } from "@/modules/access/policy";
 import { requirePageSession } from "@/modules/auth/page-session";
 import { listSalesHandoffs } from "@/modules/mvp/store";
+import {
+  getDataClassificationPresentation,
+  getMissingFieldLabels,
+  getSalesStatusPresentation,
+  getScenarioPresentation,
+  getSelectionStatusPresentation,
+} from "@/modules/workbench/presentation";
 
 import { FollowUpForm } from "./follow-up-form";
+import { StatusBadge } from "@/components/status-badge";
 
 export const dynamic = "force-dynamic";
 
@@ -30,14 +38,35 @@ export default async function SalesPage() {
           .get(handoff.projectId)
           ?.has(PERMISSIONS.SALES_MANAGE),
       );
+  const statusCounts = handoffs.reduce<Record<string, number>>(
+    (counts, handoff) => {
+      counts[handoff.status] = (counts[handoff.status] ?? 0) + 1;
+      return counts;
+    },
+    {},
+  );
 
   return (
     <div className="space-y-6">
       <header>
         <p className="text-sm font-medium text-cyan-800">销售交接</p>
-        <h1 className="mt-1 text-3xl font-semibold">待跟进项目</h1>
+        <h1 className="mt-1 text-3xl font-semibold">销售跟进工作台</h1>
         <p className="mt-2 text-slate-600">仅记录内部跟进，不形成正式报价。</p>
       </header>
+      {handoffs.length > 0 ? (
+        <div className="flex flex-wrap gap-2">
+          {Object.entries(statusCounts).map(([status, count]) => {
+            const presentation = getSalesStatusPresentation(status);
+            return (
+              <StatusBadge
+                key={status}
+                label={`${presentation.label} ${count}`}
+                tone={presentation.tone}
+              />
+            );
+          })}
+        </div>
+      ) : null}
       {handoffs.length === 0 ? (
         <p className="rounded-xl border border-dashed border-slate-300 p-6 text-slate-500">暂无销售交接。</p>
       ) : (
@@ -46,22 +75,44 @@ export default async function SalesPage() {
             <div className="flex flex-wrap justify-between gap-3">
               <div>
                 <h2 className="text-lg font-semibold">{handoff.projectName}</h2>
-                <p className="mt-1 text-sm text-slate-500">{handoff.status}</p>
+                <p className="mt-1 text-sm text-slate-500">
+                  {getSalesStatusPresentation(handoff.status).description}
+                </p>
               </div>
-              <span className="text-xs text-slate-500">{handoff.createdAt.toLocaleString("zh-CN")}</span>
+              <div className="flex flex-wrap items-center gap-2">
+                <StatusBadge
+                  label={getSalesStatusPresentation(handoff.status).label}
+                  tone={getSalesStatusPresentation(handoff.status).tone}
+                />
+                <span className="text-xs text-slate-500">
+                  {handoff.createdAt.toLocaleString("zh-CN")}
+                </span>
+              </div>
             </div>
             <p className="mt-3 text-sm text-slate-700">{handoff.summary}</p>
             {handoff.budgetConcern ? <p className="mt-2 rounded-lg bg-amber-50 p-3 text-sm text-amber-900">预算事项：{handoff.budgetConcern}</p> : null}
             {handoff.requirement ? (
               <div className="mt-4 rounded-xl bg-slate-50 p-4 text-sm text-slate-700">
-                <p className="font-medium">客户需求 v{handoff.requirement.version} · {handoff.requirement.status}</p>
+                <p className="font-medium">
+                  客户需求 v{handoff.requirement.version}
+                </p>
                 <p className="mt-2">
-                  {handoff.requirement.installationScenario} · {handoff.requirement.fields.buildingUse ?? "用途待确认"} ·
+                  {
+                    getScenarioPresentation(
+                      handoff.requirement.installationScenario,
+                    ).label
+                  }{" "}
+                  · {handoff.requirement.fields.buildingUse ?? "用途待确认"} ·
                   楼层 {handoff.requirement.fields.floorCount ?? "待确认"} ·
                   预算上限 {handoff.requirement.fields.budgetMax ? `¥${handoff.requirement.fields.budgetMax.toLocaleString("zh-CN")}` : "待确认"}
                 </p>
                 {handoff.requirement.missingFields.length > 0 ? (
-                  <p className="mt-2 text-amber-800">待确认：{handoff.requirement.missingFields.join("、")}</p>
+                  <p className="mt-2 text-amber-800">
+                    待确认：
+                    {getMissingFieldLabels(
+                      handoff.requirement.missingFields,
+                    ).join("、")}
+                  </p>
                 ) : null}
               </div>
             ) : (
@@ -69,23 +120,55 @@ export default async function SalesPage() {
             )}
             {handoff.selectionRun ? (
               <div className="mt-3 rounded-xl border border-slate-200 p-4 text-sm">
-                <p className="font-medium">初步选型：{handoff.selectionRun.status}</p>
+                <div className="flex flex-wrap items-center gap-2">
+                  <p className="font-medium">初步选型</p>
+                  <StatusBadge
+                    label={
+                      getSelectionStatusPresentation(
+                        handoff.selectionRun.status,
+                      ).label
+                    }
+                    tone={
+                      getSelectionStatusPresentation(
+                        handoff.selectionRun.status,
+                      ).tone
+                    }
+                  />
+                </div>
                 {handoff.selectionRun.result.recommendations[0] ? (
                   <p className="mt-2 text-slate-700">
                     首选 {handoff.selectionRun.result.recommendations[0].product.manufacturer} ·
                     {handoff.selectionRun.result.recommendations[0].product.modelCode} ·
-                    {handoff.selectionRun.result.recommendations[0].dataClassification}
+                    {
+                      getDataClassificationPresentation(
+                        handoff.selectionRun.result.recommendations[0]
+                          .dataClassification,
+                      ).label
+                    }
                   </p>
                 ) : (
                   <p className="mt-2 text-slate-500">当前没有有效推荐，需人工核对约束。</p>
                 )}
               </div>
             ) : (
-              <p className="mt-3 text-sm text-slate-500">尚无初步选型记录。</p>
+              <p className="mt-3 text-sm text-slate-500">
+                当前需求尚无有效初步选型记录。
+              </p>
             )}
             {handoff.followUpNotes.length > 0 ? (
               <ul className="mt-4 space-y-2 text-sm text-slate-600">
-                {handoff.followUpNotes.map((note) => <li key={note.id}>{note.contactStatus} · {note.note}</li>)}
+                {handoff.followUpNotes.map((note) => (
+                  <li
+                    className="rounded-lg bg-slate-50 px-3 py-2"
+                    key={note.id}
+                  >
+                    <span className="font-medium">{note.contactStatus}</span>
+                    <span className="ml-2">{note.note}</span>
+                    <span className="ml-2 text-xs text-slate-500">
+                      {note.createdAt.toLocaleString("zh-CN")}
+                    </span>
+                  </li>
+                ))}
               </ul>
             ) : null}
             <FollowUpForm handoffId={handoff.id} />

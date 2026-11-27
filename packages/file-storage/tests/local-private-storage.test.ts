@@ -82,8 +82,122 @@ describe("private file storage", () => {
 
     expect(integrity.valid).toBe(true);
     await expect(
+      fs.access(path.join(root, written.stagingKey)),
+    ).resolves.toBeUndefined();
+    await expect(
       storage.finalize("staging/demo.part", "objects/demo.bin"),
-    ).rejects.toBeDefined();
+    ).resolves.toBeUndefined();
+  });
+
+  it("re-verifies staging after close and rejects replacement", async () => {
+    const hookedStorage = new LocalPrivateStorage(root, {
+      afterStagingClose: async () => {
+        const stagingPath = path.join(root, "staging/replaced.part");
+        await fs.unlink(stagingPath);
+        await fs.writeFile(
+          stagingPath,
+          Buffer.alloc(PDF_BYTES.byteLength, 0x41),
+        );
+      },
+    });
+
+    await expect(
+      hookedStorage.writeToStaging(
+        "staging/replaced.part",
+        Readable.from([PDF_BYTES]),
+        20n * 1024n * 1024n,
+      ),
+    ).rejects.toMatchObject({
+      code: "STORAGE_OBJECT_IDENTITY_CHANGED",
+    });
+  });
+
+  it("rejects staging replaced with a symlink after close", async () => {
+    const outside = path.join(root, "outside-staging");
+    await fs.mkdir(outside, { recursive: true });
+    const hookedStorage = new LocalPrivateStorage(root, {
+      afterStagingClose: async () => {
+        const stagingPath = path.join(root, "staging/linked.part");
+        await fs.unlink(stagingPath);
+        await fs.symlink(
+          outside,
+          stagingPath,
+          process.platform === "win32" ? "junction" : "dir",
+        );
+      },
+    });
+
+    await expect(
+      hookedStorage.writeToStaging(
+        "staging/linked.part",
+        Readable.from([PDF_BYTES]),
+        20n * 1024n * 1024n,
+      ),
+    ).rejects.toMatchObject({
+      code: "STORAGE_OBJECT_IDENTITY_CHANGED",
+    });
+  });
+
+  it("rejects a target created before atomic no-overwrite finalize", async () => {
+    const written = await storage.writeToStaging(
+      "staging/target-race.part",
+      Readable.from([PDF_BYTES]),
+      20n * 1024n * 1024n,
+    );
+    const racedStorage = new LocalPrivateStorage(root, {
+      beforeFinalizeLink: async () => {
+        await fs.mkdir(path.join(root, "objects"), { recursive: true });
+        await fs.writeFile(
+          path.join(root, "objects/target-race.bin"),
+          Buffer.from("other"),
+        );
+      },
+    });
+
+    await expect(
+      racedStorage.finalize(
+        written.stagingKey,
+        "objects/target-race.bin",
+        {
+          sizeBytes: written.sizeBytes,
+          checksumSha256: written.checksumSha256,
+        },
+      ),
+    ).rejects.toMatchObject({ code: "STORAGE_OBJECT_EXISTS" });
+  });
+
+  it("verifies target identity and hash before retaining staging", async () => {
+    const written = await storage.writeToStaging(
+      "staging/target-change.part",
+      Readable.from([PDF_BYTES]),
+      20n * 1024n * 1024n,
+    );
+    const changedStorage = new LocalPrivateStorage(root, {
+      afterFinalizeLink: async () => {
+        const targetPath = path.join(root, "objects/target-change.bin");
+        await fs.unlink(targetPath);
+        await fs.writeFile(
+          targetPath,
+          Buffer.alloc(PDF_BYTES.byteLength, 0x43),
+        );
+      },
+    });
+
+    await expect(
+      changedStorage.finalize(
+        written.stagingKey,
+        "objects/target-change.bin",
+        {
+          sizeBytes: written.sizeBytes,
+          checksumSha256: written.checksumSha256,
+        },
+      ),
+    ).rejects.toMatchObject({
+      code: "STORAGE_OBJECT_CHECKSUM_MISMATCH",
+    });
+    await expect(
+      fs.access(path.join(root, written.stagingKey)),
+    ).resolves.toBeUndefined();
   });
 
   it("reads one verified object buffer without reopening the path", async () => {

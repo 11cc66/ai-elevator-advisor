@@ -6,7 +6,10 @@ import { downloadErrorResponse } from "@/modules/files/download-http";
 import { createVerifiedDownloadStream } from "@/modules/files/download-response-stream";
 import { AppError } from "@/server/http/errors";
 import { getRequestId } from "@/server/http/request-id";
-import { getPrivateStorage } from "@/server/files/storage";
+import {
+  getObjectStorageAdapter,
+  getPrivateStorage,
+} from "@/server/files/storage";
 import { readWebEnv } from "@/server/env";
 
 export const dynamic = "force-dynamic";
@@ -57,6 +60,7 @@ export async function GET(
       requestId,
       env: readWebEnv(),
       storage: getPrivateStorage(),
+      objectStorage: getObjectStorageAdapter(),
     });
     let responseBody: ReadableStream<Uint8Array> | undefined;
 

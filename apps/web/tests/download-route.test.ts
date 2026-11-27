@@ -29,6 +29,7 @@ vi.mock("@/modules/files/download-service", () => ({
 
 vi.mock("@/server/files/storage", () => ({
   getPrivateStorage: vi.fn(() => ({})),
+  getObjectStorageAdapter: vi.fn(() => undefined),
 }));
 
 vi.mock("@/server/env", () => ({

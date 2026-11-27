@@ -3,15 +3,15 @@ import Link from "next/link";
 import { loadActor } from "@/modules/access/actor";
 import { requirePageSession } from "@/modules/auth/page-session";
 import { listProjects } from "@/modules/projects/service";
+import {
+  getDataClassificationPresentation,
+  getProjectRecordStatusLabel,
+  getScenarioPresentation,
+} from "@/modules/workbench/presentation";
+
+import { StatusBadge } from "@/components/status-badge";
 
 export const dynamic = "force-dynamic";
-
-const scenarioLabels: Record<string, string> = {
-  OLD_BUILDING_ELEVATOR: "旧楼加装",
-  OLD_BUILDING_ADDITION: "旧楼加装",
-  EXISTING_ELEVATOR_RENOVATION: "旧梯改造",
-  NEW_BUILDING_INSTALLATION: "新楼安装",
-};
 
 export default async function CustomerProjectsPage() {
   const session = await requirePageSession("/projects");
@@ -40,23 +40,45 @@ export default async function CustomerProjectsPage() {
             尚无项目。请先新建一个 DEMO 需求项目。
           </p>
         ) : (
-          projects.map((project) => (
-            <Link
-              className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm hover:border-cyan-300"
-              href={`/projects/${project.id}`}
-              key={project.id}
-            >
-              <div className="flex items-start justify-between gap-3">
-                <h2 className="text-lg font-semibold">{project.name}</h2>
-                <span className="demo-badge">{project.dataClassification}</span>
-              </div>
-              <p className="mt-2 text-sm text-slate-500">{project.projectCode}</p>
-              <p className="mt-3 text-slate-600">
-                {scenarioLabels[project.projectType] ?? project.projectType}
-              </p>
-              <p className="mt-2 text-sm text-slate-500">{project.address}</p>
-            </Link>
-          ))
+          projects.map((project) => {
+            const scenario = getScenarioPresentation(project.projectType);
+            const status = getProjectRecordStatusLabel(project.status);
+            const classification = getDataClassificationPresentation(
+              project.dataClassification,
+            );
+
+            return (
+              <Link
+                className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:border-cyan-300"
+                href={`/projects/${project.id}`}
+                key={project.id}
+              >
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <h2 className="text-lg font-semibold">{project.name}</h2>
+                  <StatusBadge label={status} tone="neutral" />
+                </div>
+                <p className="mt-2 text-sm text-slate-500">
+                  {project.projectCode}
+                </p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <StatusBadge label={scenario.label} tone={scenario.tone} />
+                  <StatusBadge
+                    label={classification.label}
+                    tone={classification.tone}
+                  />
+                </div>
+                <p className="mt-3 text-sm leading-6 text-slate-600">
+                  {scenario.description}
+                </p>
+                <p className="mt-2 text-sm text-slate-500">
+                  {project.address}
+                </p>
+                <p className="mt-4 text-sm font-medium text-cyan-800">
+                  进入项目查看需求、方案和销售进展
+                </p>
+              </Link>
+            );
+          })
         )}
       </section>
     </main>

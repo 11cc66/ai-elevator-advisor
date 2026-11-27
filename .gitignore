@@ -26,6 +26,8 @@ playwright-report/
 test-results/
 .vitest/
 *.tsbuildinfo
+__pycache__/
+*.py[cod]
 
 # Local tooling
 .idea/
